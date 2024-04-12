@@ -69,8 +69,10 @@ async function run_python() {
         let pyodide = await loadPyodide();
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
-        
-	return pyodide.runPython(`from pyodide.http import open_url; import pandas as pd; url_content = open_url(file_url); df = pd.read_csv(url_content); df`);
+
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_url}"`+"); df = pd.read_csv(url_content); df"
+	
+	return pyodide.runPython(pyodide_browser_code);
 }
   
 </script>
