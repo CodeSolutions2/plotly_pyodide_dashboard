@@ -48,9 +48,9 @@ async function run() {
 async function get_desired_file_url() {
 	
 	const repoOwner = 'CodeSolutions2';
-	const repoName = 'text_classification_w_labels';
+	const repoName = 'pyscript_pyodide_dashboard';
 	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
-  var desired_filename = "train_dataset0.csv"
+  var desired_filename = "data.csv"
 
 	await fetch(url).then(res => res.json()).then(data => {
 		    data.forEach(file => {
@@ -70,7 +70,7 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
 
-	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = df_text.Y.value_counts().index; y = df_text.Y.value_counts().to_numpy(); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')"
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = df_text.value_counts().index; y = df_text.value_counts().to_numpy(); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')"
 
 	return pyodide.runPython(pyodide_browser_code);
 }
