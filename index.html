@@ -52,14 +52,12 @@ async function get_desired_file_url() {
 }
 
 
-async function
-
   
 </script>
 
 <py-script>
   from pyodide.http import open_url
-  from js import file_url
+  from js import file_url, get_desired_file_url
   import pandas as pd
 
   url_content = open_url(file_url)
