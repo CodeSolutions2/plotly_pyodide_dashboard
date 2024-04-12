@@ -4,17 +4,18 @@
   <body>
 
 
-<!-- This script tag bootstraps PyScript -->
-<!-- <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" /> -->
-<!-- <script defer src="https://pyscript.net/latest/pyscript.js"></script> -->
-
 <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
 
-<!-- ------------------------------ -->
-    
+<!-- --------------------------------------------------- -->
 
-  
-<!-- ------------------------------ -->
+<!-- CSS -->
+<style>
+div {position: relative; z-index: 2;},
+</style>
+
+	  
+<!-- --------------------------------------------------- -->
+	  
 
 <label id="directions" style="display:block">A Dashboard in the browser using PyScript: plot data from a csv file</label>
 	  
@@ -36,11 +37,8 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(async function(file_url) { await run_python();
-			// str_encoded_img = await run_python();
-				   // console.log('fig: ', fig);
-				   // outp.innerHTML += str_encoded_img;
-				   // document.getElementById("pyplotfigure").src = str_encoded_img;
+		.then(async function(file_url) { var df_text = await run_python();
+				   console.log('df_text: ', JSON.parse(df_text));
 				  })
 		.catch(error => { console.log(error); });
 }
@@ -72,11 +70,8 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
 
-	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig = plt.figure(figsize=(8,3)); plt.bar(x=df.sentence_number, height=df.unique_words_per_sentence, color='blue'); plt.show();"
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig = plt.figure(figsize=(8,3)); plt.bar(x=df.sentence_number, height=df.unique_words_per_sentence, color='blue'); plt.show(); df_text.to_json(orient='columns')"
 
-	//ax = df.plot.bar('sentence_number', 'unique_words_per_sentence', rot=0);
-	//buf = io.BytesIO(); fig.savefig(buf, format='png'); buf.seek(0); 'data:image/png;base64,'+base64.b64encode(buf.read()).decode('UTF-8')
-	
 	return pyodide.runPython(pyodide_browser_code);
 }
   
