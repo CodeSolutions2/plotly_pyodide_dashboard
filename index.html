@@ -36,7 +36,7 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(file_url => { result = await run_python();
+		.then(async function(file_url) { result = await run_python();
 				   console.log('result: ', result);
 				  }
 		.catch(error => { console.log(error); });
