@@ -37,9 +37,7 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(async function(file_url) { var df_text = await run_python();
-				   console.log('df_text: ', JSON.parse(df_text));
-				  })
+		//.then(async function(file_url) { var df_text = await run_python(); console.log('df_text: ', JSON.parse(df_text));})
 		.catch(error => { console.log(error); });
 }
 
