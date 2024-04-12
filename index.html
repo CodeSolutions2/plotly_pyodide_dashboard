@@ -25,7 +25,7 @@
 <!-- View results -->
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
 
-
+<div id="pyplotdiv"><img id="pyplotfigure"/></div>
 	
 <script>
 const outp = document.getElementById('output');
@@ -36,9 +36,10 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(async function(file_url) { fig = await run_python();
+		.then(async function(file_url) { str_encoded_img = await run_python();
 				   // console.log('fig: ', fig);
-				   outp.innerHTML += fig;
+				   outp.innerHTML += str_encoded_img;
+				   document.getElementById("pyplotfigure").src = str_encoded_img;
 				  })
 		.catch(error => { console.log(error); });
 }
@@ -70,7 +71,7 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
 
-	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; from pyodide import to_js; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig, ax = plt.subplots(); ax = df.plot.bar('sentence_number', 'unique_words_per_sentence', rot=0); to_js(fig)"
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig, ax = plt.subplots(); ax = df.plot.bar('sentence_number', 'unique_words_per_sentence', rot=0); buf = io.BytesIO(); fig.savefig(buf, format='png'); buf.seek(0); 'data:image/png;base64,'+base64.b64encode(buf.read()).decode('UTF-8')"
 	
 	return pyodide.runPython(pyodide_browser_code);
 }
