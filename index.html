@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+
+<!-- This script tag bootstraps PyScript -->
+<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+<!-- ------------------------------ -->
+    
+<py-config>
+	packages = ["pandas"]
+	packages = ["matplotlib"]
+</py-config>
+  
+<!-- ------------------------------ -->
+
+<label id="directions" style="display:block">Enter OpenAI key to transcribe the audio files to text. All audio files in the repository will be transcribed.</label>
+	  
+<br>
+	  
+<input id="OPENAI_API_KEY" type="text" value="" placeholder="OPENAI_API_KEY" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+	
+<br><br>
+
+<!-- <button id="run" onclick="run()">Transcribe audio</button> -->
+    
+<!-- View results -->
+<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+	
+<script>
+const outp = document.getElementById('output');
+
+var file_url = '';
+
+async function get_desired_file_url() {
+	
+	const repoOwner = 'CodeSolutions2';
+	const repoName = 'text_classification_w_labels';
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+  var desired_filename = "train_dataset0.csv"
+
+	await fetch(url).then(res => res.json()).then(data => {
+		    data.forEach(file => {
+		      if (file.type === 'file' && file.name == desired_filename) {
+            file_url = file.download_url;
+		      }
+		    });
+		  }).catch(error => { outp.innerHTML += error; });
+	
+    	console.log('file_url: ', file_url);
+	
+	return file_url;
+}
+
+
+async function
+
+  
+</script>
+
+<py-script>
+  from pyodide.http import open_url
+  from js import url
+  import pandas as pd
+
+  url_content = open_url(file_url)
+
+  pyscript.write("output", "Processing")
+  
+  df = pd.read_csv(url_content)
+  
+  
+  
+  pyscript.write("output", df)
+  
+</py-script>
+
+    
+
+  </body>
+</html>
