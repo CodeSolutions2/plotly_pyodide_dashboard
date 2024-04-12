@@ -36,10 +36,11 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(async function(file_url) { str_encoded_img = await run_python();
+		.then(async function(file_url) { await run_python();
+			// str_encoded_img = await run_python();
 				   // console.log('fig: ', fig);
-				   outp.innerHTML += str_encoded_img;
-				   document.getElementById("pyplotfigure").src = str_encoded_img;
+				   // outp.innerHTML += str_encoded_img;
+				   // document.getElementById("pyplotfigure").src = str_encoded_img;
 				  })
 		.catch(error => { console.log(error); });
 }
@@ -71,9 +72,10 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
 
-	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig = plt.figure(figsize=(8,3)); plt.bar(x=df.sentence_number, height=df.unique_words_per_sentence, color='blue'); plt.show(); buf = io.BytesIO(); fig.savefig(buf, format='png'); buf.seek(0); 'data:image/png;base64,'+base64.b64encode(buf.read()).decode('UTF-8')"
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig = plt.figure(figsize=(8,3)); plt.bar(x=df.sentence_number, height=df.unique_words_per_sentence, color='blue'); plt.show();"
 
 	//ax = df.plot.bar('sentence_number', 'unique_words_per_sentence', rot=0);
+	//buf = io.BytesIO(); fig.savefig(buf, format='png'); buf.seek(0); 'data:image/png;base64,'+base64.b64encode(buf.read()).decode('UTF-8')
 	
 	return pyodide.runPython(pyodide_browser_code);
 }
