@@ -70,7 +70,7 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
 
-	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); df = df_text.Y.value_counts(); df.columns = ['sentence_number', 'unique_words_per_sentence']; fig = plt.figure(figsize=(8,3)); plt.bar(x=df.sentence_number, height=df.unique_words_per_sentence, color='blue'); plt.show(); df_text.to_json(orient='columns')"
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = df_text.Y.value_counts().index; y = df_text.Y.value_counts().to_numpy(); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')"
 
 	return pyodide.runPython(pyodide_browser_code);
 }
