@@ -36,8 +36,9 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(async function(file_url) { result = await run_python();
-				   console.log('result: ', result);
+		.then(async function(file_url) { df = await run_python();
+				   console.log('df: ', df);
+				   outp.innerHTML += "df=" + df;
 				  })
 		.catch(error => { console.log(error); });
 }
@@ -69,7 +70,7 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
         
-	return pyodide.runPython(`from pyodide.http import open_url; from js import file_url, console, outp; import pandas as pd; url_content = open_url(file_url); df = pd.read_csv(url_content); console.log("df: ", df); outp.innerHTML += "df=" + df;`);
+	return pyodide.runPython(`from pyodide.http import open_url; import pandas as pd; url_content = open_url(file_url); df = pd.read_csv(url_content); df`);
 }
   
 </script>
