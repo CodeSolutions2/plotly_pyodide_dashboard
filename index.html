@@ -5,8 +5,8 @@
 
 
 <!-- This script tag bootstraps PyScript -->
-<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<!-- <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" /> -->
+<!-- <script defer src="https://pyscript.net/latest/pyscript.js"></script> -->
 
 <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
 
@@ -72,17 +72,17 @@ async function run_python() {
 	return pyodide.runPython(`
             # Import and use JS function in Python
             from pyodide.http import open_url
-            from js import file_url
+            from js import file_url, console, outp
             import pandas as pd
             url_content = open_url(file_url)
             pyscript.write("output", "Processing")
             df = pd.read_csv(url_content)
-            pyscript.write("output", df)
+            console.log("df: ", df)
+	    outp.innerHTML += "df=" + df
         `);
 }
   
 </script>
-
 
     
 
