@@ -36,9 +36,9 @@ var file_url = '';
 async function run() {
 
 	return await get_desired_file_url()
-		.then(async function(file_url) { df = await run_python();
-				   console.log('df: ', df);
-				   outp.innerHTML += "df=" + df;
+		.then(async function(file_url) { fig = await run_python();
+				   // console.log('fig: ', fig);
+				   outp.innerHTML += fig;
 				  })
 		.catch(error => { console.log(error); });
 }
@@ -70,7 +70,7 @@ async function run_python() {
 	await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
 
-	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_url}"`+"); df = pd.read_csv(url_content); df"
+	var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i for i in range(len(df_text))]; y = [len(df_text.iloc[i].value_counts()) for i in range(len(df_text))]; df = pd.DataFrame({'sentence_number': x, 'unique_words_per_sentence': y}); fig, ax = plt.subplots(); ax = df.plot.bar('sentence_number', 'unique_words_per_sentence', rot=0); fig"
 	
 	return pyodide.runPython(pyodide_browser_code);
 }
