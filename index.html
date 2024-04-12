@@ -8,28 +8,41 @@
 <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
+<script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+
 <!-- ------------------------------ -->
     
-<py-env>
-	- pandas
-	- matplotlib
-</py-env>
+
   
 <!-- ------------------------------ -->
 
 <label id="directions" style="display:block">A Dashboard in the browser using PyScript: plot data from a csv file</label>
 	  
 <br><br>
-
-<!-- <button id="run" onclick="run()">Run</button> -->
+ 
+<button id="run" onclick="run()">Run</button>
     
 <!-- View results -->
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+
+
 	
 <script>
 const outp = document.getElementById('output');
 
 var file_url = '';
+
+
+async function run() {
+
+	return await get_desired_file_url()
+		.then(file_url => { result = await run_python();
+				   console.log('result: ', result);
+				  }
+		.catch(error => { console.log(error); });
+}
+
+	
 
 async function get_desired_file_url() {
 	
@@ -51,26 +64,25 @@ async function get_desired_file_url() {
 	return file_url;
 }
 
-
+async function run_python() {
+        let pyodide = await loadPyodide();
+	await pyodide.loadPackage(["pandas"]);
+        await pyodide.loadPackage(["matplotlib"]);
+        
+	return pyodide.runPython(`
+            # Import and use JS function in Python
+            from pyodide.http import open_url
+            from js import file_url
+            import pandas as pd
+            url_content = open_url(file_url)
+            pyscript.write("output", "Processing")
+            df = pd.read_csv(url_content)
+            pyscript.write("output", df)
+        `);
+}
   
 </script>
 
-<py-script>
-  from pyodide.http import open_url
-  from js import file_url, get_desired_file_url
-  import pandas as pd
-
-  url_content = open_url(file_url)
-
-  pyscript.write("output", "Processing")
-  
-  df = pd.read_csv(url_content)
-  
-  
-  
-  pyscript.write("output", df)
-  
-</py-script>
 
     
 
