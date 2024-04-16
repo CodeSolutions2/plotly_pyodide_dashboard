@@ -50,7 +50,7 @@ async function run() {
                  var df_text = await pyodide.runPython(pyodide_browser_code);
              console.log('df_text: ', JSON.parse(df_text));
 		   return df_text;
-           });
+           })
            .catch(error => { console.log(error); });
 }
 
