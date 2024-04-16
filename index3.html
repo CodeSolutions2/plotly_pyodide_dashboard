@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+
+<script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+
+<!-- --------------------------------------------------- -->
+
+<!-- CSS -->
+<style>
+div {position: relative; z-index: 2;},
+</style>
+
+	  
+<!-- --------------------------------------------------- -->
+	  
+
+<label id="directions" style="display:block">A Dashboard in the browser using PyScript: plot data from a csv file</label>
+	  
+<br><br>
+ 
+<button id="run" onclick="run()">Run</button>
+    
+<!-- View results -->
+<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+
+<div id="pyplotdiv"><img id="pyplotfigure"/></div>
+	
+<script>
+const outp = document.getElementById('output');
+
+var file_url = '';
+
+  
+// ----------------------------------------------------
+
+var pyodide = await load_pyodide();
+
+  
+// ----------------------------------------------------
+  
+async function run() {
+
+	return await get_desired_file_url()
+           .then(async function(file_url) { 
+               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = df_text.value_counts().index; y = df_text.value_counts().to_numpy(); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')";
+                 var df_text = await pyodide.runPython(pyodide_browser_code);
+             console.log('df_text: ', JSON.parse(df_text));
+           });
+           .catch(error => { console.log(error); });
+}
+
+  
+// ----------------------------------------------------
+
+  
+async function get_desired_file_url() {
+	
+	const repoOwner = 'CodeSolutions2';
+	const repoName = 'pyscript_pyodide_dashboard';
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+  var desired_filename = "data.csv"
+
+	await fetch(url).then(res => res.json()).then(data => {
+		    data.forEach(file => {
+		      if (file.type === 'file' && file.name == desired_filename) {
+            file_url = file.download_url;
+		      }
+		    });
+		  }).catch(error => { outp.innerHTML += error; });
+	
+    	console.log('file_url: ', file_url);
+	
+	return file_url;
+}
+
+
+// ----------------------------------------------------
+
+
+async function run_python() {
+        return await loadPyodide()
+          .then(async function(pyodide) { await pyodide.loadPackage(["pandas"]); return pyodide; })
+          .then(async function(pyodide) { await pyodide.loadPackage(["matplotlib"]); return pyodide; })
+          .catch(error => { console.log(error); });
+ 
+}
+
+// ----------------------------------------------------
+
+
+</script>
+
+
+  </body>
+</html>
