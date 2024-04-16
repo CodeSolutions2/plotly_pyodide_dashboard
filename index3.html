@@ -40,7 +40,8 @@ var pyodide = load_pyodide();
 
   
 // ----------------------------------------------------
-  
+
+	
 async function run() {
 
 	return await get_desired_file_url()
@@ -48,6 +49,7 @@ async function run() {
                var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = df_text.value_counts().index; y = df_text.value_counts().to_numpy(); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')";
                  var df_text = await pyodide.runPython(pyodide_browser_code);
              console.log('df_text: ', JSON.parse(df_text));
+		   return df_text;
            });
            .catch(error => { console.log(error); });
 }
@@ -61,7 +63,7 @@ async function get_desired_file_url() {
 	const repoOwner = 'CodeSolutions2';
 	const repoName = 'pyscript_pyodide_dashboard';
 	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
-  var desired_filename = "data.csv"
+	var desired_filename = "data.csv"
 
 	await fetch(url).then(res => res.json()).then(data => {
 		    data.forEach(file => {
