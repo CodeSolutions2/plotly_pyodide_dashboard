@@ -37,13 +37,15 @@ var file_url = '';
 // ----------------------------------------------------
 
 	
-var pyodide = load_pyodide();
+
 
   
 // ----------------------------------------------------
 
 	
 async function run() {
+
+	var pyodide = await pyodideReadyPromise;
 
 	return await get_desired_file_url()
            .then(async function(file_url) { 
@@ -92,6 +94,10 @@ async function load_pyodide() {
  
 }
 
+// ----------------------------------------------------
+
+var pyodideReadyPromise = load_pyodide();
+	
 // ----------------------------------------------------
 
 
