@@ -36,6 +36,7 @@ var file_url = '';
   
 // ----------------------------------------------------
 
+	
 var pyodide = load_pyodide();
 
   
@@ -82,7 +83,7 @@ async function get_desired_file_url() {
 // ----------------------------------------------------
 
 
-async function run_python() {
+async function load_pyodide() {
         return await loadPyodide()
           .then(async function(pyodide) { await pyodide.loadPackage(["pandas"]); return pyodide; })
           .then(async function(pyodide) { await pyodide.loadPackage(["matplotlib"]); return pyodide; })
