@@ -42,10 +42,20 @@ div {position: relative; z-index: 2;},
 <!-- View figure results -->
 <div id="pyplotdiv"><img id="pyplotfigure"/></div>
 
-<div id="js_plot" style="width:600px;height:250px;"></div>
+<div id="js_plot_bar" style="width:600px;height:250px;"></div>
+<div id="js_plot_line" style="width:600px;height:250px;"></div>
 
 <!-- --------------------------------------------------- -->
 
+
+<!-- --------------------------------------------------- -->
+
+<!-- CSS -->
+<style>
+div {position: relative; z-index: 0;}
+</style>
+	  
+<!-- --------------------------------------------------- -->
 	  
 <script>
 const outp = document.getElementById('output');
@@ -63,9 +73,9 @@ async function python_dashboard() {
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
                var file_object = file_objects.at(0);
-               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content";
+               // var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content";
 		   // {'label': x, 'values': y}
-               return pyodide.runPython(pyodide_browser_code);
+               return pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
            })
            .then(output => { console.log('output: ', output.result); })
            .catch(error => { console.log(error); });
@@ -82,16 +92,12 @@ async function javascript_dashboard() {
         var text_out = await fetch(file_object.download_url); return text_out
     })
     .then(response => response.text())
-    .then(async function(df) { 
-        console.log("df: ", df);
-        var df_arr = df.split('\n');
-        console.log('df_arr: ', df_arr);
-	    
+    .then(async function(text_out) { 
+        var df_arr = text_out.split('\n');
         return await counter(df_arr);
     })
-    .then(async function(dictc) { 
-        await bar_chart(dictc);
-    })
+    .then(async function(dictc) { await bar_chart(dictc); })
+    .then(async function(dictc) { await line_chart(dictc); })
     .catch(error => { console.log(error); });
   
 }
@@ -103,7 +109,7 @@ async function bar_chart(dictc) {
 	var trace1 = { x: xValue, y: yValue, type: 'bar', text: yValue.map(String), textposition: 'auto', hoverinfo: 'none', marker: { color: 'rgb(158,202,225)', opacity: 0.6, line: {color: 'rgb(8,48,107)', width: 1.5} } };
 	var data = [trace1];
 	var layout = { title: 'Bar chart', barmode: 'stack' };
-	Plotly.newPlot('js_plot', data, layout);
+	Plotly.newPlot('js_plot_bar', data, layout);
 }
 
 async function line_chart(dictc) {
@@ -113,7 +119,7 @@ async function line_chart(dictc) {
 	    
         const trace_items = { x: index, y: dictc.values, mode: 'markers', type: 'line' };
         const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
-        Plotly.newPlot("js_plot", [trace_items], layout );
+        Plotly.newPlot("js_plot_line", [trace_items], layout );
 
 }
 
