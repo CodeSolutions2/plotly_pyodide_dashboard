@@ -63,7 +63,7 @@ async function python_dashboard() {
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
                var file_object = file_objects.at(0);
-               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); df.value_counts()";
+               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); {'label': x, 'values': y}";
                return pyodide.runPython(pyodide_browser_code);
            })
            .then(df_value_counts => { 
@@ -85,7 +85,10 @@ async function javascript_dashboard() {
     .then(response => response.text())
     .then(async function(df) { 
         console.log("df: ", df);
-        return await counter(df);
+        var df_arr = df.split('\n');
+        console.log('df_arr: ', df_arr);
+	    
+        return await counter(df_arr);
     })
     .then(async function(dictc) { 
         await bar_chart(dictc);
@@ -115,12 +118,9 @@ async function line_chart(dictc) {
 
 }
 
-async function counter(vec) {
-
-	console.log('vec: ', vec);
-	
+async function counter(arr) {
 	// Returns the unique values in vec, which a count of how many times the value appears
-	let unique = [...new Set(vec)];
+	let unique = [...new Set(arr)];
 	console.log('unique: ', unique);
 	const truevals = (num) => num != "\n";
 	const unique1 = unique.filter(truevals);
@@ -129,9 +129,9 @@ async function counter(vec) {
 	let count = [];
 	unique.forEach(async function(val, index) {
 		const uq_vals = (num) => num === val;
-		const uq_val_vec = vec.filter(uq_vals);
-		console.log('val: ', val, 'uq_val_vec: ', uq_val_vec);
-		count.push(uq_val_vec.length);
+		const uq_val_arr = arr.filter(uq_vals);
+		console.log('val: ', val, 'uq_val_arr: ', uq_val_arr);
+		count.push(uq_val_arr.length);
 	});
 	
 	// Create a dictionary
