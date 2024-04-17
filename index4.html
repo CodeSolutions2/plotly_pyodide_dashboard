@@ -80,7 +80,7 @@ var pyodideReadyPromise = load_pyodide();
 // -----------------------
 	
 function output_results(s) {
-        output.value = s
+        outp.innerHTML = s
 }
 	
 // -----------------------
@@ -96,14 +96,12 @@ async function python_dashboard() {
                // var file_object = file_objects.at(0);
                // var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content";
 		   // {'label': x, 'values': y}
-			   let output = pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
-			   output_results(output);
-               } catch (error){
-			   console.log(error);
-               }
-               return output;
+			   let result = await pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
+			   await output_results(result);
+               } catch (error){ console.log('error: ', error); }
+               return result;
            })
-           .then(output => { console.log('output: ', output); })
+           .then(result => { console.log('result: ', result); })
            .catch(error => { console.log(error); });
 }
 
@@ -141,8 +139,6 @@ async function bar_chart(dictc) {
 async function line_chart(dictc) {
         // https://plotly.com/javascript/getting-started/
         const index = [...Array(dictc.values.length).keys()].map((x) => x);
-        console.log('index: ', index);
-	    
         const trace_items = { x: index, y: dictc.values, mode: 'markers', type: 'line' };
         const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
         Plotly.newPlot("js_plot_line", [trace_items], layout );
