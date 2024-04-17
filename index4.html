@@ -66,9 +66,7 @@ async function python_dashboard() {
                var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); {'label': x, 'values': y}";
                return pyodide.runPython(pyodide_browser_code);
            })
-           .then(df_value_counts => { 
-               console.log('df_value_counts: ', df_value_counts);
-           })
+           .then(output => { console.log('output: ', output.result); })
            .catch(error => { console.log(error); });
 }
 
@@ -122,9 +120,11 @@ async function counter(arr) {
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
 	console.log('unique: ', unique);
-	const truevals = (num) => num != "\n";
+	let truevals = (num) => num.length > 0;
 	const unique1 = unique.filter(truevals);
-	console.log('unique1: ', unique1);
+	truevals = (num) => num != "\n";
+	const unique2 = unique1.filter(truevals);
+	console.log('unique2: ', unique2);
 	
 	let count = [];
 	unique.forEach(async function(val, index) {
