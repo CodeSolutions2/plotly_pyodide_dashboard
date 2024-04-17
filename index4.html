@@ -90,17 +90,15 @@ async function python_dashboard() {
 
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
-
                try {
-               // var file_object = file_objects.at(0);
-               // var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content";
-		   // {'label': x, 'values': y}
-			   let result = await pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
-			   await output_results(result);
-               } catch (error){ console.log('error: ', error); }
-               return result;
+		       // {'label': x, 'values': y}
+		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content");
+		       // let result = await pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
+		       await output_results(result);
+               } catch (error){ 
+		       console.log('error: ', error);
+	       }
            })
-           .then(result => { console.log('result: ', result); })
            .catch(error => { console.log(error); });
 }
 
