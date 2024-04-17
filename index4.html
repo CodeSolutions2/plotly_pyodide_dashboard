@@ -129,7 +129,7 @@ async function bar_chart(dictc) {
 	var yValue = dictc.values;
 	var trace1 = { x: xValue, y: yValue, type: 'bar', text: yValue.map(String), textposition: 'auto', hoverinfo: 'none', marker: { color: 'rgb(158,202,225)', opacity: 0.6, line: {color: 'rgb(8,48,107)', width: 1.5} } };
 	var data = [trace1];
-	var layout = { title: 'Bar chart', barmode: 'stack' };
+	var layout = { title: 'Bar chart', barmode: 'stack', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
 	Plotly.newPlot('js_plot_bar', data, layout);
 }
 
