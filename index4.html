@@ -93,8 +93,15 @@ async function python_dashboard() {
            .then(async function(file_objects) { 
                try {
 		       // var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = df_text.value_counts().index; y = df_text.value_counts().to_numpy(); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')"
+		       
 		       // let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import numpy; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = list(df.value_counts().index); y = list(df.value_counts().to_numpy()); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); {'label': x, 'values': y}");
-		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import numpy; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = list(df.value_counts().index); y = list(df.value_counts().to_numpy()); fig = plt.figure(figsize=(8,3)); {'label': x, 'values': y}");
+		       // this gives error - TypeError: unhashable type: 'numpy.ndarray'
+		       
+		       // let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import numpy; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = list(df.value_counts().index); y = list(df.value_counts().to_numpy()); fig = plt.figure(figsize=(8,3)); {'label': x, 'values': y}");  
+		       // this gives error - TypeError: unhashable type: 'numpy.ndarray'
+		       
+		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import numpy; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = list(df.value_counts().index); y = list(df.value_counts().to_numpy()); {'label': x, 'values': y}");
+		       
 		       // let result = await pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
 		       await output_results(result);
                } catch (error){ 
