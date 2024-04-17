@@ -50,7 +50,7 @@ async function python_dashboard() {
                return pyodide.runPython(pyodide_browser_code);
            })
            .then(df_value_counts => { 
-               console.log('df_value_counts: ', JSON.parse(df_value_counts));
+               console.log('df_value_counts: ', df_value_counts);
            })
            .catch(error => { console.log(error); });
 }
