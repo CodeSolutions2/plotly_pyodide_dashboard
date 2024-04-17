@@ -115,7 +115,10 @@ async function python_dashboard() {
 		       // Done from python! prints in the console.log area
 
 		       // To try:
-		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import numpy; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); data = {'labels': x, 'values': y}; df1 = pd.DataFrame(data); df1.plot(kind='bar').to_html()");
+		       // let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import numpy; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); data = {'labels': x, 'values': y}; df1 = pd.DataFrame(data); df1.plot(kind='bar').to_html()");
+		       // AttributeError: 'AxesSubplot' object has no attribute 'to_html'
+
+		       let result = await pyodide.runPython("import matplotlib.pyplot as plt; import mpld3; fig = plt.figure(figsize=(8,3)); plt.plot([1, 2, 3, 4]); plt.ylabel('some numbers'); mpld3.fig_to_html(plt.gcf())");
 		       
 		       // let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')");
 		       
