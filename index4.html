@@ -127,7 +127,7 @@ async function counter(arr) {
 	console.log('unique2: ', unique2);
 	
 	let count = [];
-	unique.forEach(async function(val, index) {
+	unique2.forEach(async function(val, index) {
 		const uq_vals = (num) => num === val;
 		const uq_val_arr = arr.filter(uq_vals);
 		console.log('val: ', val, 'uq_val_arr: ', uq_val_arr);
@@ -135,7 +135,6 @@ async function counter(arr) {
 	});
 	
 	// Create a dictionary
-	// return Object.fromEntries(unique.map((key, index) => [key, count[index]]));
 	return {labels: unique, values: count};
 }
 
