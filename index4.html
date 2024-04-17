@@ -63,7 +63,8 @@ async function python_dashboard() {
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
                var file_object = file_objects.at(0);
-               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); {'label': x, 'values': y}";
+               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content";
+		   // {'label': x, 'values': y}
                return pyodide.runPython(pyodide_browser_code);
            })
            .then(output => { console.log('output: ', output.result); })
