@@ -65,19 +65,45 @@ const repoName = 'pyscript_pyodide_dashboard';
 const csv_filename = 'data.csv';
 
 // ----------------------------------------------------
+
+async function load_pyodide() {
+	let pyodide = await loadPyodide();
+        await pyodide.loadPackage(["pandas"]);
+        await pyodide.loadPackage(["matplotlib"]);
+        return pyodide;
+}
+
+// -----------------------
+
+var pyodideReadyPromise = load_pyodide();
+
+// -----------------------
 	
+function output_results(s) {
+        output.value = s
+}
+	
+// -----------------------
+
 async function python_dashboard() {
 
 	var pyodide = await pyodideReadyPromise;
 
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
-               var file_object = file_objects.at(0);
+
+               try {
+               // var file_object = file_objects.at(0);
                // var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); x = df.value_counts().index.to_numpy(); y = df.value_counts().to_numpy(); url_content";
 		   // {'label': x, 'values': y}
-               return pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
+			   let output = pyodide.runPython("a = ['a', 'b', 'c', 'd', 'e']; list(a)");
+			   output_results(output);
+               } catch (error){
+			   console.log(error);
+               }
+               return output;
            })
-           .then(output => { console.log('output: ', output.result); })
+           .then(output => { console.log('output: ', output); })
            .catch(error => { console.log(error); });
 }
 
@@ -96,7 +122,7 @@ async function javascript_dashboard() {
         var df_arr = text_out.split('\n');
         return await counter(df_arr);
     })
-    .then(async function(dictc) { await bar_chart(dictc); })
+    .then(async function(dictc) { await bar_chart(dictc); return dictc; })
     .then(async function(dictc) { await line_chart(dictc); })
     .catch(error => { console.log(error); });
   
@@ -120,24 +146,23 @@ async function line_chart(dictc) {
         const trace_items = { x: index, y: dictc.values, mode: 'markers', type: 'line' };
         const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
         Plotly.newPlot("js_plot_line", [trace_items], layout );
-
 }
 
 async function counter(arr) {
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
-	console.log('unique: ', unique);
+	// console.log('unique: ', unique);
 	let truevals = (num) => num.length > 0;
 	const unique1 = unique.filter(truevals);
 	truevals = (num) => num != "\n";
 	const unique2 = unique1.filter(truevals);
-	console.log('unique2: ', unique2);
+	// console.log('unique2: ', unique2);
 	
 	let count = [];
 	unique2.forEach(async function(val, index) {
 		const uq_vals = (num) => num === val;
 		const uq_val_arr = arr.filter(uq_vals);
-		console.log('val: ', val, 'uq_val_arr: ', uq_val_arr);
+		// console.log('val: ', val, 'uq_val_arr: ', uq_val_arr);
 		count.push(uq_val_arr.length);
 	});
 	
@@ -145,7 +170,9 @@ async function counter(arr) {
 	return {labels: unique, values: count};
 }
 
+	
 // ----------------------------------------------------
+
 	
 async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 	
@@ -165,20 +192,6 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 		.catch(error => { console.log(error); });
 }
 
-
-// ----------------------------------------------------
-
-
-async function load_pyodide() {
-	let pyodide = await loadPyodide();
-        await pyodide.loadPackage(["pandas"]);
-        await pyodide.loadPackage(["matplotlib"]);
-        return pyodide;
-}
-
-// ----------------------------------------------------
-
-var pyodideReadyPromise = load_pyodide();
 	
 // ----------------------------------------------------
 
