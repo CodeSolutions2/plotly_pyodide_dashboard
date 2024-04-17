@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+
+<script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+
+<!-- --------------------------------------------------- -->
+
+<!-- CSS -->
+<style>
+div {position: relative; z-index: 2;},
+</style>
+
+	  
+<!-- --------------------------------------------------- -->
+	  
+
+<label id="directions" style="display:block">A Dashboard in the browser using PyScript: plot data from a csv file</label>
+	  
+<br><br>
+ 
+<button id="python_dashboard" onclick="python_dashboard()">python_dashboard</button>
+
+<button id="javascript_dashboard" onclick="javascript_dashboard()">javascript_dashboard</button>
+    
+<!-- View results -->
+<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+
+<div id="pyplotdiv"><img id="pyplotfigure"/></div>
+	
+<script>
+const outp = document.getElementById('output');
+
+const repoOwner = 'CodeSolutions2';
+const repoName = 'pyscript_pyodide_dashboard';
+const csv_filename = 'data.csv';
+
+// ----------------------------------------------------
+	
+async function python_dashboard() {
+
+	var pyodide = await pyodideReadyPromise;
+
+	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
+           .then(async function(file_objects) { 
+               var file_object = file_objects.at(0);
+               var pyodide_browser_code = "from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; url_content = open_url("+`"${file_object.download_url}"`+"); df = pd.read_csv(url_content); df.value_counts()";
+               return pyodide.runPython(pyodide_browser_code);
+           })
+           .then(df_value_counts => { 
+               console.log('df_value_counts: ', JSON.parse(df_value_counts));
+           })
+           .catch(error => { console.log(error); });
+}
+
+// ----------------------------------------------------
+	
+async function javascript_dashboard() {
+
+  // Read data into Javascript from .csv
+  return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
+    .then(async function(file_objects) {
+        var file_object = file_objects.at(0);
+        var text_out = await fetch(file_object.download_url); return text_out
+    })
+    .then(response => response.text())
+    .then(async function(df) { 
+        console.log("df: ", df);
+        return df;
+    })
+    .catch(error => { console.log(error); });
+  
+}
+
+// ----------------------------------------------------
+	
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
+	
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+	var file_objects = [];
+	return await fetch(url)
+		.then(res => res.json())
+		.then(data => { data.forEach(async function(file) {
+			    var regexp = new RegExp(`${csv_filename}`, 'g');
+		      if (file.type === 'file' && file.name.match(regexp)) {
+            file_objects.push(file);
+		      }
+		    });
+		    return file_objects;
+		})
+		.catch(error => { console.log(error); });
+}
+
+
+// ----------------------------------------------------
+
+
+async function load_pyodide() {
+	let pyodide = await loadPyodide();
+        await pyodide.loadPackage(["pandas"]);
+        await pyodide.loadPackage(["matplotlib"]);
+        return pyodide;
+}
+
+// ----------------------------------------------------
+
+var pyodideReadyPromise = load_pyodide();
+	
+// ----------------------------------------------------
+
+
+</script>
+
+
+  </body>
+</html>
