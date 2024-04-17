@@ -122,12 +122,15 @@ async function counter(vec) {
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(vec)];
 	console.log('unique: ', unique);
+	const truevals = (num) => num != "\n";
+	const unique1 = unique.filter(truevals);
+	console.log('unique1: ', unique1);
 	
 	let count = [];
 	unique.forEach(async function(val, index) {
-		console.log('val: ', val);
-		const uq_vals = (num) => num == val;
+		const uq_vals = (num) => num === val;
 		const uq_val_vec = vec.filter(uq_vals);
+		console.log('val: ', val, 'uq_val_vec: ', uq_val_vec);
 		count.push(uq_val_vec.length);
 	});
 	
