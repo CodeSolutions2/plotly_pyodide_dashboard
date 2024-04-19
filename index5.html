@@ -74,9 +74,6 @@ async function load_pyodide() {
 	// -----------------------
 	
         await pyodide.loadPackage(["pandas"]);
-        // await pyodide.loadPackage(["matplotlib"]);
-	// await pyodide.loadPackage(["micropip"]);
-	
         return pyodide;
 }
 
@@ -89,12 +86,6 @@ var pyodideReadyPromise = load_pyodide();
 async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 
-	let str = dictc_string.toString();
-	let arr = str.split("'");
-	console.log('arr: ', arr);
-	
-	
-	// await bar_chart(dictc);
 }
 	
 // -----------------------
