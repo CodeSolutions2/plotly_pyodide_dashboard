@@ -131,7 +131,7 @@ async function python_dashboard() {
 		       
 		       // let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')");
 
-	let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import plotly.express as px; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = px.scatter(x=range(len(x), y=y); fig.to_html"); 
+	let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import plotly.express as px; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = px.scatter(x=range(len(x)), y=y); fig.to_html");  
 		       
 
 
