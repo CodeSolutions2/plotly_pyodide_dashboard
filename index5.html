@@ -90,7 +90,7 @@ async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 
 	let dictc = JSON.parse(dictc_string);
-	console.log('dictc: '; dictc);
+	console.log('dictc: ', dictc);
 	
 	await bar_chart(dictc);
 }
