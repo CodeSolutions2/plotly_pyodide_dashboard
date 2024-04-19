@@ -89,7 +89,12 @@ var pyodideReadyPromise = load_pyodide();
 async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 
-	let dictc = JSON.parse(dictc_string.toString());
+	let str = dictc_string.toString();
+	let arr = str.split(',');
+	console.log('arr: ', arr);
+	
+	
+	let dictc = JSON.parse(JSON.stringify(dictc_string));
 	console.log('dictc: ', dictc);
 	
 	await bar_chart(dictc);
