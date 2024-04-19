@@ -74,7 +74,9 @@ async function load_pyodide() {
 	// -----------------------
 	
         await pyodide.loadPackage(["pandas"]);
-        // await pyodide.loadPackage(["matplotlib"]);
+        await pyodide.loadPackage(["matplotlib"]);
+	await pyodide.loadPackage(["micropip"]);
+	
         return pyodide;
 }
 
@@ -137,7 +139,10 @@ async function python_dashboard() {
 		       
 		       // let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import io, base64; url_content = open_url("+`"${file_url}"`+"); df_text = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = plt.figure(figsize=(8,3)); plt.bar(x=x, height=y, color='blue'); plt.show(); df_text.to_json(orient='columns')");
 
-	let result = await pyodide.runPythonAsync("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = px.scatter(x=range(len(x)), y=y); fig.to_html(full_html=False)");  
+		       // let result = await pyodide.runPythonAsync("from pyodide.http import open_url; import pandas as pd; import js; from js import plotly; import plotly.express as px; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = px.scatter(x=range(len(x)), y=y); fig.to_html(full_html=False)");  
+		       // ModuleNotFoundError: No module named 'plotly'
+
+		       let result = await pyodide.runPythonAsync("from pyodide.http import open_url; import pandas as pd; import matplotlib.pyplot as plt; import js; import micropip; micropip.install('plotly'); import plotly.express as px; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); fig = px.scatter(x=range(len(x)), y=y); fig.to_html(full_html=False)");  
 		       
 
 
