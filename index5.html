@@ -69,6 +69,7 @@ async function load_pyodide() {
 	let pyodide = await loadPyodide();
         await pyodide.loadPackage(["pandas"]);
         await pyodide.loadPackage(["matplotlib"]);
+	await pyodide.loadPackage(["plotly"]);
         return pyodide;
 }
 
