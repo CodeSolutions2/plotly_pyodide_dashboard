@@ -90,12 +90,21 @@ async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 
-	dictc_string = dictc_string.replace(": [", "<start>");
-	outp.innerHTML += dictc_string;
+	console.log('dictc_string.length: ', dictc_string.length);
 
-	dictc_string = dictc_string.replace("]", "<end>");
-	outp.innerHTML += dictc_string;
-
+	let start = [1];
+	let endd = [];
+	for (let i=0; i< dictc_string.length; i++) {
+		if (dictc_string[i] == ':'){
+			endd.push(i-1);
+		}
+		if (dictc_string[i] == ']' & i<dictc_string.length-1) {
+			start.push(i+2);
+		}
+	}
+	console.log('start: ', start);
+	console.log('endd: ', endd);
+	
 	// Way 0: to recover string data as numerical values
 	let json_object = JSON.parse(JSON.stringify(dictc_string));
 	console.log('json_object: ', json_object);
