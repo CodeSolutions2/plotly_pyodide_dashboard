@@ -114,7 +114,7 @@ async function python_output_to_javascript() {
 	var dictc_string_new = '';
 	let s_cnt = 0;
 	let e_cnt = 0;
-	dictc_string.forEach(async function(char, ind) {
+	for (let i=0; i< dictc_string.length; i++) {
 		if (ind == start[s_cnt]) {
 			dictc_string_new = dictc_string_new + '"';
 			s_cnt = s_cnt + 1;
@@ -122,9 +122,9 @@ async function python_output_to_javascript() {
 			dictc_string_new = dictc_string_new + '"';
 			e_cnt = e_cnt + 1;
 		} else {
-			dictc_string_new = dictc_string_new + char;
+			dictc_string_new = dictc_string_new + dictc_string[ind];
 		}
-	});
+	}
 	console.log('dictc_string_new: ', dictc_string_new);
 	
 	// Way 0: to recover string data as numerical values
