@@ -131,7 +131,7 @@ async function python_output_to_javascript() {
 	console.log('json_object: ', json_object);
 
 	let desired_keys = ["labels", "values"];
-	let old_keys = json_object.keys();
+	const old_keys = Object.keys(json_object);
 	console.log('old_keys: ', old_keys);
 	
 	for (let i=0; i< old_keys.length; i++) {
