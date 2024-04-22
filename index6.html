@@ -89,7 +89,7 @@ var pyodideReadyPromise = load_pyodide();
 async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 
-	let newStr = str.replace('\', '"');
+	let newStr = dictc_string.replace("\", '"');
 
 	// Way 0: to recover string data as numerical values
 	let json_object = JSON.parse(JSON.stringify(dictc_string));
