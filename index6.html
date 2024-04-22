@@ -129,10 +129,19 @@ async function python_output_to_javascript() {
 	
 	let json_object = JSON.parse(JSON.stringify(dictc_string_new));
 	console.log('json_object: ', json_object);
-	console.log('json_object["label"]: ', json_object["label"]);
-	console.log('json_object["values"]: ', json_object["values"]);
 
-	await bar_chart(dictc);
+	let desired_keys = ["labels", "values"];
+	let old_keys = json_object.keys();
+	console.log('old_keys: ', old_keys);
+	
+	for (let i=0; i< old_keys.length; i++) {
+		json_object[old_keys[i]] = desired_keys[i];
+	}
+		
+	console.log('json_object["labels"]: ', json_object["labels"]);
+	console.log('json_object["values"]: ', json_object["values"]);
+	
+	await bar_chart(json_object);
 }
 	
 	
