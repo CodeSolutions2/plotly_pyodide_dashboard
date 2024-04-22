@@ -92,7 +92,7 @@ async function load_pyodide() {
 
 
 async function python_output_to_javascript() {
-	var dictc_string = "{'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}";
+	var dictc_string = "{'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}";
 	
 	console.log('dictc_string.length: ', dictc_string.length);
 
@@ -127,25 +127,12 @@ async function python_output_to_javascript() {
 	}
 	console.log('dictc_string_new: ', dictc_string_new);
 	
-	// Way 0: to recover string data as numerical values
 	let json_object = JSON.parse(JSON.stringify(dictc_string_new));
 	console.log('json_object: ', json_object);
-	// console.log('json_object["label"]: ', json_object["label"]);
-	// console.log('json_object["values"]: ', json_object["values"]);
-	// it can not convert to JSON because the keys have single quotes, instead of double quotes
+	console.log('json_object["label"]: ', json_object["label"]);
+	console.log('json_object["values"]: ', json_object["values"]);
 
-	// Way 1: Use Regex to split the string between single quotes
-	//let regexp = /'(.*?)'/g;
-	//let matches = [...dictc_string.matchAll(regexp)];
-	//console.log('matches: ', matches);
-	// TypeError: dictc_string.matchAll is not a function
-	
-	// Way 2: less effective to parse everything by hand
-	// let arr = str.split(",");
-	// console.log('arr: ', arr);
-	// '[ "{'labels': ['c'", " 'a'", " 'b'", " 'd'", " 'f'", " 'g']", " 'values': [2", " 1", " 1", " 1", … ]
-	
-
+	await bar_chart(dictc);
 }
 	
 	
@@ -165,7 +152,7 @@ async function python_dashboard() {
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
                try {
-		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); y_str = [str(i) for i in y]; {\"labels\": x, \"values\": y_str}");
+		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); {'labels': x, 'values': y}");
 		       // {'label': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
 		       
 		       await output_results(result);
