@@ -106,8 +106,26 @@ async function python_output_to_javascript() {
 			start.push(i+2);
 		}
 	}
+	start.pop();
+	
 	console.log('start: ', start);
 	console.log('endd: ', endd);
+
+	var dictc_string_new = '';
+	let s_cnt = 0;
+	let e_cnt = 0;
+	dictc_string.forEach((char, ind) {
+		if (ind == start[s_cnt]) {
+			dictc_string_new = dictc_string_new + '"';
+			s_cnt = s_cnt + 1;
+		} else if (ind == endd[e_cnt]) {
+			dictc_string_new = dictc_string_new + '"';
+			e_cnt = e_cnt + 1;
+		} else {
+			dictc_string_new = dictc_string_new + char;
+		}
+	});
+	console.log('dictc_string_new: ', dictc_string_new);
 	
 	// Way 0: to recover string data as numerical values
 	// let json_object = JSON.parse(JSON.stringify(dictc_string));
