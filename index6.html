@@ -118,7 +118,7 @@ async function python_dashboard() {
 	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
            .then(async function(file_objects) { 
                try {
-		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); y_str = [str(i) for i in y]; {labels: x, values: y_str}");
+		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); y_str = [str(i) for i in y]; {'labels': x, 'values': y_str}");
 		       // {'label': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
 		       
 		       await output_results(result);
