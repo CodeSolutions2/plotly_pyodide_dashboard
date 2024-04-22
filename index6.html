@@ -118,7 +118,7 @@ async function python_output_to_javascript() {
 		if (i == start[s_cnt]) {
 			dictc_string_new = dictc_string_new + '"';
 			s_cnt = s_cnt + 1;
-		} else if (ind == endd[e_cnt]) {
+		} else if (i == endd[e_cnt]) {
 			dictc_string_new = dictc_string_new + '"';
 			e_cnt = e_cnt + 1;
 		} else {
