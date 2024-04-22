@@ -128,8 +128,8 @@ async function python_output_to_javascript() {
 	console.log('dictc_string_new: ', dictc_string_new);
 	
 	// Way 0: to recover string data as numerical values
-	// let json_object = JSON.parse(JSON.stringify(dictc_string));
-	// console.log('json_object: ', json_object);
+	let json_object = JSON.parse(JSON.stringify(dictc_string_new));
+	console.log('json_object: ', json_object);
 	// console.log('json_object["label"]: ', json_object["label"]);
 	// console.log('json_object["values"]: ', json_object["values"]);
 	// it can not convert to JSON because the keys have single quotes, instead of double quotes
