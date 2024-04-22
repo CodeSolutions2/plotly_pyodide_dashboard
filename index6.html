@@ -90,8 +90,11 @@ async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 
-	let newStr = dictc_string.replace("'", "\"");
-	outp.innerHTML += newStr;
+	dictc_string = dictc_string.replace(": [", "<start>");
+	outp.innerHTML += dictc_string;
+
+	dictc_string = dictc_string.replace("]", "<end>");
+	outp.innerHTML += dictc_string;
 
 	// Way 0: to recover string data as numerical values
 	let json_object = JSON.parse(JSON.stringify(dictc_string));
