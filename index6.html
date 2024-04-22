@@ -25,6 +25,8 @@ div {position: relative; z-index: 2;},
 <br><br>
 <button id="python_dashboard" onclick="python_dashboard()">python_dashboard</button>
 <br><br>
+<button id="python_output_to_javascript" onclick="python_output_to_javascript()">python_output_to_javascript</button>
+<br><br>
 <button id="javascript_dashboard" onclick="javascript_dashboard()">javascript_dashboard</button>
 
 
@@ -82,14 +84,16 @@ async function load_pyodide() {
 
 // -----------------------
 
-var pyodideReadyPromise = load_pyodide();
+// var pyodideReadyPromise = load_pyodide();
 
 // -----------------------
-	
-async function output_results(dictc_string) {
-	outp.innerHTML = dictc_string;
-	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 
+
+
+
+async function python_output_to_javascript() {
+	var = "{'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}";
+	
 	console.log('dictc_string.length: ', dictc_string.length);
 
 	let start = [1];
@@ -106,10 +110,10 @@ async function output_results(dictc_string) {
 	console.log('endd: ', endd);
 	
 	// Way 0: to recover string data as numerical values
-	let json_object = JSON.parse(JSON.stringify(dictc_string));
-	console.log('json_object: ', json_object);
-	console.log('json_object["label"]: ', json_object["label"]);
-	console.log('json_object["values"]: ', json_object["values"]);
+	// let json_object = JSON.parse(JSON.stringify(dictc_string));
+	// console.log('json_object: ', json_object);
+	// console.log('json_object["label"]: ', json_object["label"]);
+	// console.log('json_object["values"]: ', json_object["values"]);
 	// it can not convert to JSON because the keys have single quotes, instead of double quotes
 
 	// Way 1: Use Regex to split the string between single quotes
@@ -123,6 +127,13 @@ async function output_results(dictc_string) {
 	// console.log('arr: ', arr);
 	// '[ "{'labels': ['c'", " 'a'", " 'b'", " 'd'", " 'f'", " 'g']", " 'values': [2", " 1", " 1", " 1", … ]
 	
+
+}
+	
+	
+async function output_results(dictc_string) {
+	outp.innerHTML = dictc_string;
+	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 	
 	// await bar_chart(dictc);
 }
