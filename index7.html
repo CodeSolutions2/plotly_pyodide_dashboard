@@ -148,6 +148,11 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		console.log('arr: ', arr);
 
 		// Ensure that array values are proper string or integer/float
+
+		// Quick fix
+		if (key == 'values') { arr = arr.map((num) => { return Number(num); }) }
+
+		
 		arr = arr.map((num) => { 
 			let out = num;
 			try {
@@ -161,8 +166,8 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 				if (typeof isNaN(out) == true) {
 					out = num.toString();
 				}
+				return out;
 			}
-			return out;
 		})
 		console.log('arr: ', arr);
 		
