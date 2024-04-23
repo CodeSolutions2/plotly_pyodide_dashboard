@@ -133,8 +133,9 @@ async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
 	console.log('dictc_string_new: ', dictc_string_new);
 	console.log('dictc_string_new.length: ', dictc_string_new.length);
 
-	let json_parse_object_only = JSON.parse(dictc_string_new);
-	console.log('json_parse_object_only: ', json_parse_object_only);
+	// let json_parse_object_only = JSON.parse(dictc_string_new);
+	// console.log('json_parse_object_only: ', json_parse_object_only);
+	// SyntaxError: JSON.parse: unexpected character at line 1 column 13 of the JSON data
 	
 	let json_object = JSON.parse(JSON.stringify(dictc_string_new));
 	console.log('json_object: ', json_object);
