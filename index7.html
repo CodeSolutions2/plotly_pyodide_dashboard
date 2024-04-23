@@ -5,8 +5,6 @@
 
 
 <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
-
-
 <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
 
 	
@@ -21,7 +19,7 @@ div {position: relative; z-index: 2;},
 <!-- --------------------------------------------------- -->
 	  
 
-<label id="directions" style="display:block">A Dashboard in the browser using PyScript: plot data from a csv file</label>
+<label id="directions" style="display:block">A Dashboard in the browser using Plotly and/or Pyodide: plot data from a csv file</label>
 <br><br>
 <button id="python_dashboard" onclick="python_dashboard()">python_dashboard</button>
 <br><br>
@@ -62,7 +60,7 @@ div {position: relative; z-index: 0;}
 const outp = document.getElementById('output');
 
 const repoOwner = 'CodeSolutions2';
-const repoName = 'pyscript_pyodide_dashboard';
+const repoName = 'plotly_pyodide_dashboard';
 const csv_filename = 'data.csv';
 
 // ----------------------------------------------------
@@ -84,7 +82,7 @@ async function load_pyodide() {
 
 // -----------------------
 
-// var pyodideReadyPromise = load_pyodide();
+var pyodideReadyPromise = load_pyodide();
 
 // -----------------------
 
@@ -97,6 +95,7 @@ async function python_output_to_javascript() {
   await bar_chart(dictc);
 }
 
+// -----------------------
 
 async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
@@ -188,7 +187,11 @@ async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 	
-	// await bar_chart(dictc);
+	await convert_dictionarylikestring_to_dictionary(dictc_string)
+		.then(async function(dictc) {
+			await bar_chart(dictc);
+		})
+
 }
 	
 // -----------------------
