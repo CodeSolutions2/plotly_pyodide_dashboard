@@ -30,7 +30,7 @@ div {position: relative; z-index: 2;},
 
 <br><br>
 	  
-<label id="enter_url" style="display:block">[Step 1] Enter a url of a csv file to present the data in a table</label>
+<label id="enter_url_label" style="display:block">[Step 1] Enter a url of a csv file to present the data in a table</label>
 <br><br>
 <!-- https://raw.githubusercontent.com/CodeSolutions2/plotly_pyodide_dashboard/main/data.csv -->
 <input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
@@ -50,7 +50,11 @@ div {position: relative; z-index: 2;},
 </fieldset>
 <br>
 <button id="show_data" onclick="show_selected_csv_data()">Show selected csv data</button>
-	  
+
+<br><br>
+
+<label id="transform_plot_label" style="display:block">[Step 2] Enter a url of a csv file to present the data in a table</label>
+<br><br>
 <!-- ----------------------------------- -->
 
 
@@ -115,9 +119,16 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 	const get_download_url = document.getElementById("get_download_url").value;
 
 	var string_arr = get_download_url.split(',');
-	const repoOwner = string_arr[0];  // 'CodeSolutions2';
-	const repoName = string_arr[1];  // 'plotly_pyodide_dashboard';
-	const csv_filename = string_arr[2];  // 'data.csv';
+	let repoOwner = string_arr[0];  // 'CodeSolutions2';
+	let repoName = string_arr[1];  // 'plotly_pyodide_dashboard';
+	let csv_filename = string_arr[2];  // 'data.csv';
+
+	const isNotspace = (num) => num != " "
+	repoOwner = [repoOwner].filter(isNotspace);
+	repoName = [repoName].filter(isNotspace);
+	csv_filename = [csv_filename].filter(isNotspace);
+	
+	console.log('repoOwner: ', repoOwner, 'repoName: ', repoName, 'csv_filename: ', csv_filename)
 	
 	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
 
@@ -129,7 +140,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 		      if (file.type === 'file' && file.name.match(regexp)) {
 			      file_objects.push(file); 
 			      outp.innerHTML = file.download_url; 
-			      console.log('file.download_url: ', file.download_url)
+			      console.log('file.download_url: ', file.download_url);
 		      }
 		      });
 		      return file_objects;
