@@ -38,8 +38,6 @@ div {position: relative; z-index: 2;},
 <!-- --------------------------------------------------- -->
 
 <!-- View figure results -->
-<!-- <div id="pyplotdiv"><img id="pyplotfigure"/></div> -->
-
 <div id="js_plot_bar" style="width:600px;height:250px;"></div>
 <br><br>
 <div id="js_plot_line" style="width:600px;height:250px;"></div>
@@ -155,7 +153,6 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// Ensure that array values are proper string or integer/float
 		let object1 = {};
 		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); })
-
 		console.log('object1: ', object1);
 		console.log('arr: ', arr);
 		
@@ -184,6 +181,11 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 // -----------------------
 	
 async function output_results(dictc_string) {
+
+	let dictc_string = dictc_string.toString();
+	console.log('dictc_string: ', dictc_string);
+	console.log('dictc_string.length: ', dictc_string.length);
+	
 	outp.innerHTML = dictc_string;
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 	
