@@ -106,8 +106,9 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 	
 	// Design 2: without relying on JSON.parse
 	let flag = 'not_done';
-	let c = 0;
-	let uq2_prev;
+	let array0 = [];
+	let array1 = [];
+	
 	while (flag == 'not_done') {
 		
 		// there are 3 unique characters to search for each loop
@@ -132,6 +133,8 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		key = key.join('');
 		console.log('key: ', key, 'key.length: ', key.length);
 
+		array0.push(key);
+		
 		// -----------------------
 		
 		// Obtain the value information as an array
@@ -144,6 +147,13 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		let arr = string_values.split(',');
 		console.log('arr: ', arr);
 
+		// Ensure that array values are proper string or integer/float
+		const isNotdoublequote = (num) => num != '"'
+		arr = arr.map((num) => { return num.filter(isNotdoublequote) })
+		console.log('arr: ', arr);
+		
+		array1.push(arr);
+		
 		// -----------------------
 		
 		// Reassign char_arr to remaining string to parse
@@ -154,13 +164,14 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		
 		if (char_arr.length < 3) {
 			flag = 'done';
-		} else {
-			c = c + 1;
 		}
 
 		// -----------------------
 	}
 
+
+	const dictt = Object.fromEntries(array0.map((key, index) => [key, array1[index]]));
+	console.log('dictt: ', dictt);
 }
 
 async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
