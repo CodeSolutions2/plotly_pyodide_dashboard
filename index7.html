@@ -141,6 +141,9 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		let char_arr_values = char_arr.slice(uq1+1, uq2);
 		console.log('char_arr_values: ', char_arr_values);
 
+		char_arr_values = char_arr_values.filter(isNotspace);
+		console.log('char_arr_values: ', char_arr_values);
+
 		let string_values = char_arr_values.join('');
 		console.log('string_values: ', string_values);
 		
@@ -148,13 +151,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		console.log('arr: ', arr);
 
 		// Ensure that array values are proper string or integer/float
-
-		// Quick fix
-		if (key == 'values') { let arr2 = arr.map((num) => { return Number(num); }); console.log('arr2: ', arr2); }
-		
-
 		let object1 = {};
-
 		arr = arr.map((num) => { 
 			object1[Number(num)] = Number(num);
 			return object1[num] ?? num
