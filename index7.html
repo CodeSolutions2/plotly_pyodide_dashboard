@@ -149,7 +149,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 
 		// Ensure that array values are proper string or integer/float
 		arr = arr.map((num) => { 
-			let out = num.toString();
+			let out = num;
 			try {
 				if (typeof Number(num) == 'number') {
 					out = Number(num);
@@ -157,7 +157,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 			} finally { 
 				// after try succeeds or is rejected, it runs finally
 				if (typeof out != 'number') {
-					out = num.toString();
+					out = num;
 				}
 			}
 			return out;
