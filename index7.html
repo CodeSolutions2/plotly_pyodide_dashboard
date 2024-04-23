@@ -149,7 +149,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 
 		// Ensure that array values are proper string or integer/float
 		const isNotdoublequote = (num) => num != '"'
-		arr = arr.map((num) => { return num.filter(isNotdoublequote) })
+		arr = arr.map((num) => { return [num].filter(isNotdoublequote)[0] })
 		console.log('arr: ', arr);
 		
 		array1.push(arr);
