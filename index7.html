@@ -25,9 +25,9 @@ div {position: relative; z-index: 2;},
 <label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
 <!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
 <br><br>
-<input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
-<input id="repoName" type="text" value="" placeholder="repoName" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
-<input id="csv_filename" type="text" value="" placeholder="csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<input id="repoName" type="text" value="" placeholder="repoName" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<input id="csv_filename" type="text" value="" placeholder="csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
 <br>
 <button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">Get a download url for a file</button>
 
@@ -36,7 +36,7 @@ div {position: relative; z-index: 2;},
 <label id="enter_url_label" style="display:block">[Step 1] Enter a url of a csv file to present the data in a table</label>
 <br><br>
 <!-- https://raw.githubusercontent.com/CodeSolutions2/plotly_pyodide_dashboard/main/data.csv -->
-<input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 500px;">
 <br><br>
 <!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
 <!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
@@ -133,7 +133,8 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 		      if (file.type === 'file' && file.name.match(regexp)) {
 			      file_objects.push(file); 
 			      outp.innerHTML = file.download_url;
-			      document.getElementById("enter_url_label").value = file.download_url;
+			      // document.getElementById("enter_url_label").value = file.download_url;
+			      document.getElementById("enter_url_label").setAttribute("value", file.download_url);
 			      console.log('file.download_url: ', file.download_url);
 		      }
 		      });
@@ -187,18 +188,18 @@ async function python_load_data(csv_dataset_url) {
 
 async function output_results_load_data(result) {
 
-	result = result.toString();
-	console.log('result: ', result);
-	console.log('result.length: ', result.length);
-	
 	outp.innerHTML = result;
 	
-	
-	// await convert_dictionarylikestring_to_dictionary(dictc_string)
-		//.then(async function(dictc) {
-			
-		//})
-
+	await convert_dictionarylikestring_to_dictionary(result)
+		.then(async function(dictc) {
+			delete dictc.columns;
+			console.log('dictc: ', dictc);
+			return await dictionary_to_array(dictc);
+		})
+		.then(async function(rowArray) {
+			await generateTable_dynamically_by_row(rowArray);
+		})
+		.catch(error => { console.log(error); });
 }
 
 // ----------------------------------------------------
@@ -212,7 +213,6 @@ async function javascript_load_data(csv_dataset_url) {
 
 		  // Plot in table
 		  await generateTable_dynamically_by_row(arr);
- 
 	  })
 	  .catch(error => { console.log(error); });
   
@@ -284,6 +284,11 @@ async function counter(arr) {
 async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
+
+	// Ensure the input is a string
+	dictc_string = dictc_string.toString();
+	console.log('dictc_string: ', dictc_string);
+	console.log('dictc_string.length: ', dictc_string.length);
 	
 	let char_arr = dictc_string.split('');
 	let char_arr_orglen = char_arr.length;
@@ -351,7 +356,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 // ----------------------------------------------------
 
-async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(url) {
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download_url) {
 
 	return await fetch(file_download_url)
 		.then(res => res.text())
