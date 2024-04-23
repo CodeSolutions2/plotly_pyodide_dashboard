@@ -19,10 +19,20 @@ div {position: relative; z-index: 2;},
 <!-- --------------------------------------------------- -->
 	  
 <h1>A Dashboard in the browser using Plotly and/or Pyodide: plot data from a csv file</h1>
+	  
 <br><br>
-<label id="enter_url" style="display:block">[Step 0] Enter a url of a csv file to present the data in a table</label>
+	  
+<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename; ensure values are separated by a comma. (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
 <br><br>
-<!-- https://api.github.com/repos/CodeSolutions2/plotly_pyodide_dashboard/contents/data.csv -->
+<input id="get_download_url" type="text" value="" placeholder="repoOwner, repoName, csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<br>
+<button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">Get a download url for a file</button>
+
+<br><br>
+	  
+<label id="enter_url" style="display:block">[Step 1] Enter a url of a csv file to present the data in a table</label>
+<br><br>
+<!-- https://raw.githubusercontent.com/CodeSolutions2/plotly_pyodide_dashboard/main/data.csv -->
 <input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 <br><br>
 <!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
@@ -79,34 +89,6 @@ const outp = document.getElementById('output');
 
 // ----------------------------------------------------
 
-
-async function show_selected_csv_data() {
-
-	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
-	
-	const python_pyodide = document.getElementById("python_pyodide").checked;
-	const javascript = document.getElementById("javascript").checked;
-
-	if (python_pyodide == true && javascript == false) {
-		// python_pyodide
-		await python_load_data(csv_dataset_url)
-		// transform string into array element - first see how the output is 
-		
-		// plot array in table
-		// generateTable_dynamically_by_row(arr)
-			
-	}
-	if (python_pyodide == false && javascript == true) {
-		// javascript
-		await javascript_load_data(csv_dataset_url)
-	}
-
-
-	
-}
-
-// ----------------------------------------------------
-
 async function load_pyodide() {
 	// -----------------------
 	// const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/dev/full/';
@@ -127,12 +109,68 @@ var pyodideReadyPromise = load_pyodide();
 	
 // ----------------------------------------------------
 
+// Step 0
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
+	
+	const get_download_url = document.getElementById("get_download_url").value;
+
+	var string_arr = get_download_url.split(',');
+	const repoOwner = string_arr[0];  // 'CodeSolutions2';
+	const repoName = string_arr[1];  // 'plotly_pyodide_dashboard';
+	const csv_filename = string_arr[2];  // 'data.csv';
+	
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+	var file_objects = [];
+	return await fetch(url)
+		.then(res => res.json())
+		.then(data => { data.forEach(async function(file) {
+			    var regexp = new RegExp(`${csv_filename}`, 'g');
+		      if (file.type === 'file' && file.name.match(regexp)) {
+			      file_objects.push(file); 
+			      outp.innerHTML = file.download_url; 
+			      console.log('file.download_url: ', file.download_url)
+		      }
+		      });
+		      return file_objects;
+		})
+		.catch(error => { console.log(error); });
+}
+
+// ----------------------------------------------------
+
+// Step 1
+async function show_selected_csv_data() {
+
+	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
+	
+	const python_pyodide = document.getElementById("python_pyodide").checked;
+	const javascript = document.getElementById("javascript").checked;
+
+	if (python_pyodide == true && javascript == false) {
+		// python_pyodide
+		await python_load_data(csv_dataset_url)
+		// transform string into array element - first see how the output is 
+		
+		// plot array in table
+		// generateTable_dynamically_by_row(arr)
+			
+	}
+	if (python_pyodide == false && javascript == true) {
+		// javascript
+		await javascript_load_data(csv_dataset_url);
+	}
+	
+}
+
+
+	
 async function python_load_data(csv_dataset_url) {
 
 	var pyodide = await pyodideReadyPromise;
 
        try {
-	       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${csv_dataset_url}"`+"); df = pd.read_csv(url_content); df.to_json(orient='values')");
+	       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${csv_dataset_url}"`+"); df = pd.read_csv(url_content); df.to_json(orient='split')");
 	       // {"columns": ["col 1", "col 2"], "index": ["row 1", "row 2"], "data": [["a", "b"], ["c", "d"]]}
 	       
 	       await output_results_load_data(result);
@@ -149,59 +187,45 @@ async function output_results_load_data(result) {
 	console.log('result.length: ', result.length);
 	
 	outp.innerHTML = result;
-	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
+	
 	
 	// await convert_dictionarylikestring_to_dictionary(dictc_string)
 		//.then(async function(dictc) {
-			//await bar_chart(dictc);
+			
 		//})
 
 }
-	
-
 
 // ----------------------------------------------------
-
-async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
-	
-	const repoOwner = 'CodeSolutions2';
-	const repoName = 'plotly_pyodide_dashboard';
-	const csv_filename = 'data.csv';
-	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
-
-	var file_objects = [];
-	return await fetch(url)
-		.then(res => res.json())
-		.then(data => { data.forEach(async function(file) {
-			    var regexp = new RegExp(`${csv_filename}`, 'g');
-		      if (file.type === 'file' && file.name.match(regexp)) {
-            file_objects.push(file); console.log('file.download_url: ', file.download_url)
-		      }
-		    });
-		    return file_objects;
-		})
-		.catch(error => { console.log(error); });
-}
 	
 async function javascript_load_data(csv_dataset_url) {
 
   // Read data into Javascript from .csv
-  // return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
-  return await GET_text_from_file_wo_auth_GitHub_RESTAPI(csv_dataset_url)
-  //  .then(async function(file_objects) {
-  //      var file_object = file_objects.at(0);
- //       var text_out = await fetch(file_object.download_url); return text_out
- //   })
- //   .then(response => response.text())
- //   .then(async function(text_out) { 
-//        var df_arr = text_out.split('\n');
- //       return await counter(df_arr);
-   // })
-   // .catch(error => { console.log(error); });
+  return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
+	  .then(async function(text_out) { 
+		  var df_arr = text_out.split('\n');
+
+		  // Plot in table
+		  await generateTable_dynamically_by_row(arr);
+ 
+	  })
+	  .catch(error => { console.log(error); });
   
 }
 
 
+
+
+// ----------------------------------------------------
+
+// Step 2: decide how to visualize the data in the table
+// Make buttons appear that can format (ie: value_counts/counter) and plot the data
+
+// return await counter(df_arr);
+//await bar_chart(dictc);
+
+
+	
 // ----------------------------------------------------
 // SUBFUNCTIONS
 // ----------------------------------------------------
@@ -254,6 +278,8 @@ async function counter(arr) {
 
 async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
+	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
+	
 	let char_arr = dictc_string.split('');
 	let char_arr_orglen = char_arr.length;
 	
