@@ -1,3 +1,3 @@
-# pyscript_pyodide_dashboard
+# plotly_pyodide_dashboard
 
-https://CodeSolutions2.github.io/pyscript_pyodide_dashboard/index4.html
+https://CodeSolutions2.github.io/plotly_pyodide_dashboard/index7.html
