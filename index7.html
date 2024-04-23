@@ -158,8 +158,8 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 				}
 			} finally { 
 				// after try succeeds or is rejected, it runs finally
-				if (typeof out != 'number') {
-					out = num;
+				if (typeof isNaN(out) == true) {
+					out = num.toString();
 				}
 			}
 			return out;
