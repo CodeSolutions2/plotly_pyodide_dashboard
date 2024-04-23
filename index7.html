@@ -18,14 +18,33 @@ div {position: relative; z-index: 2;},
 	  
 <!-- --------------------------------------------------- -->
 	  
+<h1>A Dashboard in the browser using Plotly and/or Pyodide: plot data from a csv file</h1>
+<br><br>
+<label id="enter_url" style="display:block">[Step 0] Enter a url of a csv file to present the data in a table</label>
+<br><br>
+<!-- https://api.github.com/repos/CodeSolutions2/plotly_pyodide_dashboard/contents/data.csv -->
+<input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<br><br>
+<!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
+<!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
+<fieldset>
+<legend>Select a backend computational engine:</legend>
+<div>
+<input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" />
+<label for="python_pyodide">python_pyodide</label>
+</div>
+<div>
+<input type="radio" id="javascript" name="radio_name" value="javascript" />
+<label for="javascript">javascript</label>
+</div>
+</fieldset>
+<br>
+<button id="show_data" onclick="show_selected_csv_data()">Show selected csv data</button>
+	  
+<!-- ----------------------------------- -->
 
-<label id="directions" style="display:block">A Dashboard in the browser using Plotly and/or Pyodide: plot data from a csv file</label>
-<br><br>
-<button id="python_dashboard" onclick="python_dashboard()">python_dashboard</button>
-<br><br>
-<button id="python_output_to_javascript" onclick="python_output_to_javascript()">python_output_to_javascript</button>
-<br><br>
-<button id="javascript_dashboard" onclick="javascript_dashboard()">javascript_dashboard</button>
+
+
 
 
 <!-- --------------------------------------------------- -->
@@ -57,9 +76,33 @@ div {position: relative; z-index: 0;}
 <script>
 const outp = document.getElementById('output');
 
-const repoOwner = 'CodeSolutions2';
-const repoName = 'plotly_pyodide_dashboard';
-const csv_filename = 'data.csv';
+
+// ----------------------------------------------------
+
+
+async function show_selected_csv_data() {
+
+	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
+	
+	const python_pyodide = document.getElementById("python_pyodide").checked;
+	const javascript = document.getElementById("javascript").checked;
+
+	if (python_pyodide == true && javascript == false) {
+		// python_pyodide
+		await python_dashboard_load_data(csv_dataset_url)
+		// transform string into array element - first see how the output is 
+		
+		// plot array in table
+		// generateTable_dynamically_by_row(arr)
+			
+	}
+	if (python_pyodide == false && javascript == true) {
+		// javascript
+	}
+
+
+	
+}
 
 // ----------------------------------------------------
 
@@ -78,165 +121,90 @@ async function load_pyodide() {
         return pyodide;
 }
 
-// -----------------------
-
 var pyodideReadyPromise = load_pyodide();
 
-// -----------------------
-
-async function python_output_to_javascript() {
-
-  var dictc_string = "{'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}";
-  
-  var dictc = await convert_dictionarylikestring_to_dictionary(dictc_string);
-
-  await bar_chart(dictc);
-}
-
-// -----------------------
-
-async function convert_dictionarylikestring_to_dictionary(dictc_string) {
-
-	let char_arr = dictc_string.split('');
-	console.log('char_arr: ', char_arr);
 	
-	let char_arr_orglen = char_arr.length;
-	
-	// Design 2: without relying on JSON.parse
-	let flag = 'not_done';
-	let array0 = [];
-	let array1 = [];
-	
-	while (flag == 'not_done') {
-		
-		// there are 3 unique characters to search for each loop
-		// : - indicates end of key
-		// [ - indicates start of array
-		// ] - indicates end of array
-		let uq0 = char_arr.findIndex((char) => char == ':');
-		let uq1 = char_arr.findIndex((char) => char == '[');
-		let uq2 = char_arr.findIndex((char) => char == ']');
+// ----------------------------------------------------
 
-		// Obtain the key information as a string 
-		let key = char_arr.slice(1, uq0);
-		console.log('key: ', key);
-		
-		const isNotquote = (num) => num != "'"
-		key = key.filter(isNotquote);
-		console.log('key: ', key);
-		
-		const isNotspace = (num) => num != " "
-		key = key.filter(isNotspace);
-		console.log('key: ', key);
-		
-		key = key.join('');
-		console.log('key: ', key, 'key.length: ', key.length);
-
-		array0.push(key);
-		
-		// -----------------------
-		
-		// Obtain the value information as an array
-		let char_arr_values = char_arr.slice(uq1+1, uq2);
-		console.log('char_arr_values: ', char_arr_values);
-
-		char_arr_values = char_arr_values.filter(isNotquote);
-		char_arr_values = char_arr_values.filter(isNotspace);
-		console.log('char_arr_values: ', char_arr_values);
-
-		let string_values = char_arr_values.join('');
-		console.log('string_values: ', string_values);
-		
-		let arr = string_values.split(',');
-		console.log('arr: ', arr);
-
-		// Ensure that array values are proper string or integer/float
-		let object1 = {};
-		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); })
-		console.log('object1: ', object1);
-		console.log('arr: ', arr);
-		
-		array1.push(arr);
-		
-		// -----------------------
-		
-		// Reassign char_arr to remaining string to parse
-		char_arr = char_arr.slice(uq2+1, char_arr_orglen)
-		console.log('char_arr: ', char_arr);
-
-		// -----------------------
-		
-		if (char_arr.length < 3) {
-			flag = 'done';
-		}
-
-		// -----------------------
-	}
-
-	const dictt = Object.fromEntries(array0.map((key, index) => [key, array1[index]]));
-	console.log('dictt: ', dictt);
-	return dictt;
-}
-
-// -----------------------
-	
-async function output_results(dictc_string) {
-
-	dictc_string = dictc_string.toString();
-	console.log('dictc_string: ', dictc_string);
-	console.log('dictc_string.length: ', dictc_string.length);
-	
-	outp.innerHTML = dictc_string;
-	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
-	
-	await convert_dictionarylikestring_to_dictionary(dictc_string)
-		.then(async function(dictc) {
-			await bar_chart(dictc);
-		})
-
-}
-	
-// -----------------------
-	
-async function python_dashboard() {
+async function python_dashboard_load_data(csv_dataset_url) {
 
 	var pyodide = await pyodideReadyPromise;
 
-	return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
-           .then(async function(file_objects) { 
-               try {
-		       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${file_objects.at(0).download_url}"`+"); df = pd.read_csv(url_content); x = [i[0] for i in list(df.value_counts().index)]; y = list(df.value_counts().to_numpy()); {'labels': x, 'values': y}");
-		       // {'label': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
-		       
-		       await output_results(result);
-               } catch (error){ 
-		       console.log('error: ', error);
-	       }
-           })
-           .catch(error => { console.log(error); });
+       try {
+	       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${csv_dataset_url}"`+"); df = pd.read_csv(url_content); df.to_json(orient='values')");
+	       // {"columns": ["col 1", "col 2"], "index": ["row 1", "row 2"], "data": [["a", "b"], ["c", "d"]]}
+	       
+	       await output_results_load_data(result);
+       } catch (error){ 
+	       console.log('error: ', error);
+       }
 }
 
-// ----------------------------------------------------
+
+async function output_results_load_data(result) {
+
+	result = result.toString();
+	console.log('result: ', result);
+	console.log('result.length: ', result.length);
 	
-async function javascript_dashboard() {
+	outp.innerHTML = result;
+	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
+	
+	// await convert_dictionarylikestring_to_dictionary(dictc_string)
+		//.then(async function(dictc) {
+			//await bar_chart(dictc);
+		//})
+
+}
+	
+
+
+// ----------------------------------------------------
+
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
+	
+	const repoOwner = 'CodeSolutions2';
+	const repoName = 'plotly_pyodide_dashboard';
+	const csv_filename = 'data.csv';
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+	var file_objects = [];
+	return await fetch(url)
+		.then(res => res.json())
+		.then(data => { data.forEach(async function(file) {
+			    var regexp = new RegExp(`${csv_filename}`, 'g');
+		      if (file.type === 'file' && file.name.match(regexp)) {
+            file_objects.push(file); console.log('file.download_url: ', file.download_url)
+		      }
+		    });
+		    return file_objects;
+		})
+		.catch(error => { console.log(error); });
+}
+	
+async function javascript_load_data(csv_dataset_url) {
 
   // Read data into Javascript from .csv
-  return await GET_text_from_file_wo_auth_GitHub_RESTAPI()
-    .then(async function(file_objects) {
-        var file_object = file_objects.at(0);
-        var text_out = await fetch(file_object.download_url); return text_out
+  // return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
+  return await GET_text_from_file_wo_auth_GitHub_RESTAPI(csv_dataset_url)
+  //  .then(async function(file_objects) {
+  //      var file_object = file_objects.at(0);
+ //       var text_out = await fetch(file_object.download_url); return text_out
+ //   })
+ //   .then(response => response.text())
+ //   .then(async function(text_out) { 
+//        var df_arr = text_out.split('\n');
+ //       return await counter(df_arr);
     })
-    .then(response => response.text())
-    .then(async function(text_out) { 
-        var df_arr = text_out.split('\n');
-        return await counter(df_arr);
-    })
-    .then(async function(dictc) { await bar_chart(dictc); return dictc; })
-    .then(async function(dictc) { await line_chart(dictc); })
     .catch(error => { console.log(error); });
   
 }
-	
+
+
+// ----------------------------------------------------
+// SUBFUNCTIONS
+// ----------------------------------------------------
+
 async function bar_chart(dictc) {
 	// https://plotly.com/javascript/bar-charts/
 	var xValue = dictc.labels;
@@ -247,6 +215,8 @@ async function bar_chart(dictc) {
 	Plotly.newPlot('js_plot_bar', data, layout);
 }
 
+// ----------------------------------------------------
+
 async function line_chart(dictc) {
         // https://plotly.com/javascript/getting-started/
         const index = [...Array(dictc.values.length).keys()].map((x) => x);
@@ -255,6 +225,8 @@ async function line_chart(dictc) {
         Plotly.newPlot("js_plot_line", [trace_items], layout );
 }
 
+// ----------------------------------------------------
+	
 async function counter(arr) {
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
@@ -277,27 +249,152 @@ async function counter(arr) {
 	return {labels: unique, values: count};
 }
 
-	
 // ----------------------------------------------------
 
-	
-async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
-	
-	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
-	var file_objects = [];
-	return await fetch(url)
-		.then(res => res.json())
-		.then(data => { data.forEach(async function(file) {
-			    var regexp = new RegExp(`${csv_filename}`, 'g');
-		      if (file.type === 'file' && file.name.match(regexp)) {
-            file_objects.push(file);
-		      }
-		    });
-		    return file_objects;
+	let char_arr = dictc_string.split('');
+	let char_arr_orglen = char_arr.length;
+	
+	// Design 2: without relying on JSON.parse
+	let flag = 'not_done';
+	let array0 = [];
+	let array1 = [];
+
+	const isNotquote = (num) => num != "'"
+	const isNotspace = (num) => num != " "
+	
+	while (flag == 'not_done') {
+		
+		// there are 3 unique characters to search for each loop
+		// : - indicates end of key
+		// [ - indicates start of array
+		// ] - indicates end of array
+		let uq0 = char_arr.findIndex((char) => char == ':');
+		let uq1 = char_arr.findIndex((char) => char == '[');
+		let uq2 = char_arr.findIndex((char) => char == ']');
+
+		// Obtain the key information as a string 
+		let key = char_arr.slice(1, uq0);
+		key = key.filter(isNotquote);
+		key = key.filter(isNotspace);
+		key = key.join('');
+
+		array0.push(key);
+		
+		// -----------------------
+		
+		// Obtain the value information as an array
+		let char_arr_values = char_arr.slice(uq1+1, uq2);
+		char_arr_values = char_arr_values.filter(isNotquote);
+		char_arr_values = char_arr_values.filter(isNotspace);
+		
+		let string_values = char_arr_values.join('');
+		let arr = string_values.split(',');
+
+		// Ensure that array values are proper string or integer/float
+		let object1 = {};
+		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); })
+		// console.log('object1: ', object1);
+		// console.log('arr: ', arr);
+		
+		array1.push(arr);
+		
+		// -----------------------
+		
+		// Reassign char_arr to remaining string to parse
+		char_arr = char_arr.slice(uq2+1, char_arr_orglen)
+
+		// -----------------------
+		
+		if (char_arr.length < 3) {
+			flag = 'done';
+		}
+
+		// -----------------------
+	}
+	
+	return Object.fromEntries(array0.map((key, index) => [key, array1[index]]));
+}
+
+// ----------------------------------------------------
+
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(url) {
+
+	return await fetch(file_download_url)
+		.then(res => res.text())
+		.then(data => { 
+			console.log('data: ', data); return data;
 		})
 		.catch(error => { console.log(error); });
 }
+
+// ----------------------------------------------------
+
+async function dictionary_to_array(dictt) {
+
+	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
+	
+	var columnArray = [];
+	dictt.forEach(async function(rowdata, ind) { 
+		let col = [];
+		let key = Object.keys(rowdata);
+		col.push(key);
+
+		dictt[key].forEach(async function(val, ind) {
+			col.push(val);
+		});
+		columnArray.push(col);
+	});
+
+	var rowArray = await transform_columnArray_into_rowArray(columnArray);
+	return rowArray;
+}
+	
+// ----------------------------------------------------
+
+async function transform_columnArray_into_rowArray(columnArray) {
+
+	let num_of_rows = columnArray[0].length;
+	let num_of_cols = columnArray.length;
+
+	var rowArray = [];
+	for (let r=0; r < num_of_rows.length; r++){
+		let row = [];
+		for (let c=0; c < num_of_cols.length; c++){
+			row.push(columnArray[c][r]);
+		}
+		rowArray.push(row);
+	}
+	return rowArray;
+}
+
+// -------------------------------------------------
+
+async function generateTable_dynamically_by_row(arr) {
+						
+	const tbl = document.createElement("table");
+	const tblBody = document.createElement("tbody");
+
+	// Create row cells dynamically
+	for (let i=0; i < arr.length; i++){
+		// create a table row
+		const row = document.createElement("tr");
+
+		for (let j=0; j < arr[0].length; j++){
+			const cell = document.createElement("td");
+			const cellText = document.createTextNode(`${arr[i][j]}`);
+			cell.appendChild(cellText);
+			row.appendChild(cell);
+		}
+
+		// add a row to the end of the table
+		tblBody.appendChild(row);
+	}
+	tbl.appendChild(tblBody);
+
+	document.body.appendChild(tbl);
+  }  
 
 	
 // ----------------------------------------------------
