@@ -356,7 +356,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// OR
 		
 		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
-		let uq2 = char_arr.findIndex((char) => char == '],"');
+		let uq2 = char_arr.findIndex((char) => char == ',"');
 		console.log('uq2: ', uq2);
 		
 		let uq3 = char_arr.findIndex((char) => char == ']}');
