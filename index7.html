@@ -97,6 +97,60 @@ async function python_output_to_javascript() {
 }
 
 
+async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
+
+	let temp_string = dictc_string;
+	
+	// Design 2: without relying on JSON.parse
+	let flag = 'not_done';
+	let c = 0;
+	let uq2_prev;
+	while (flag == 'not_done') {
+		// there are 3 unique characters to search for each loop
+		// : - indicates end of key
+		// [ - indicates start of array
+		// ] - indicates end of array
+		let uq0 = temp_string.findIndex((char) => char == ':');
+
+		if (uq0 == 'undefined') {
+			flag = 'done';
+		}
+		
+		let uq1 = temp_string.findIndex((char) => char == '[');
+		let uq2 = temp_string.findIndex((char) => char == ']');
+
+		// Obtain the key information as a string 
+		if (c == 0) {
+			let key = temp_string.slice(1, uq0);
+		} else {
+			let key = temp_string.slice(uq2_prev+1, uq0);
+		}
+		console.log('key: ', key);
+		const isNotquote = (num) => num != "'"
+		key = key.filter(isNotquote);
+		console.log('key: ', key);
+		
+		const isNotspace = (num) => num != " "
+		key = key.filter(isNotspace);
+		console.log('key: ', key);
+		
+		key = key.toString();
+		console.log('key: ', key, 'key.length: ', key.length);
+
+		
+		// Obtain the value information as an array
+		let arr_string = temp_string.slice(uq1, uq2);
+		console.log('arr_string: ', arr_string);
+		
+		let arr = arr_string.split(',');
+		console.log('arr: ', arr);
+
+		uq2_prev = uq2;
+		c = c + 1;
+	}
+
+}
+
 async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
 	
 	
@@ -132,47 +186,13 @@ async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
 	}
 	console.log('dictc_string_new: ', dictc_string_new);
 	console.log('dictc_string_new.length: ', dictc_string_new.length);
+	// string of 72 characters
 
-	
-	
-	let json_object = JSON.parse(JSON.stringify(dictc_string_new));
-	console.log('json_object: ', json_object);
-
-	console.log('json_object.length: ', json_object.length);
-
-	
-
-  // Incorrect: key = 0 always and the value is each of the characters
-  new_json_object = {};
-  // Rename the keys to the desired key names
-  // for (let i=0; i< json_object.length; i++) {
-  //   let key = Object.keys(json_object[i]);
- //    console.log('key: ', key);
-
-    // Way 0: just rename the key
-    // json_object[key] = desired_keys[i]
-
-    // Way 1: Get the values using the key name, put the values in a new object with the deisred_keys
-    // new_json_object[desired_keys[i]] = Object.values(`${row}.${key}`);
-    
-    // Get the values of the existing key
- //    let val = Object.values(json_object[i]);
-  //   console.log('val: ', val);
-    
-  // }
-	
-	// const old_keys = Object.keys(json_object);
-	// console.log('old_keys: ', old_keys);
-  // Incorrect: gave a count from 1 to 10+
-	
-	// for (let i=0; i< old_keys.length; i++) {
-	// 	json_object[old_keys[i]] = desired_keys[i];
-	// }
-		
-	// console.log('json_object["labels"]: ', json_object["labels"]);
-	// console.log('json_object["values"]: ', json_object["values"]);
-	
-	// await bar_chart(json_object);
+	// This does nothing to dictc_string_new, it remains a string of 72 characters
+	// JSON.parse should have turned it into a JSON object
+	// let json_object = JSON.parse(JSON.stringify(dictc_string_new));
+	// console.log('json_object: ', json_object);
+	// console.log('json_object.length: ', json_object.length);
 }
 	
 	
