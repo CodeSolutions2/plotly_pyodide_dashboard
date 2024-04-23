@@ -164,7 +164,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 			} finally { 
 				// after try succeeds or is rejected, it runs finally
 				console.log('out finally: ', out);
-				if (typeof isNaN(out) == true || out == 'NaN') {
+				if (typeof Number(out) != 'number') {
 					out = num.toString();
 				}
 				return out;
