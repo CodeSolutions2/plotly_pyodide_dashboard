@@ -155,7 +155,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 
 		
 		arr = arr.map((num) => { 
-			let out = num;
+			var out = num;
 			console.log('out: ', out);
 			try {
 				if (typeof Number(num) == 'number') {
@@ -164,7 +164,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 			} finally { 
 				// after try succeeds or is rejected, it runs finally
 				console.log('out finally: ', out);
-				if (typeof isNaN(out) == true) {
+				if (typeof isNaN(out) == true || out == 'NaN') {
 					out = num.toString();
 				}
 				return out;
