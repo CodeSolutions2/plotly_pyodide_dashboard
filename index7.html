@@ -124,9 +124,9 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 	let csv_filename = string_arr[2];  // 'data.csv';
 
 	const isNotspace = (num) => num != " "
-	repoOwner = [repoOwner].filter(isNotspace);
-	repoName = [repoName].filter(isNotspace);
-	csv_filename = [csv_filename].filter(isNotspace);
+	repoOwner = [repoOwner].filter(isNotspace)[0];
+	repoName = [repoName].filter(isNotspace)[0];
+	csv_filename = [csv_filename].filter(isNotspace)[0];
 	
 	console.log('repoOwner: ', repoOwner, 'repoName: ', repoName, 'csv_filename: ', csv_filename)
 	
