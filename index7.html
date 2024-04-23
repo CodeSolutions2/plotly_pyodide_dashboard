@@ -171,7 +171,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 				// if (typeof Number(out) != 'number') { out = num.toString(); console.log('out finally1: ', out); }
 				// return out;
 				// OR
-				return object1[out] ?? num
+				return object1[num] ?? num
 			}
 		})
 
