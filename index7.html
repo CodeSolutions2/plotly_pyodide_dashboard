@@ -148,19 +148,20 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		console.log('arr: ', arr);
 
 		// Ensure that array values are proper string or integer/float
-		const isNotdoublequote = (num) => num != '"'
 		arr = arr.map((num) => { 
+			let out = num.toString();
 			try {
 				if (typeof Number(num) == 'number') {
-					return Number(num);
+					out = Number(num);
 				}
 			} finally { 
-				return num.toString(); 
+				// after try succeeds or is rejected, it runs finally
+				if (typeof out != 'number') {
+					out = num.toString();
+				}
 			}
+			return out;
 		})
-	
-		// arr = arr.map((num) => { return [num].filter(isNotquote)[0] })
-		// arr = arr.map((num) => { return [num].filter(isNotdoublequote)[0] })
 		console.log('arr: ', arr);
 		
 		array1.push(arr);
