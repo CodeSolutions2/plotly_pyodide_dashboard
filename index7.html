@@ -59,6 +59,7 @@ div {position: relative; z-index: 2;},
 <label id="transform_plot_label" style="display:block">[Step 2] Decide how to visualize the data in the table</label>
 <br>
 <button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of a counted rows</button>
+<button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of a counted rows</button>
 <!-- ----------------------------------- -->
 
 
@@ -228,12 +229,28 @@ async function javascript_load_data(csv_dataset_url) {
 async function bar_chart_arrayInputOnly() {
 
 	// Read array data from the page
-	let arr = outp.innerHTML;
+	let arr_string = outp.innerHTML;
+
+	// Select the column that one wants to make a bar chart of
+
+	let arr = arr_string.split(',');
 	
 	return await counter(arr)
 		.then(async function(dictc) { await bar_chart(dictc); });
 }
 
+async function line_chart_arrayInputOnly() {
+
+	// Read array data from the page
+	let arr_string = outp.innerHTML;
+
+	// Select the column that one wants to make a bar chart of
+
+	let arr = arr_string.split(',');
+	
+	return await line_chart(arr);
+}
+	
 	
 // ----------------------------------------------------
 // SUBFUNCTIONS
@@ -251,10 +268,10 @@ async function bar_chart(dictc) {
 
 // ----------------------------------------------------
 
-async function line_chart(dictc) {
+async function line_chart(arr) {
         // https://plotly.com/javascript/getting-started/
-        const index = [...Array(dictc.values.length).keys()].map((x) => x);
-        const trace_items = { x: index, y: dictc.values, mode: 'markers', type: 'line' };
+        const index = [...Array(arr.length).keys()].map((x) => x);
+        const trace_items = { x: index, y: arr, mode: 'markers', type: 'line' };
         const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
         Plotly.newPlot("js_plot_line", [trace_items], layout );
 }
@@ -321,12 +338,13 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// OR
 		
 		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+		let uq2;
 		if (char_arr.findIndex((char) => char == '],"').length > 0) {
 			// Not at the end of string
-			let uq2 = char_arr.findIndex((char) => char == '],"');
+			uq2 = char_arr.findIndex((char) => char == '],"');
 		} else {
 			// At end of string, use a different identifier 
-			let uq2 = char_arr.findIndex((char) => char == ']}');
+			uq2 = char_arr.findIndex((char) => char == ']}');
 		}
 		// -----------------------
 
