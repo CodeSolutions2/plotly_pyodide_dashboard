@@ -91,13 +91,14 @@ async function load_pyodide() {
 async function python_output_to_javascript() {
 
   var dictc_string = "{'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}";
-  let desired_keys = ["labels", "values"];
   
-  await convert_JSONlikestring_to_JSON(dictc_string, desired_keys);
+  var dictc = await convert_dictionarylikestring_to_dictionary(dictc_string);
+
+  await bar_chart(dictc);
 }
 
 
-async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
+async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	let char_arr = dictc_string.split('');
 	console.log('char_arr: ', char_arr);
@@ -176,55 +177,12 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		// -----------------------
 	}
 
-
 	const dictt = Object.fromEntries(array0.map((key, index) => [key, array1[index]]));
 	console.log('dictt: ', dictt);
+	return dictt;
 }
 
-async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
-	
-	
-	console.log('dictc_string.length: ', dictc_string.length);
-	let start = [1];
-	let endd = [];
-	for (let i=0; i< dictc_string.length; i++) {
-		if (dictc_string[i] == ':'){
-			endd.push(i-1);
-		}
-		if (dictc_string[i] == ']' & i<dictc_string.length-1) {
-			start.push(i+2);
-		}
-	}
-	start.pop();
-	
-	console.log('start: ', start);
-	console.log('endd: ', endd);
-
-	var dictc_string_new = '';
-	let s_cnt = 0;
-	let e_cnt = 0;
-	for (let i=0; i< dictc_string.length; i++) {
-		if (i == start[s_cnt]) {
-			dictc_string_new = dictc_string_new + '"';
-			s_cnt = s_cnt + 1;
-		} else if (i == endd[e_cnt]) {
-			dictc_string_new = dictc_string_new + '"';
-			e_cnt = e_cnt + 1;
-		} else {
-			dictc_string_new = dictc_string_new + dictc_string[i];
-		}
-	}
-	console.log('dictc_string_new: ', dictc_string_new);
-	console.log('dictc_string_new.length: ', dictc_string_new.length);
-	// string of 72 characters
-
-	// This does nothing to dictc_string_new, it remains a string of 72 characters
-	// JSON.parse should have turned it into a JSON object
-	// let json_object = JSON.parse(JSON.stringify(dictc_string_new));
-	// console.log('json_object: ', json_object);
-	// console.log('json_object.length: ', json_object.length);
-}
-	
+// -----------------------
 	
 async function output_results(dictc_string) {
 	outp.innerHTML = dictc_string;
