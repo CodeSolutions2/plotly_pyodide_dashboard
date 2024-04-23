@@ -129,22 +129,26 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		key = key.filter(isNotspace);
 		console.log('key: ', key);
 		
-		key = key.toString();
+		key = key.join();
 		console.log('key: ', key, 'key.length: ', key.length);
 
 		// -----------------------
 		
 		// Obtain the value information as an array
-		let arr_string = char_arr.slice(uq1, uq2);
-		console.log('arr_string: ', arr_string);
+		let char_arr_values = char_arr.slice(uq1+1, uq2);
+		console.log('char_arr_values: ', char_arr_values);
+
+		let string_values = char_arr_values.join();
+		console.log('string_values: ', string_values);
 		
-		let arr = arr_string.split(',');
+		let arr = string_values.split(',');
 		console.log('arr: ', arr);
 
 		// -----------------------
 		
 		// Reassign char_arr to remaining string to parse
 		char_arr = char_arr.slice(uq2+1, char_arr_orglen)
+		console.log('char_arr: ', char_arr);
 
 		// -----------------------
 		
