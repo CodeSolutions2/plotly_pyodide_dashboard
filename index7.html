@@ -99,32 +99,27 @@ async function python_output_to_javascript() {
 
 async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 
-	let temp_string = dictc_string;
+	let char_arr = dictc_string.split('');
+	console.log('char_arr: ', char_arr);
+	
+	let char_arr_orglen = char_arr.length;
 	
 	// Design 2: without relying on JSON.parse
 	let flag = 'not_done';
 	let c = 0;
 	let uq2_prev;
 	while (flag == 'not_done') {
+		
 		// there are 3 unique characters to search for each loop
 		// : - indicates end of key
 		// [ - indicates start of array
 		// ] - indicates end of array
-		let uq0 = temp_string.findIndex((char) => char == ':');
-
-		if (uq0 == 'undefined') {
-			flag = 'done';
-		}
-		
-		let uq1 = temp_string.findIndex((char) => char == '[');
-		let uq2 = temp_string.findIndex((char) => char == ']');
+		let uq0 = char_arr.findIndex((char) => char == ':');
+		let uq1 = char_arr.findIndex((char) => char == '[');
+		let uq2 = char_arr.findIndex((char) => char == ']');
 
 		// Obtain the key information as a string 
-		if (c == 0) {
-			let key = temp_string.slice(1, uq0);
-		} else {
-			let key = temp_string.slice(uq2_prev+1, uq0);
-		}
+		let key = char_arr.slice(1, uq0);
 		console.log('key: ', key);
 		const isNotquote = (num) => num != "'"
 		key = key.filter(isNotquote);
@@ -137,16 +132,29 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		key = key.toString();
 		console.log('key: ', key, 'key.length: ', key.length);
 
+		// -----------------------
 		
 		// Obtain the value information as an array
-		let arr_string = temp_string.slice(uq1, uq2);
+		let arr_string = char_arr.slice(uq1, uq2);
 		console.log('arr_string: ', arr_string);
 		
 		let arr = arr_string.split(',');
 		console.log('arr: ', arr);
 
-		uq2_prev = uq2;
-		c = c + 1;
+		// -----------------------
+		
+		// Reassign char_arr to remaining string to parse
+		char_arr = char_arr.slice(uq2+1, char_arr_orglen)
+
+		// -----------------------
+		
+		if (char_arr.length < == 3) {
+			flag = 'done';
+		} else {
+			c = c + 1;
+		}
+
+		// -----------------------
 	}
 
 }
