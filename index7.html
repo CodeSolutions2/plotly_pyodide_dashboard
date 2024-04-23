@@ -22,9 +22,12 @@ div {position: relative; z-index: 2;},
 	  
 <br><br>
 	  
-<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename; ensure values are separated by a comma. (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
+<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename.</label>
+<!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
 <br><br>
-<input id="get_download_url" type="text" value="" placeholder="repoOwner, repoName, csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<input id="repoName" type="text" value="" placeholder="repoName" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
+<input id="csv_filename" type="text" value="" placeholder="csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 <br>
 <button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">Get a download url for a file</button>
 
@@ -116,19 +119,9 @@ var pyodideReadyPromise = load_pyodide();
 // Step 0
 async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 	
-	const get_download_url = document.getElementById("get_download_url").value;
-
-	var string_arr = get_download_url.split(',');
-	let repoOwner = string_arr[0];  // 'CodeSolutions2';
-	let repoName = string_arr[1];  // 'plotly_pyodide_dashboard';
-	let csv_filename = string_arr[2];  // 'data.csv';
-
-	const isNotspace = (num) => num != " "
-	repoOwner = [repoOwner].filter(isNotspace)[0];
-	repoName = [repoName].filter(isNotspace)[0];
-	csv_filename = [csv_filename].filter(isNotspace)[0];
-	
-	console.log('repoOwner: ', repoOwner, 'repoName: ', repoName, 'csv_filename: ', csv_filename)
+	const repoOwner = document.getElementById("repoOwner").value;
+	const repoName = document.getElementById("repoName").value;
+	const csv_filename = document.getElementById("csv_filename").value;
 	
 	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
 
