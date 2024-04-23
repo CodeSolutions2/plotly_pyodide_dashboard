@@ -129,7 +129,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		key = key.filter(isNotspace);
 		console.log('key: ', key);
 		
-		key = key.join();
+		key = key.join('');
 		console.log('key: ', key, 'key.length: ', key.length);
 
 		// -----------------------
@@ -138,7 +138,7 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		let char_arr_values = char_arr.slice(uq1+1, uq2);
 		console.log('char_arr_values: ', char_arr_values);
 
-		let string_values = char_arr_values.join();
+		let string_values = char_arr_values.join('');
 		console.log('string_values: ', string_values);
 		
 		let arr = string_values.split(',');
