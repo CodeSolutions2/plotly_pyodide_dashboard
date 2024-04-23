@@ -56,8 +56,9 @@ div {position: relative; z-index: 2;},
 
 <br><br>
 
-<label id="transform_plot_label" style="display:block">[Step 2] Enter a url of a csv file to present the data in a table</label>
-<br><br>
+<label id="transform_plot_label" style="display:block">[Step 2] Decide how to visualize the data in the table</label>
+<br>
+<button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of a counted rows</button>
 <!-- ----------------------------------- -->
 
 
@@ -86,7 +87,7 @@ div {position: relative; z-index: 2;},
 <!-- CSS -->
 <style>
 div {position: relative; z-index: 0;}
-table {border-collapse: collapse;}
+table {border-collapse: collapse; position: absolute; z-index: 10;}
 td,
 th {border: 1px solid black; padding: 10px 20px;}
 </style>
@@ -137,8 +138,8 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 			      file_objects.push(file); 
 			      outp.innerHTML = file.download_url;
 			      // document.getElementById("enter_url_label").value = file.download_url;
-			      document.getElementById("enter_url_label").setAttribute("value", file.download_url);
-			      console.log('file.download_url: ', file.download_url);
+			      // document.getElementById("enter_url_label").setAttribute("value", file.download_url);
+			      // console.log('file.download_url: ', file.download_url);
 		      }
 		      });
 		      return file_objects;
@@ -152,18 +153,12 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 async function show_selected_csv_data() {
 
 	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
-	
 	const python_pyodide = document.getElementById("python_pyodide").checked;
 	const javascript = document.getElementById("javascript").checked;
 
 	if (python_pyodide == true && javascript == false) {
 		// python_pyodide
-		await python_load_data(csv_dataset_url)
-		// transform string into array element - first see how the output is 
-		
-		// plot array in table
-		// generateTable_dynamically_by_row(arr)
-			
+		await python_load_data(csv_dataset_url);
 	}
 	if (python_pyodide == false && javascript == true) {
 		// javascript
@@ -191,7 +186,8 @@ async function python_load_data(csv_dataset_url) {
 
 async function output_results_load_data(result) {
 
-	outp.innerHTML = result;
+	// Display on page
+	// outp.innerHTML = result;
 	
 	await convert_dictionarylikestring_to_dictionary(result)
 		.then(async function(dictc) {
@@ -213,7 +209,7 @@ async function javascript_load_data(csv_dataset_url) {
   return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
 	  .then(async function(text_out) { 
 		  var arr = text_out.split('\n');
-
+		  
 		  // Plot in table
 		  await generateTable_dynamically_by_row(arr);
 	  })
@@ -229,9 +225,14 @@ async function javascript_load_data(csv_dataset_url) {
 // Step 2: decide how to visualize the data in the table
 // Make buttons appear that can format (ie: value_counts/counter) and plot the data
 
-// return await counter(df_arr);
-//await bar_chart(dictc);
+async function bar_chart_arrayInputOnly() {
 
+	// Read array data from the page
+	let arr = outp.innerHTML;
+	
+	return await counter(arr)
+		.then(async function(dictc) { await bar_chart(dictc); });
+}
 
 	
 // ----------------------------------------------------
@@ -309,12 +310,25 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// there are 3 unique characters to search for each loop
 		// : - indicates end of key
 		// [ - indicates start of array
-		// ] - indicates end of array OR ," (for pandas split notation to avoid cutting rows in square brackets)
+		// ] - indicates end of array OR ]," (for pandas split notation to avoid cutting rows in square brackets)
 		let uq0 = char_arr.findIndex((char) => char == ':');
 		let uq1 = char_arr.findIndex((char) => char == '[');
+
+		// -----------------------
+		// For simplistic dictionary string: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 		// let uq2 = char_arr.findIndex((char) => char == ']');
+		
 		// OR
-		let uq2 = char_arr.findIndex((char) => char == ',"');
+		
+		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+		if (char_arr.findIndex((char) => char == '],"').length > 0) {
+			// Not at the end of string
+			let uq2 = char_arr.findIndex((char) => char == '],"');
+		} else {
+			// At end of string, use a different identifier 
+			let uq2 = char_arr.findIndex((char) => char == ']}');
+		}
+		// -----------------------
 
 		// Obtain the key information as a string 
 		let key = char_arr.slice(1, uq0);
@@ -349,7 +363,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// -----------------------
 		
-		if (char_arr.length < 3) {
+		if (char_arr.length < 3 ) {
 			flag = 'done';
 		}
 
@@ -414,7 +428,10 @@ async function transform_columnArray_into_rowArray(columnArray) {
 // -------------------------------------------------
 
 async function generateTable_dynamically_by_row(arr) {
-						
+
+	// Display on page for later retrival
+	outp.innerHTML = arr;
+	
 	const tbl = document.createElement("table");
 	const tblBody = document.createElement("tbody");
 
@@ -435,7 +452,7 @@ async function generateTable_dynamically_by_row(arr) {
 	}
 	tbl.appendChild(tblBody);
 
-	document.body.appendChild(tbl);
+	document.body.appendChild(tbl);  
   }  
 
 	
