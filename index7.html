@@ -156,23 +156,8 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 		let object1 = {};
 
 		arr = arr.map((num) => { 
-			// var out = num;
-			// console.log('out: ', out);
-			try {
-				if (typeof Number(num) == 'number') {
-					// out = Number(num);
-					// object1[out] = out;
-					// OR
-					object1[num] = Number(num);
-				}
-			} finally { 
-				// after try succeeds or is rejected, it runs finally
-				// console.log('out finally: ', out);
-				// if (typeof Number(out) != 'number') { out = num.toString(); console.log('out finally1: ', out); }
-				// return out;
-				// OR
-				return object1[num] ?? num
-			}
+			object1[Number(num)] = Number(num);
+			return object1[num] ?? num
 		})
 
 		console.log('object1: ', object1);
