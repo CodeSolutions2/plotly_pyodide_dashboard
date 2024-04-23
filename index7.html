@@ -347,7 +347,10 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// [ - indicates start of array
 		// ] - indicates end of array OR ]," (for pandas split notation to avoid cutting rows in square brackets)
 		let uq0 = char_arr.findIndex((char) => char == ':');
+		console.log('uq0: ', uq0);
+		
 		let uq1 = char_arr.findIndex((char) => char == '[');
+		console.log('uq1: ', uq1);
 
 		// -----------------------
 		// For simplistic dictionary string: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
@@ -356,7 +359,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// OR
 		
 		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
-		let uq2 = char_arr.findIndex((char) => char == ',"');
+		let uq2 = char_arr.findIndex((char) => char == '],"');
 		console.log('uq2: ', uq2);
 		
 		let uq3 = char_arr.findIndex((char) => char == ']}');
