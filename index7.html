@@ -89,7 +89,7 @@ async function show_selected_csv_data() {
 
 	if (python_pyodide == true && javascript == false) {
 		// python_pyodide
-		await python_dashboard_load_data(csv_dataset_url)
+		await python_load_data(csv_dataset_url)
 		// transform string into array element - first see how the output is 
 		
 		// plot array in table
@@ -98,6 +98,7 @@ async function show_selected_csv_data() {
 	}
 	if (python_pyodide == false && javascript == true) {
 		// javascript
+		await javascript_load_data(csv_dataset_url)
 	}
 
 
@@ -126,7 +127,7 @@ var pyodideReadyPromise = load_pyodide();
 	
 // ----------------------------------------------------
 
-async function python_dashboard_load_data(csv_dataset_url) {
+async function python_load_data(csv_dataset_url) {
 
 	var pyodide = await pyodideReadyPromise;
 
