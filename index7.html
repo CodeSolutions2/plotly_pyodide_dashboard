@@ -155,7 +155,10 @@ async function convert_JSONlikestring_to_JSON(dictc_string, desired_keys) {
 				if (typeof Number(num) == 'number') {
 					out = Number(num);
 				}
-			} catch (e) { console.log(e); }
+			} catch (e) { console.log(e); 
+			} finally {
+				out = num.toString();
+			}
 			return out;
 		})
 	
