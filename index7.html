@@ -116,7 +116,7 @@ async function load_pyodide() {
         return pyodide;
 }
 
-var pyodideReadyPromise = load_pyodide();
+// var pyodideReadyPromise = load_pyodide();
 
 	
 // ----------------------------------------------------
@@ -159,7 +159,8 @@ async function show_selected_csv_data() {
 
 	if (python_pyodide == true && javascript == false) {
 		// python_pyodide
-		await python_load_data(csv_dataset_url);
+		// await python_load_data(csv_dataset_url);
+		await test_python_function();
 	}
 	if (python_pyodide == false && javascript == true) {
 		// javascript
@@ -202,6 +203,22 @@ async function output_results_load_data(result) {
 		.catch(error => { console.log(error); });
 }
 
+	
+async function test_python_function() {
+	var result = '{"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}';
+
+	await convert_dictionarylikestring_to_dictionary(result)
+		.then(async function(dictc) {
+			delete dictc.columns;
+			console.log('dictc: ', dictc);
+			return await dictionary_to_array(dictc);
+		})
+		.then(async function(rowArray) {
+			await generateTable_dynamically_by_row(rowArray);
+		})
+		.catch(error => { console.log(error); });
+	
+}
 // ----------------------------------------------------
 	
 async function javascript_load_data(csv_dataset_url) {
