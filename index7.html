@@ -131,17 +131,24 @@ async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
 		}
 	}
 	console.log('dictc_string_new: ', dictc_string_new);
+	console.log('dictc_string_new.length: ', dictc_string_new.length);
 
+	let json_parse_object_only = JSON.parse(dictc_string_new);
+	console.log('json_parse_object_only: ', json_parse_object_only);
+	
 	let json_object = JSON.parse(JSON.stringify(dictc_string_new));
 	console.log('json_object: ', json_object);
 
+	console.log('json_object.length: ', json_object.length);
 
+	
+
+  // Incorrect: key = 0 always and the value is each of the characters
   new_json_object = {};
-  
   // Rename the keys to the desired key names
-  for (let i=0; i< json_object.length; i++) {
-    let key = Object.keys(json_object[i]);
-    console.log('key: ', key);
+  // for (let i=0; i< json_object.length; i++) {
+  //   let key = Object.keys(json_object[i]);
+ //    console.log('key: ', key);
 
     // Way 0: just rename the key
     // json_object[key] = desired_keys[i]
@@ -150,10 +157,10 @@ async function convert_JSONlike_string_to_JSON(dictc_string, desired_keys) {
     // new_json_object[desired_keys[i]] = Object.values(`${row}.${key}`);
     
     // Get the values of the existing key
-    let val = Object.values(json_object[i]);
-    console.log('val: ', val);
+ //    let val = Object.values(json_object[i]);
+  //   console.log('val: ', val);
     
-  }
+  // }
 	
 	// const old_keys = Object.keys(json_object);
 	// console.log('old_keys: ', old_keys);
