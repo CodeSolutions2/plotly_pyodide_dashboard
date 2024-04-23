@@ -22,7 +22,7 @@ div {position: relative; z-index: 2;},
 	  
 <br><br>
 	  
-<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename.</label>
+<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
 <!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
 <br><br>
 <input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
@@ -132,7 +132,8 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 			    var regexp = new RegExp(`${csv_filename}`, 'g');
 		      if (file.type === 'file' && file.name.match(regexp)) {
 			      file_objects.push(file); 
-			      outp.innerHTML = file.download_url; 
+			      outp.innerHTML = file.download_url;
+			      document.getElementById("enter_url_label").value = file.download_url;
 			      console.log('file.download_url: ', file.download_url);
 		      }
 		      });
