@@ -268,21 +268,22 @@ async function bar_chart_arrayInputOnly() {
 	
 	let user_input = document.getElementById("backend_input").value;
 
+	// ----------
 	// The user needs to enter a JSON string: {"arr": 'data'}
-	var input_obj = JSON.parse(JSON.stringify(user_input));
-	console.log('input_obj: ', input_obj);
+	// var input_obj = JSON.parse(JSON.stringify(user_input));
+	// console.log('input_obj: ', input_obj);  // input_obj:  {"arr": ['data']} it stays as a string
 
 	// OR
 
 	// The user needs to enter a JSON string: {"arr": ['data']}
 	var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
 	console.log('input_obj2: ', input_obj2);
+	// ----------
 	
-
-	console.log('input_obj["arr"]: ', `${input_obj["arr"]}`);
-	console.log('input_obj.arr: ', `${input_obj.arr}`);
-	console.log('input_obj2["arr"]: ', `${input_obj2["arr"]}`);
-	console.log('input_obj2.arr: ', `${input_obj2.arr}`);
+	// console.log('input_obj["arr"]: ', `${input_obj["arr"]}`);  // undefined
+	// console.log('input_obj.arr: ', `${input_obj.arr}`);  // undefined
+	console.log('input_obj2["arr"]: ', `${input_obj2["arr"]}`); // dictionary object
+	console.log('input_obj2.arr: ', `${input_obj2.arr}`); // dictionary object
 	
 	var arr = dictc[`${input_obj2.arr}`];
 	console.log('arr: ', arr);
@@ -315,15 +316,30 @@ async function line_chart_arrayInputOnly() {
 	// -----------------------
 	// Select the column that one wants to make a plot
 
+	let user_input = document.getElementById("backend_input").value;
+	
+	// ----------
 	// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
-	var input_obj = JSON.parse(JSON.stringify(document.getElementById("backend_input").value));
+	var input_obj = JSON.parse(JSON.stringify(user_input));
 	console.log('input_obj: ', input_obj);
+
+	// OR
+
+	// The user needs to enter a JSON string: {"x_labels": ['data'], "y_values": ['index']}
+	var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+	console.log('input_obj2: ', input_obj2);
+	// ----------
+
+	console.log('input_obj["arr"]: ', `${input_obj["arr"]}`);  // undefined
+	console.log('input_obj.arr: ', `${input_obj.arr}`);  // undefined
+	console.log('input_obj2["arr"]: ', `${input_obj2["arr"]}`); // dictionary object
+	console.log('input_obj2.arr: ', `${input_obj2.arr}`); // dictionary object
 	
 	// Rename the keys of the dictionary
-	dictc.x_labels = dictc[`${input_obj.x_labels}`];
-	// delete dictc.`${input_obj.x_labels}`;  // Remove old key
-	dictc.y_values = dictc[`${input_obj.y_values}`];
-	// delete dictc.`${input_obj.y_values}`;  // Remove old key
+	dictc.x_labels = dictc[`${input_obj2.x_labels}`];
+	// delete dictc.`${input_obj2.x_labels}`;  // Remove old key
+	dictc.y_values = dictc[`${input_obj2.y_values}`];
+	// delete dictc.`${input_obj2.y_values}`;  // Remove old key
 
 	console.log('dictc: ', dictc);
 	
