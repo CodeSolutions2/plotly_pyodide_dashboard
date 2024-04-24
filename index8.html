@@ -206,10 +206,10 @@ async function test_python_function() {
 			let desired_keys = ["labels", "values"];
 			return await dictionary_to_array(dictc, desired_keys);
 		})
-		.then(async function(rowArray) {
-			await generateTable_dynamically(rowArray);
-		})
-		.catch(error => { console.log(error); });
+		//.then(async function(rowArray) {
+		//	await generateTable_dynamically(rowArray);
+		//})
+		//.catch(error => { console.log(error); });
 	
 }
 // ----------------------------------------------------
@@ -457,24 +457,31 @@ async function dictionary_to_array(dictc, desired_keys) {
 
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
 	// desired_keys = ["labels", "values"]
+
+	let keys0 = Object.keys(dictc);
+	console.log('keys0: ', keys0);
 	
 	var columnArray = [];
-	[dictc].forEach(async function(rowdata, ind) { 
-		let keys = Object.keys(rowdata);  // Array [ "index", "data" ]
-		console.log('keys: ', keys);
+	// [dictc].forEach(async function(rowdata, ind) { 
+	// 	let keys = Object.keys(rowdata);  // Array [ "index", "data" ]
+	// 	console.log('keys: ', keys);
 		
-		keys.forEach(async function(key, ind) {
-			let col = [];
-			// col.push(key);
-			// OR
-			col.push(desired_keys[ind]);
-			col.concat(dictc[key]);
-		});
-		columnArray.push(col);
+	keys0.forEach(async function(key, ind) {
+		let col = [];
+		// col.push(key);
+		// OR
+		col.push(desired_keys[ind]);
+		col.concat(dictc[key]);
+		console.log('col: ', col);
 	});
+	columnArray.push(col);
+	
+	// });
 
-	var rowArray = await transform_columnArray_into_rowArray(columnArray);
-	return rowArray;
+	console.log('columnArray: ', columnArray);
+
+	// var rowArray = await transform_columnArray_into_rowArray(columnArray);
+	// return rowArray;
 }
 	
 // ----------------------------------------------------
