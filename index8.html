@@ -53,7 +53,7 @@
 <td id="graph_output">	
 <!-- <textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea> -->
 <input id="python_input" type="text" value="" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
-
+<input id="javascript_input" type="text" value="" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
 	
 <div id="js_plot_bar" style="width:600px;height:250px;"></div>
@@ -309,24 +309,36 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
 
+	const isNotquote = (num) => num != "'"
+	const isNotspace = (num) => num != " "
+
+	// -----------------------
+	
 	// Ensure the input is a string
 	dictc_string = dictc_string.toString();
 	console.log('dictc_string: ', dictc_string);
 	console.log('dictc_string.length: ', dictc_string.length);
+
+	// -----------------------
 	
 	let char_arr = dictc_string.split('');
+
+	// Remove all blank spaces from the char array
+	char_arr = char_arr.filter(isNotspace);
+	
 	let char_arr_orglen = char_arr.length;
+
+	// -----------------------
 	
 	// Design 2: without relying on JSON.parse
 	let flag = 'not_done';
 	let array0 = [];
 	let array1 = [];
-
 	let c = 0;
-	const isNotquote = (num) => num != "'"
-	const isNotspace = (num) => num != " "
 	
 	while (flag == 'not_done') {
+
+		console.log('char_arr: ', char_arr);
 		
 		// there are 3 unique characters to search for each loop
 		// : - indicates end of key
@@ -340,7 +352,51 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// -----------------------
 		// For simplistic dictionary string: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
-		let uq2 = char_arr.findIndex((char) => char == ']');
+		let uq2 = char_arr.findIndex((char) => char == ']');  // end marker
+		console.log('uq2: ', uq2);
+
+		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+
+		// Idea (Confirm that the end marker is correct - the end marker needs to have a sequential pattern of ],' or ]," ): search (from left to right) for current : and the next : to the right
+
+		// step 0: obtain string from after the current : to the end of string
+		let next_char_arr = char_arr.slice(uq1, char_arr_orglen);
+		console.log('next_char_arr: ', next_char_arr);
+
+		// step 1: find the index of the next : with respect to next_char_arr
+		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
+		let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
+
+		// step 2: confirm which index is where the sequence pattern occurs
+		console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
+		
+		// Way 0: use while loop (simplest) - while is better than for because I can break the loop when the unique value is found
+	 	let i = 0;
+		let flag2 = 'not done';
+		while (flag2 == 'not done' & i < (uq3-uq2)-3){
+			if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+				uq2 = i;  // correction for the end marker
+				flag2 = 'done';
+				console.log('sequence found loop: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
+			} else {
+				i = i + 1;
+			}
+		}
+		console.log('uq2 corrected: ', uq2);
+
+		// Way 1: use map - this is essentually a for loop
+		// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
+		let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
+		let ind_arr = [];
+		let correct_index = ind.map((i) => {
+			if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+				console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
+				ind_arr.push(i);  // collect when it is true, the last values is the correct value, there should only be one value
+			}
+		});
+		console.log('ind_arr: ', ind_arr);
+		let uq2_1 = ind_arr.pop()
+		console.log('uq2 corrected: ', uq2_1);
 		
 		// -----------------------
 
@@ -377,9 +433,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// -----------------------
 		
-		if (char_arr.length < 3 || c > 10) {
-			flag = 'done';
-		}
+		if (char_arr.length < 3 || c > 10) { flag = 'done'; }
 
 		c = c + 1; // to force loop to stop while debugging
 		// -----------------------
@@ -467,7 +521,8 @@ async function generateTable_dynamically_by_row(arr) {
 	}
 	tbl.appendChild(tblBody);
 
-	document.body.appendChild(tbl);  
+	document.getElementById("graph_output").appendChild(tbl);
+	// document.body.appendChild(tbl);  
   }  
 
 	
