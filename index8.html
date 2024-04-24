@@ -189,7 +189,7 @@ async function output_results_load_data(result) {
 			return await dictionary_to_array(dictc);
 		})
 		.then(async function(rowArray) {
-			await generateTable_dynamically_by_row(rowArray);
+			await generateTable_dynamically(rowArray);
 		})
 		.catch(error => { console.log(error); });
 }
@@ -205,7 +205,7 @@ async function test_python_function() {
 			return await dictionary_to_array(dictc);
 		})
 		.then(async function(rowArray) {
-			await generateTable_dynamically_by_row(rowArray);
+			await generateTable_dynamically(rowArray);
 		})
 		.catch(error => { console.log(error); });
 	
@@ -217,10 +217,10 @@ async function javascript_load_data(csv_dataset_url) {
   // Read data into Javascript from .csv
   return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
 	  .then(async function(text_out) { 
-		  var arr = text_out.split('\n');
+		  var rowArray = text_out.split('\n');
 		  
 		  // Plot in table
-		  await generateTable_dynamically_by_row(arr);
+		  await generateTable_dynamically(rowArray);
 	  })
 	  .catch(error => { console.log(error); });
   
@@ -460,8 +460,9 @@ async function dictionary_to_array(dictc, desired_keys) {
 	[dictc].forEach(async function(rowdata, ind) { 
 		let keys = Object.keys(rowdata);  // Array [ "index", "data" ]
 		console.log('keys: ', keys);
-
+		
 		keys.forEach(async function(key, ind) {
+			let col = [];
 			// col.push(key);
 			// OR
 			col.push(desired_keys[ind]);
@@ -482,9 +483,9 @@ async function transform_columnArray_into_rowArray(columnArray) {
 	let num_of_cols = columnArray.length;
 
 	var rowArray = [];
-	for (let r=0; r < num_of_rows.length; r++){
+	for (let r=0; r < num_of_rows; r++){
 		let row = [];
-		for (let c=0; c < num_of_cols.length; c++){
+		for (let c=0; c < num_of_cols; c++){
 			row.push(columnArray[c][r]);
 		}
 		rowArray.push(row);
@@ -494,24 +495,24 @@ async function transform_columnArray_into_rowArray(columnArray) {
 
 // -------------------------------------------------
 
-async function generateTable_dynamically_by_row(arr) {
+async function generateTable_dynamically(rowArray) {
 
 	// Display on page for later retrival
-	outp.innerHTML = arr;
+	outp.innerHTML = rowArray;
 	
 	const tbl = document.createElement("table");
 	const tblBody = document.createElement("tbody");
 
 	// Create row cells dynamically
-	for (let i=0; i < arr.length; i++){
+	for (let i=0; i < rowArray.length; i++){
 		// create a table row
 		const row = document.createElement("tr");
 
-		for (let j=0; j < arr[0].length; j++){
+		for (let j=0; j < rowArray[0].length; j++){
 			const cell = document.createElement("td");
 			cell.setAttribute("id", 'dynamic_table');
 			
-			const cellText = document.createTextNode(`${arr[i][j]}`);
+			const cellText = document.createTextNode(`${rowArray[i][j]}`);
 			cell.appendChild(cellText);
 			row.appendChild(cell);
 		}
