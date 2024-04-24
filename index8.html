@@ -72,14 +72,12 @@
 <!-- CSS -->
 <style>
 div {position: relative; z-index: 0;}
-table {vertical-align: top; border-collapse: collapse; position: relative; z-index: 0;}
-td,
+table {border-collapse: collapse; position: relative; z-index: 0;}
+td {vertical-align: top;}
 th {border: 0px solid black; padding: 10px 20px;}
 td#dynamic_table {border: 1px solid black; padding: 10px 20px;}
-	
 input#python_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
-
-input#javascript_input {background-color: #7cbc70;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+input#javascript_input {background-color: ##7fb88e;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
 </style>
 	  
 <!-- --------------------------------------------------- -->
@@ -375,28 +373,13 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
 		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
 			// The string is at the last object value
-			uq2 = char_arr_orglen;  // Correct uq2 directly
+			uq2 = char_arr_orglen-2;  // -2 is for removing ]} at the end
 		} else {
 			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
 	
 			// step 2: confirm which index is where the sequence pattern occurs
 			console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
 			
-			// Way 0: use while loop (simplest) - while is better than for because I can break the loop when the unique value is found
-		 	// let i = 0;
-			// let flag2 = 'not done';
-			// while (flag2 == 'not done' & i < (uq3-uq2)-3){
-			// 	if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
-			// 		uq2 = i;  // correction for the end marker
-			// 		flag2 = 'done';
-			// 		console.log('sequence found loop: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
-			// 	} else {
-			// 		i = i + 1;
-			// 	}
-			// }
-			// console.log('uq2 corrected: ', uq2);
-	
-			// Way 1: use map - this is essentually a for loop
 			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
 			let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
 			let correct_index = ind.map((i) => {
