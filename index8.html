@@ -34,7 +34,7 @@
 <!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
 <fieldset>
 <legend>Select a backend computational engine:</legend>
-<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">TESTpython_pyodide</label></div>
+<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">python_pyodide</label></div>
 <div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">javascript</label></div>
 </fieldset>
 <br>
@@ -42,7 +42,8 @@
 
 <br><br>
 
-<label id="transform_plot_label" style="display:block">[Step 2] Decide how to visualize the data in the table</label>
+<label id="transform_plot_label" style="display:block">[Step 2] Visualize the data: enter the column names in the table/DataFrame that correspond with labels=y </label>
+For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value: {"arr": 'data'}. For Line chart: enter the JSON string, replacing 'data' and 'index' with desired x and y column names: {"x_labels": 'data', "y_values": 'index'}.
 <br>
 <button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of an accumulated/counted value column</button>
 <button id="line_chart_arrayInputOnly" onclick="line_chart_arrayInputOnly()" style="display:block">Line chart of a column</button>
@@ -52,9 +53,7 @@
 <td id="graph_output">	
 <!-- <textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea> -->
 <label id="modify_plots" style="display:block">[Step 3] (Optional) Make a new {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']} using the DataFrame data to submit to a plot.</label>
-<input id="python_input" type="text" value="" placeholder="Python backend" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
-<br>
-<input id="javascript_input" type="text" value="" placeholder="JavaScript backend" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
+<input id="backend_input" type="text" value="" placeholder="Backend input area (select the radio button for Python or JavaScript)" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 <br>
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
 <br>
@@ -80,8 +79,7 @@ td#dynamic_table {vertical-align: top; border: 1px solid black; padding: 10px 20
 
 th {border: 0px solid black; padding: 10px 20px;}
 
-input#python_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
-input#javascript_input {background-color: #7fb88e;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
 </style>
 	  
 <!-- --------------------------------------------------- -->
@@ -132,10 +130,12 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 		      if (file.type === 'file' && file.name.match(regexp)) {
 			      file_objects.push(file); 
 			      outp.innerHTML = file.download_url;
+
+			      // Fill in input automatically
 			      // document.getElementById("enter_url_label").value = file.download_url;
 			      // document.getElementById("enter_url_label").setAttribute("value", file.download_url);
-			      // console.log('file.download_url: ', file.download_url);
 			      
+			      // console.log('file.download_url: ', file.download_url);
 		      }
 		      });
 		      return file_objects;
@@ -181,25 +181,7 @@ async function python_load_data(csv_dataset_url) {
 }
 
 
-async function output_results_load_data(result) {
-	
-	await convert_dictionarylikestring_to_dictionary(result)
-		.then(async function(dictc) {
-			delete dictc.columns;
-			console.log('dictc: ', dictc);
-			
-			// Display on page
-			outp.innerHTML = dictc.toString();
-			
-			return await dictionary_to_array(dictc);
-		})
-		.then(async function(rowArray) {
-			await generateTable_dynamically(rowArray);
-		})
-		.catch(error => { console.log(error); });
-}
-
-	
+// async function output_results_load_data(result) {
 async function test_python_function() {
 	var result = '{"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}';
 
@@ -208,14 +190,13 @@ async function test_python_function() {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
 			
-			// Display on page
-			outp.innerHTML = JSON.stringify(dictc); //dictc.toString();
-			
+			// Display dictionary on page for Step 2: plotting
+			outp.innerHTML = JSON.stringify(dictc);
+
+			// Convert dictionary to rowArray
 			return await dictionary_to_array(dictc);
 		})
-		.then(async function(rowArray) {
-			await generateTable_dynamically(rowArray);
-		})
+		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
 		.catch(error => { console.log(error); });
 	
 }
@@ -225,11 +206,39 @@ async function javascript_load_data(csv_dataset_url) {
 
   // Read data into Javascript from .csv
   return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
-	  .then(async function(text_out) { 
-		  var rowArray = text_out.split('\n');
+	  .then(async function(text_arr) { 
+
+		  // -----------------------
+		  
+		  // Transform text array into a dictionary
+		  var rowArray_stringPerRow = text_arr.split('\n');
+
+		  // **** Could use map here ****
+		  
+		  // Separate each row into an Array
+		  var rowArray_wo_index = [];
+		  rowArray_stringPerRow.forEach(async function(row, ind) { rowArray_wo_index.push(row.split(',')); });
+
+		  // (Optional) add and index to the rowArray
+		  var rowArray_w_index = [];
+		  rowArray_wo_index.forEach(async function(row, ind) { rowArray_w_index.push([ind].concat(row)); });
+
+		  var rowArray = rowArray_w_index;  // rowArray_wo_index
 		  
 		  // Plot in table
 		  await generateTable_dynamically(rowArray);
+		  
+		  // -----------------------
+
+		  // Convert rowArray to a columnArray
+		  
+
+		  // Convert columnArray to dictionary
+
+		  // Display dictionary on page for Step 2: plotting
+		  outp.innerHTML = dict;
+		  
+		  // -----------------------
 	  })
 	  .catch(error => { console.log(error); });
   
@@ -244,17 +253,24 @@ async function javascript_load_data(csv_dataset_url) {
 // Make buttons appear that can format (ie: value_counts/counter) and plot the data
 
 async function bar_chart_arrayInputOnly() {
-	
-	// How to save data for the next process
-	// Way 0: as a string
-	let arr_string = outp.innerHTML;// Read array data from the page
-	// Way 1: as an object (to memory)
-	
 
-	// Select the column that one wants to make a bar chart of
-	// let desired_keys = ["labels", "values"];
-	let arr = arr_string.split(',');
-	
+	// -----------------------
+	// How to reload transformed data for the discrete plotting processes
+	// -----------------------
+	// Way 0: Read a JSON string from the page OR from a repo file
+	let dictc = JSON.parse(outp.innerHTML);
+	// OR
+	// Way 1: Read an object from memory OR a blob from an endpoint
+	// -----------------------
+
+	// Select the column that one wants count
+	// The user needs to enter a JSON string: {"arr": 'data'}
+	var input_obj = JSON.parse(document.getElementById("backend_input").value);
+	var arr = dictc[`${input_obj.arr}`];
+
+	// -----------------------
+	// Senario 2: Transform data using the aggregation function buttons
+	// -----------------------
 	return await counter(arr)
 		.then(async function(dictc) { 
 			await bar_chart(dictc); });
@@ -262,14 +278,41 @@ async function bar_chart_arrayInputOnly() {
 
 async function line_chart_arrayInputOnly() {
 
-	// Read array data from the page
-	let arr_string = outp.innerHTML;
+	// -----------------------
+	// How to reload transformed data for the discrete plotting processes
+	// -----------------------
+	// Way 0: Read a JSON string from the page OR from a repo file
+	let dictc = JSON.parse(outp.innerHTML);
+	// OR
+	// Way 1: Read an object from memory OR a blob from an endpoint
+	// -----------------------
 
-	// Select the column that one wants to make a bar chart of
-
-	let arr = arr_string.split(',');
 	
-	return await line_chart(arr);
+	// -----------------------
+	// Senario 0: Plot data directly
+	// -----------------------
+	// Select the column that one wants to make a plot
+
+	// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
+	var input_obj = JSON.parse(document.getElementById("backend_input").value);
+	
+	// Rename the keys of the dictionary
+	dictc.x_labels = dictc.`${input_obj.x_labels}`;
+	// delete dictc.`${input_obj.x_labels}`;  // Remove old key
+	dictc.y_values = dictc.`${input_obj.y_values}`;
+	// delete dictc.`${input_obj.y_values}`;  // Remove old key
+
+	
+	// -----------------------
+	// Senario 1: Transform data using the code input
+	// -----------------------
+
+
+	// -----------------------
+	// Senario 2: Transform data using the aggregation function buttons
+	// -----------------------
+	
+	return await line_chart(dictc);
 }
 	
 	
@@ -279,8 +322,8 @@ async function line_chart_arrayInputOnly() {
 
 async function bar_chart(dictc) {
 	// https://plotly.com/javascript/bar-charts/
-	var xValue = dictc.labels;
-	var yValue = dictc.values;
+	var xValue = dictc.x_labels;
+	var yValue = dictc.y_values;
 	var trace1 = { x: xValue, y: yValue, type: 'bar', text: yValue.map(String), textposition: 'auto', hoverinfo: 'none', marker: { color: 'rgb(158,202,225)', opacity: 0.6, line: {color: 'rgb(8,48,107)', width: 1.5} } };
 	var data = [trace1];
 	var layout = { title: 'Bar chart', barmode: 'stack', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
@@ -289,10 +332,12 @@ async function bar_chart(dictc) {
 
 // ----------------------------------------------------
 
-async function line_chart(arr) {
+async function line_chart(dictc) {
         // https://plotly.com/javascript/getting-started/
-        const index = [...Array(arr.length).keys()].map((x) => x);
-        const trace_items = { x: index, y: arr, mode: 'markers', type: 'line' };
+	const xValue = [...Array(dictc.x_labels.length).keys()].map((x) => x);
+	var yValue = dictc.y_values;
+	
+        const trace_items = { x: xValue, y: yValue, mode: 'markers', type: 'line' };
         const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
         Plotly.newPlot("js_plot_line", [trace_items], layout );
 }
@@ -300,6 +345,7 @@ async function line_chart(arr) {
 // ----------------------------------------------------
 	
 async function counter(arr) {
+	
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
 	// console.log('unique: ', unique);
@@ -317,8 +363,8 @@ async function counter(arr) {
 		count.push(uq_val_arr.length);
 	});
 	
-	// Create a dictionary
-	return {labels: unique, values: count};
+	// Create a dictionary for plotting directly
+	return {x_labels: unique, y_values: count};
 }
 
 // ----------------------------------------------------
@@ -466,8 +512,6 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download
 	
 async function dictionary_to_array(dictc) {
 
-	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
-
 	let keys0 = Object.keys(dictc);
 	// console.log('keys0: ', keys0);
 	
@@ -476,7 +520,7 @@ async function dictionary_to_array(dictc) {
 		let col = [];
 		col.push(key);
 		col = col.concat(dictc[key]);
-		console.log('col: ', col);
+		// console.log('col: ', col);
 		columnArray.push(col);
 	});
 	// console.log('columnArray: ', columnArray);
@@ -503,6 +547,24 @@ async function transform_columnArray_into_rowArray(columnArray) {
 	return rowArray;
 }
 
+// ----------------------------------------------------
+
+async function transform_rowArray_into_columnArray(rowArray) {
+
+	let num_of_rows = rowArray[0].length;
+	let num_of_cols = rowArray.length;
+
+	var rowArray = [];
+	for (let r=0; r < num_of_rows; r++){
+		let row = [];
+		for (let c=0; c < num_of_cols; c++){
+			row.push(columnArray[c][r]);
+		}
+		rowArray.push(row);
+	}
+	return rowArray;
+}
+	
 // -------------------------------------------------
 
 async function generateTable_dynamically(rowArray) {
