@@ -297,9 +297,9 @@ async function line_chart_arrayInputOnly() {
 	var input_obj = JSON.parse(document.getElementById("backend_input").value);
 	
 	// Rename the keys of the dictionary
-	dictc.x_labels = dictc.`${input_obj.x_labels}`;
+	dictc.x_labels = dictc[`${input_obj.x_labels}`];
 	// delete dictc.`${input_obj.x_labels}`;  // Remove old key
-	dictc.y_values = dictc.`${input_obj.y_values}`;
+	dictc.y_values = dictc[`${input_obj.y_values}`];
 	// delete dictc.`${input_obj.y_values}`;  // Remove old key
 
 	
