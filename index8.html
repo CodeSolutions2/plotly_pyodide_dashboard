@@ -52,8 +52,9 @@
 <!-- View results -->
 <td id="graph_output">	
 <!-- <textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea> -->
-<input id="python_input" type="text" value="" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
-<input id="javascript_input" type="text" value="" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
+<label id="modify_plots" style="display:block">[Step 3] (Optional) Make a new {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']} using the DataFrame data to submit to a plot.</label>
+<input id="python_input" type="text" value="" placeholder="Python backend" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
+<input id="javascript_input" type="text" value="JavaScript backend" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
 	
 <div id="js_plot_bar" style="width:600px;height:250px;"></div>
@@ -74,6 +75,8 @@ table {border-collapse: collapse; position: absolute; z-index: 10;}
 td,
 th {border: 0px solid black; padding: 10px 20px;}
 input#python_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+
+input#javascript_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
 </style>
 	  
 <!-- --------------------------------------------------- -->
