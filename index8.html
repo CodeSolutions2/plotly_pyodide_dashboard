@@ -178,14 +178,15 @@ async function python_load_data(csv_dataset_url) {
 
 
 async function output_results_load_data(result) {
-
-	// Display on page
-	// outp.innerHTML = result;
 	
 	await convert_dictionarylikestring_to_dictionary(result)
 		.then(async function(dictc) {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
+			
+			// Display on page
+			outp.innerHTML = dictc;
+			
 			return await dictionary_to_array(dictc);
 		})
 		.then(async function(rowArray) {
@@ -202,6 +203,10 @@ async function test_python_function() {
 		.then(async function(dictc) {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
+			
+			// Display on page
+			outp.innerHTML = dictc;
+			
 			return await dictionary_to_array(dictc);
 		})
 		.then(async function(rowArray) {
@@ -497,9 +502,6 @@ async function transform_columnArray_into_rowArray(columnArray) {
 // -------------------------------------------------
 
 async function generateTable_dynamically(rowArray) {
-
-	// Display on page for later retrival
-	outp.innerHTML = rowArray;
 	
 	const tbl = document.createElement("table");
 	const tblBody = document.createElement("tbody");
