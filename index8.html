@@ -265,12 +265,26 @@ async function bar_chart_arrayInputOnly() {
 	console.log('dictc: ', dictc);
 
 	// Select the column that one wants count
+	
+	let user_input = document.getElementById("backend_input").value;
+
 	// The user needs to enter a JSON string: {"arr": 'data'}
-	var input_obj = JSON.parse(JSON.stringify(document.getElementById("backend_input").value));
+	var input_obj = JSON.parse(JSON.stringify(user_input));
 	console.log('input_obj: ', input_obj);
 
-	console.log('key value: ', `${input_obj.arr}`);
-	var arr = dictc[`${input_obj.arr}`];
+	// OR
+
+	// The user needs to enter a JSON string: {"arr": ['data']}
+	var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+	console.log('input_obj2: ', input_obj2);
+	
+
+	console.log('input_obj["arr"]: ', `${input_obj["arr"]}`);
+	console.log('input_obj.arr: ', `${input_obj.arr}`);
+	console.log('input_obj2["arr"]: ', `${input_obj2["arr"]}`);
+	console.log('input_obj2.arr: ', `${input_obj2.arr}`);
+	
+	var arr = dictc[`${input_obj2.arr}`];
 	console.log('arr: ', arr);
 
 	// -----------------------
