@@ -262,12 +262,14 @@ async function bar_chart_arrayInputOnly() {
 	// OR
 	// Way 1: Read an object from memory OR a blob from an endpoint
 	// -----------------------
+	console.log('dictc: ', dictc);
 
 	// Select the column that one wants count
 	// The user needs to enter a JSON string: {"arr": 'data'}
 	var input_obj = JSON.parse(JSON.stringify(document.getElementById("backend_input").value));
 	console.log('input_obj: ', input_obj);
-	
+
+	console.log('key value: ', `${input_obj.arr}`);
 	var arr = dictc[`${input_obj.arr}`];
 	console.log('arr: ', arr);
 
