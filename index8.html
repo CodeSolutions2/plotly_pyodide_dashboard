@@ -48,7 +48,7 @@ div {position: relative; z-index: 2;},
 <!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
 <fieldset>
 <legend>Select a backend computational engine:</legend>
-<!-- <div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">python_pyodide</label></div>-->
+<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">TESTpython_pyodide</label></div>
 <div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">javascript</label></div>
 </fieldset>
 <br>
@@ -63,9 +63,8 @@ div {position: relative; z-index: 2;},
 </td>
         
 <td id="graph_output">	
-<textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea>
-<br>
-<input id="python_input" type="text" value="" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 150px;">
+<!-- <textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea> -->
+<input id="python_input" type="text" value="" placeholder="" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 </td>
         
       </tr>
@@ -108,6 +107,7 @@ div {position: relative; z-index: 0;}
 table {border-collapse: collapse; position: absolute; z-index: 10;}
 td,
 th {border: 1px solid black; padding: 10px 20px;}
+input#python_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
 </style>
 	  
 <!-- --------------------------------------------------- -->
@@ -127,8 +127,6 @@ async function load_pyodide() {
 	// -----------------------
 	
         await pyodide.loadPackage(["pandas"]);
-        // await pyodide.loadPackage(["matplotlib"]);
-	// await pyodide.loadPackage(["micropip"]);
 	
         return pyodide;
 }
