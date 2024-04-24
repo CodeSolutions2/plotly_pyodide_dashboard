@@ -343,7 +343,6 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 	let c = 0;
 	
 	while (flag == 'not_done') {
-
 		console.log('char_arr: ', char_arr);
 		
 		// there are 3 unique characters to search for each loop
@@ -452,22 +451,21 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download
 
 // ----------------------------------------------------
 	
-async function dictionary_to_array(dictt) {
+async function dictionary_to_array(dictc, desired_keys) {
 
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
+	// desired_keys = ["labels", "values"]
 	
 	var columnArray = [];
-	[dictt].forEach(async function(rowdata, ind) { 
-		let col = [];
-		let key = Object.keys(rowdata);
-		console.log('key: ', key);
-		
-		col.push(key);
+	[dictc].forEach(async function(rowdata, ind) { 
+		let keys = Object.keys(rowdata);  // Array [ "index", "data" ]
+		console.log('keys: ', keys);
 
-		console.log('dictt[key]: ', dictt[key]);
-		
-		dictt[key].forEach(async function(val, ind) {
-			col.push(val);
+		keys.forEach(async function(key, ind) {
+			// col.push(key);
+			// OR
+			col.push(desired_keys[ind]);
+			col.concat(dictc[key]);
 		});
 		columnArray.push(col);
 	});
