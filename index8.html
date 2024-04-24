@@ -72,10 +72,14 @@
 <!-- CSS -->
 <style>
 div {position: relative; z-index: 0;}
-table {border-collapse: collapse; position: relative; z-index: 0;}
+
+table {vertical-align: top; border-collapse: collapse; position: relative; z-index: 0;}
+
 td {vertical-align: top;}
+td#dynamic_table {vertical-align: top; border: 1px solid black; padding: 10px 20px;}
+
 th {border: 0px solid black; padding: 10px 20px;}
-td#dynamic_table {border: 1px solid black; padding: 10px 20px;}
+
 input#python_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
 input#javascript_input {background-color: #7fb88e;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
 </style>
@@ -185,7 +189,7 @@ async function output_results_load_data(result) {
 			console.log('dictc: ', dictc);
 			
 			// Display on page
-			outp.innerHTML = dictc;
+			outp.innerHTML = dictc.toString();
 			
 			return await dictionary_to_array(dictc);
 		})
@@ -205,7 +209,7 @@ async function test_python_function() {
 			console.log('dictc: ', dictc);
 			
 			// Display on page
-			outp.innerHTML = dictc;
+			outp.innerHTML = dictc.toString();
 			
 			return await dictionary_to_array(dictc);
 		})
