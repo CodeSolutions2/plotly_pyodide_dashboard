@@ -186,7 +186,8 @@ async function output_results_load_data(result) {
 		.then(async function(dictc) {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
-			return await dictionary_to_array(dictc);
+			let desired_keys = ["labels", "values"];
+			return await dictionary_to_array(dictc, desired_keys);
 		})
 		.then(async function(rowArray) {
 			await generateTable_dynamically(rowArray);
@@ -202,7 +203,8 @@ async function test_python_function() {
 		.then(async function(dictc) {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
-			return await dictionary_to_array(dictc);
+			let desired_keys = ["labels", "values"];
+			return await dictionary_to_array(dictc, desired_keys);
 		})
 		.then(async function(rowArray) {
 			await generateTable_dynamically(rowArray);
