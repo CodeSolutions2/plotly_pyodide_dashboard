@@ -373,7 +373,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
 		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
 			// The string is at the last object value
-			uq2 = char_arr_orglen-2;  // -2 is for removing ]} at the end
+			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
 		} else {
 			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
 	
