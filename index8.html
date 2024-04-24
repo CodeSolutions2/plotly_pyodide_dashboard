@@ -209,7 +209,7 @@ async function test_python_function() {
 			console.log('dictc: ', dictc);
 			
 			// Display on page
-			outp.innerHTML = dictc.toString();
+			outp.innerHTML = JSON.stringify(dictc); //dictc.toString();
 			
 			return await dictionary_to_array(dictc);
 		})
