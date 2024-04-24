@@ -186,8 +186,7 @@ async function output_results_load_data(result) {
 		.then(async function(dictc) {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
-			let desired_keys = ["labels", "values"];
-			return await dictionary_to_array(dictc, desired_keys);
+			return await dictionary_to_array(dictc);
 		})
 		.then(async function(rowArray) {
 			await generateTable_dynamically(rowArray);
@@ -203,13 +202,12 @@ async function test_python_function() {
 		.then(async function(dictc) {
 			delete dictc.columns;
 			console.log('dictc: ', dictc);
-			let desired_keys = ["labels", "values"];
-			return await dictionary_to_array(dictc, desired_keys);
+			return await dictionary_to_array(dictc);
 		})
-		//.then(async function(rowArray) {
-		//	await generateTable_dynamically(rowArray);
-		//})
-		//.catch(error => { console.log(error); });
+		.then(async function(rowArray) {
+			await generateTable_dynamically(rowArray);
+		})
+		.catch(error => { console.log(error); });
 	
 }
 // ----------------------------------------------------
@@ -237,16 +235,20 @@ async function javascript_load_data(csv_dataset_url) {
 // Make buttons appear that can format (ie: value_counts/counter) and plot the data
 
 async function bar_chart_arrayInputOnly() {
-
-	// Read array data from the page
-	let arr_string = outp.innerHTML;
+	
+	// How to save data for the next process
+	// Way 0: as a string
+	let arr_string = outp.innerHTML;// Read array data from the page
+	// Way 1: as an object (to memory)
+	
 
 	// Select the column that one wants to make a bar chart of
-
+	// let desired_keys = ["labels", "values"];
 	let arr = arr_string.split(',');
 	
 	return await counter(arr)
-		.then(async function(dictc) { await bar_chart(dictc); });
+		.then(async function(dictc) { 
+			await bar_chart(dictc); });
 }
 
 async function line_chart_arrayInputOnly() {
@@ -453,36 +455,25 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download
 
 // ----------------------------------------------------
 	
-async function dictionary_to_array(dictc, desired_keys) {
+async function dictionary_to_array(dictc) {
 
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
-	// desired_keys = ["labels", "values"]
 
 	let keys0 = Object.keys(dictc);
-	console.log('keys0: ', keys0);
+	// console.log('keys0: ', keys0);
 	
 	var columnArray = [];
-	// [dictc].forEach(async function(rowdata, ind) { 
-	// 	let keys = Object.keys(rowdata);  // Array [ "index", "data" ]
-	// 	console.log('keys: ', keys);
-		
 	keys0.forEach(async function(key, ind) {
 		let col = [];
-		// col.push(key);
-		// OR
-		col.push(desired_keys[ind]);
+		col.push(key);
 		col = col.concat(dictc[key]);
 		console.log('col: ', col);
 		columnArray.push(col);
 	});
-	
-	
-	// });
+	// console.log('columnArray: ', columnArray);
 
-	console.log('columnArray: ', columnArray);
-
-	// var rowArray = await transform_columnArray_into_rowArray(columnArray);
-	// return rowArray;
+	var rowArray = await transform_columnArray_into_rowArray(columnArray);
+	return rowArray;
 }
 	
 // ----------------------------------------------------
