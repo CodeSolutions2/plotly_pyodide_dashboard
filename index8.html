@@ -266,14 +266,20 @@ async function bar_chart_arrayInputOnly() {
 	// Select the column that one wants count
 	// The user needs to enter a JSON string: {"arr": 'data'}
 	var input_obj = JSON.parse(JSON.stringify(document.getElementById("backend_input").value));
+	console.log('input_obj: ', input_obj);
+	
 	var arr = dictc[`${input_obj.arr}`];
+	console.log('arr: ', arr);
 
 	// -----------------------
 	// Senario 2: Transform data using the aggregation function buttons
 	// -----------------------
 	return await counter(arr)
-		.then(async function(dictc) { 
-			await bar_chart(dictc); });
+		.then(async function(dictc2) { 
+			console.log('dictc2: ', dictc2);
+
+			
+			await bar_chart(dictc2); });
 }
 
 async function line_chart_arrayInputOnly() {
@@ -295,6 +301,7 @@ async function line_chart_arrayInputOnly() {
 
 	// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
 	var input_obj = JSON.parse(JSON.stringify(document.getElementById("backend_input").value));
+	console.log('input_obj: ', input_obj);
 	
 	// Rename the keys of the dictionary
 	dictc.x_labels = dictc[`${input_obj.x_labels}`];
@@ -302,6 +309,7 @@ async function line_chart_arrayInputOnly() {
 	dictc.y_values = dictc[`${input_obj.y_values}`];
 	// delete dictc.`${input_obj.y_values}`;  // Remove old key
 
+	console.log('dictc: ', dictc);
 	
 	// -----------------------
 	// Senario 1: Transform data using the code input
