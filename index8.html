@@ -314,8 +314,9 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
 
-	const isNotquote = (num) => num != "'"
-	const isNotspace = (num) => num != " "
+	const NoDoublequote = (num) => num != '"'
+	const Noquote = (num) => num != "'"
+	const Nospace = (num) => num != " "
 
 	// -----------------------
 	
@@ -329,7 +330,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 	let char_arr = dictc_string.split('');
 
 	// Remove all blank spaces from the char array
-	char_arr = char_arr.filter(isNotspace);
+	char_arr = char_arr.filter(Nospace);
 	
 	let char_arr_orglen = char_arr.length;
 
@@ -395,8 +396,9 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// Obtain the key information as a string 
 		let key = char_arr.slice(1, uq0);
-		key = key.filter(isNotquote);
-		key = key.filter(isNotspace);
+		key = key.filter(NoDoublequote);
+		key = key.filter(Noquote);
+		key = key.filter(Nospace);
 		key = key.join('');
 
 		array0.push(key);
@@ -405,8 +407,8 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		
 		// Obtain the value information as an array
 		let char_arr_values = char_arr.slice(uq1+1, uq2);
-		char_arr_values = char_arr_values.filter(isNotquote);
-		char_arr_values = char_arr_values.filter(isNotspace);
+		char_arr_values = char_arr_values.filter(Noquote);
+		char_arr_values = char_arr_values.filter(Nospace);
 		
 		let string_values = char_arr_values.join('');
 		let arr = string_values.split(',');
@@ -449,6 +451,29 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download
 
 // ----------------------------------------------------
 
+async function dictionary_to_array(dictt) {
+
+	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
+	
+	var columnArray = [];
+	dictt.forEach(async function(rowdata, ind) { 
+		let col = [];
+		let key = Object.keys(rowdata);
+		col.push(key);
+
+		dictt[key].forEach(async function(val, ind) {
+			col.push(val);
+		});
+		columnArray.push(col);
+	});
+
+	var rowArray = await transform_columnArray_into_rowArray(columnArray);
+	return rowArray;
+}
+
+
+// ----------------------------------------------------
+	
 async function dictionary_to_array(dictt) {
 
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
@@ -517,7 +542,6 @@ async function generateTable_dynamically_by_row(arr) {
 	tbl.appendChild(tblBody);
 
 	document.getElementById("graph_output").appendChild(tbl);
-	// document.body.appendChild(tbl);  
   }  
 
 	
