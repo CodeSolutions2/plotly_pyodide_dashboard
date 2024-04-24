@@ -471,7 +471,7 @@ async function dictionary_to_array(dictc, desired_keys) {
 		// col.push(key);
 		// OR
 		col.push(desired_keys[ind]);
-		col.concat(dictc[key]);
+		col = col.concat(dictc[key]);
 		console.log('col: ', col);
 	});
 	columnArray.push(col);
