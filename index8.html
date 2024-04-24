@@ -449,28 +449,6 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download
 		.catch(error => { console.log(error); });
 }
 
-// ----------------------------------------------------
-
-async function dictionary_to_array(dictt) {
-
-	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
-	
-	var columnArray = [];
-	dictt.forEach(async function(rowdata, ind) { 
-		let col = [];
-		let key = Object.keys(rowdata);
-		col.push(key);
-
-		dictt[key].forEach(async function(val, ind) {
-			col.push(val);
-		});
-		columnArray.push(col);
-	});
-
-	var rowArray = await transform_columnArray_into_rowArray(columnArray);
-	return rowArray;
-}
-
 
 // ----------------------------------------------------
 	
@@ -479,11 +457,15 @@ async function dictionary_to_array(dictt) {
 	// {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': [2, 1, 1, 1, 1, 1]}
 	
 	var columnArray = [];
-	dictt.forEach(async function(rowdata, ind) { 
+	[dictt].forEach(async function(rowdata, ind) { 
 		let col = [];
 		let key = Object.keys(rowdata);
+		console.log('key: ', key);
+		
 		col.push(key);
 
+		console.log('dictt[key]: ', dictt[key]);
+		
 		dictt[key].forEach(async function(val, ind) {
 			col.push(val);
 		});
