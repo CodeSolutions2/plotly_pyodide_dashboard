@@ -14,7 +14,6 @@
 <tr>
         
 <td>
-
 <label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
 <!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
 <br><br>
@@ -374,41 +373,40 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// step 1: find the index of the next : with respect to next_char_arr
 		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
 		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
-		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ uq3_1stcolonstart = char_arr_orglen; } // account for the last value
-		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
-		
-		let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
-
-		// step 2: confirm which index is where the sequence pattern occurs
-		console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
-		
-		// Way 0: use while loop (simplest) - while is better than for because I can break the loop when the unique value is found
-	 	let i = 0;
-		let flag2 = 'not done';
-		while (flag2 == 'not done' & i < (uq3-uq2)-3){
-			if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
-				uq2 = i;  // correction for the end marker
-				flag2 = 'done';
-				console.log('sequence found loop: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
-			} else {
-				i = i + 1;
-			}
+		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
+			// The string is at the last object value
+			uq2 = char_arr_orglen;  // Correct uq2 directly
+		} else {
+			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
+	
+			// step 2: confirm which index is where the sequence pattern occurs
+			console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
+			
+			// Way 0: use while loop (simplest) - while is better than for because I can break the loop when the unique value is found
+		 	// let i = 0;
+			// let flag2 = 'not done';
+			// while (flag2 == 'not done' & i < (uq3-uq2)-3){
+			// 	if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+			// 		uq2 = i;  // correction for the end marker
+			// 		flag2 = 'done';
+			// 		console.log('sequence found loop: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
+			// 	} else {
+			// 		i = i + 1;
+			// 	}
+			// }
+			// console.log('uq2 corrected: ', uq2);
+	
+			// Way 1: use map - this is essentually a for loop
+			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
+			let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
+			let correct_index = ind.map((i) => {
+				if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+					console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
+					uq2 = i;
+				}
+			});
+			console.log('uq2 corrected: ', uq2);
 		}
-		console.log('uq2 corrected: ', uq2);
-
-		// Way 1: use map - this is essentually a for loop
-		// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
-		let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
-		let ind_arr = [];
-		let correct_index = ind.map((i) => {
-			if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
-				console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
-				ind_arr.push(i);  // collect when it is true, the last values is the correct value, there should only be one value
-			}
-		});
-		console.log('ind_arr: ', ind_arr);
-		let uq2_1 = ind_arr.pop()
-		console.log('uq2 corrected: ', uq2_1);
 		
 		// -----------------------
 
