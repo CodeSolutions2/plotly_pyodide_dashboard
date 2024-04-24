@@ -374,9 +374,8 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// step 1: find the index of the next : with respect to next_char_arr
 		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
 		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
-
-		if (uq3_1stcolonstart == 'undefined'){ console.log('HERE'); }
-		
+		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ uq3_1stcolonstart = char_arr_orglen; } // account for the last value
+		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
 		
 		let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
 
