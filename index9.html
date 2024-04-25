@@ -298,12 +298,18 @@ async function bar_chart_arrayInputOnly() {
 
 		// Check if the user input is correct
 		let user_input = document.getElementById("backend_input").value;
-
 		console.log('user_input: ', user_input);
 
-		console.log('user_input2: ', [user_input.toString()].includes('arr'));
-		console.log('user_input3: ', [user_input].includes('arr'));
-
+		// ----------
+		var out = await find_sequential_characters('arr', user_input.toString());
+		console.log('out: ', out);
+		// OR
+		let regexp = /arr/g;
+		var matches = regexp.exec(user_input);
+		console.log('matches: ', matches);
+		// ----------
+		
+		
 		if ([user_input].includes('arr') == true) {
 			// user input is correct
 			// ----------
@@ -366,6 +372,16 @@ async function line_chart_arrayInputOnly() {
 
 		// Check if the user input is correct
 		let user_input = document.getElementById("backend_input").value;
+		console.log('user_input: ', user_input);
+
+		// ----------
+		var out = await find_sequential_characters('x_labels', user_input.toString());
+		console.log('out: ', out);
+		// OR
+		let regexp = /x_labels/g;
+		var matches = regexp.exec(user_input);
+		console.log('matches: ', matches);
+		// ----------
 
 		if ([user_input].includes('arr') == true) {
 			// user input is correct
@@ -447,7 +463,30 @@ async function plotly_line_chart(dictc) {
 }
 
 // ----------------------------------------------------
+
+async function find_sequential_characters(str_to_find, str_to_search) {
+
+	let str_to_search_char_arr = str_to_search.split('');
+	let str_to_find_char_arr = str_to_find.split('');
+
+	let search_length = str_to_search_char_arr.length;
+	let offset = str_to_find_char_arr.length;
 	
+	let ind = [...Array(search_length-offset).keys()].map((x) => x);
+	let first_found_index = ind.map((i) => {
+		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
+			console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
+			return i;
+		} else {
+			return '';
+		}
+	});
+	console.log('first_found_index: ', first_found_index);
+	return first_found_index;
+}
+
+// ----------------------------------------------------
+
 async function counter(arr) {
 	
 	// Returns the unique values in vec, which a count of how many times the value appears
