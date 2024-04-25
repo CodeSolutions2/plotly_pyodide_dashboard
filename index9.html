@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+<!-- --------------------------------------------------- -->
+<h1>A Dashboard in the browser using Plotly and/or Pyodide: plot data from a csv file</h1>
+	  
+<br><br>
+    
+<!-- View two split window -->
+<div align="left">
+<table style='text-align: left; width: 300px; display:block'>
+<tr>
+        
+<td>
+<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
+<!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
+<br><br>
+<input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<input id="repoName" type="text" value="" placeholder="repoName" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<input id="csv_filename" type="text" value="" placeholder="csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<br>
+<button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">Get a download url for a file</button>
+
+<br><br>
+	  
+<label id="enter_url_label" style="display:block">[Step 1] Enter a url of a csv file to present the data in a table:</label>
+<br>
+<!-- https://raw.githubusercontent.com/CodeSolutions2/plotly_pyodide_dashboard/main/data.csv -->
+<input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 550px;">
+<br><br>
+<!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
+<!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
+<fieldset>
+<legend>Select a backend computational engine:</legend>
+<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">python_pyodide</label></div>
+<!-- <div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">javascript</label></div> -->
+</fieldset>
+<br>
+<button id="show_data" onclick="show_selected_csv_data()">Show selected csv data</button>
+
+<br><br>
+
+<label id="transform_plot_label" style="display:block">[Step 2] Visualize the data:</label>
+<br>
+For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value: {"arr": ['data']} <br><br>For Line chart: enter the JSON string, replacing 'data' and 'index' with desired x and y column names: {"x_labels": ['data'], "y_values": ['index']}
+<br>
+<button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of an accumulated/counted value column</button>
+<button id="line_chart_arrayInputOnly" onclick="line_chart_arrayInputOnly()" style="display:block">Line chart of a column</button>
+</td>
+
+<!-- View results -->
+<td id="graph_output">	
+<!-- <textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea> -->
+<label id="modify_plots" style="display:block">[Step 3] Backend input: enter Python, Javascript, or dictionary strings to create figures.</label>
+<input id="backend_input" type="text" value="" placeholder="Backend input area (select the radio button for Python or JavaScript)" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
+<br>
+<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+<br>
+<div id="js_plot_bar" style="width:600px;height:250px;"></div>
+<br><br>
+<div id="js_plot_line" style="width:600px;height:250px;"></div>
+</td>
+        
+</tr>
+</table>
+</div>  
+
+<!-- --------------------------------------------------- -->
+
+<!-- CSS -->
+<style>
+div {position: relative; z-index: 0;}
+
+table {vertical-align: top; border-collapse: collapse; position: relative; z-index: 0;}
+
+td {vertical-align: top;}
+td#dynamic_table_body_row_cell {vertical-align: top; border: 1px solid black; padding: 10px 20px;}
+
+th {border: 0px solid black; padding: 10px 20px;}
+
+input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+</style>
+	  
+<!-- --------------------------------------------------- -->
+
+
+<script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+
+	  
+<script>
+const outp = document.getElementById('output');
+
+
+// ----------------------------------------------------
+
+async function load_pyodide() {
+	// -----------------------
+	// const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/dev/full/';
+	// let pyodide = await loadPyodide({'indexURL': pyodideUrl});
+	// OR
+	let pyodide = await loadPyodide(); // more robust when browser loads quickly
+	// -----------------------
+	
+        await pyodide.loadPackage(["pandas"]);
+	
+        return pyodide;
+}
+
+// var pyodideReadyPromise = load_pyodide();
+
+	
+// ----------------------------------------------------
+
+// Step 0
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
+	
+	const repoOwner = document.getElementById("repoOwner").value;
+	const repoName = document.getElementById("repoName").value;
+	const csv_filename = document.getElementById("csv_filename").value;
+	
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+	var file_objects = [];
+	return await fetch(url)
+		.then(res => res.json())
+		.then(data => { data.forEach(async function(file) {
+			    var regexp = new RegExp(`${csv_filename}`, 'g');
+		      if (file.type === 'file' && file.name.match(regexp)) {
+			      file_objects.push(file); 
+			      outp.innerHTML = file.download_url;
+
+			      // Fill in input automatically
+			      // document.getElementById("enter_url_label").value = file.download_url;
+			      // document.getElementById("enter_url_label").setAttribute("value", file.download_url);
+			      
+			      // console.log('file.download_url: ', file.download_url);
+		      }
+		      });
+		      return file_objects;
+		})
+		.catch(error => { console.log(error); });
+}
+
+// ----------------------------------------------------
+
+// Step 1
+async function show_selected_csv_data() {
+
+	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
+	const python_pyodide = document.getElementById("python_pyodide").checked;
+	const javascript = document.getElementById("javascript").checked;
+
+	if (python_pyodide == true && javascript == false) {
+		// python_pyodide
+		// await python_load_data(csv_dataset_url);
+		await test_python_function();
+	}
+	if (python_pyodide == false && javascript == true) {
+		// javascript
+		await javascript_load_data(csv_dataset_url);
+	}
+	
+}
+
+
+	
+async function python_load_data(csv_dataset_url) {
+
+	var pyodide = await pyodideReadyPromise;
+
+       try {
+	       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${csv_dataset_url}"`+"); df = pd.read_csv(url_content); df.to_json(orient='split')");
+	       // {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+	       
+	       await output_results_load_data(result);
+       } catch (error){ 
+	       console.log('error: ', error);
+       }
+}
+
+
+// async function output_results_load_data(result) {
+async function test_python_function() {
+	var result = '{"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}';
+
+	await convert_dictionarylikestring_to_dictionary(result)
+		.then(async function(dictc) {
+			delete dictc.columns;
+			console.log('dictc: ', dictc);
+			
+			// Display dictionary on page for Step 2: plotting
+			outp.innerHTML = JSON.stringify(dictc);
+
+			// Convert dictionary to rowArray
+			return await dictionary_to_array(dictc);
+		})
+		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
+		.catch(error => { console.log(error); });
+	
+}
+// ----------------------------------------------------
+	
+async function javascript_load_data(csv_dataset_url) {
+
+  // Read data into Javascript from .csv
+  return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
+	  .then(async function(text_arr) { 
+
+		  // -----------------------
+		  
+		  // Transform text array into a dictionary
+		  var rowArray_stringPerRow = text_arr.split('\n');
+
+		  // **** Could use map here ****
+		  
+		  // Separate each row into an Array
+		  var rowArray_wo_index = [];
+		  rowArray_stringPerRow.forEach(async function(row, ind) { rowArray_wo_index.push(row.split(',')); });
+
+		  // (Optional) add and index to the rowArray
+		  var rowArray_w_index = [];
+		  rowArray_wo_index.forEach(async function(row, ind) { rowArray_w_index.push([ind].concat(row)); });
+
+		  var rowArray = rowArray_w_index;  // rowArray_wo_index
+		  
+		  // Plot in table
+		  await generateTable_dynamically(rowArray);
+		  
+		  // -----------------------
+
+		  // Convert rowArray to a columnArray
+		  
+
+		  // Convert columnArray to dictionary
+
+		  // Display dictionary on page for Step 2: plotting
+		  //outp.innerHTML = dict;
+		  
+		  // -----------------------
+	  })
+	  .catch(error => { console.log(error); });
+  
+}
+
+
+
+
+// ----------------------------------------------------
+
+// Step 2: decide how to visualize the data in the table
+// Make buttons appear that can format (ie: value_counts/counter) and plot the data
+
+async function bar_chart_arrayInputOnly() {
+
+	// -----------------------
+	// How to reload transformed data for the discrete plotting processes
+	// -----------------------
+	// Way 0: Read a JSON string from the page OR from a repo file
+	let dictc = JSON.parse(outp.innerHTML);
+	// OR
+	// Way 1: Read an object from memory OR a blob from an endpoint
+	// -----------------------
+	console.log('dictc: ', dictc);
+
+	// Select the column that one wants count
+	
+	let user_input = document.getElementById("backend_input").value;
+
+	// ----------
+	// The user needs to enter a JSON string: {"arr": 'data'}
+	// var input_obj = JSON.parse(JSON.stringify(user_input));
+	// console.log('input_obj: ', input_obj);  // input_obj:  {"arr": ['data']} it stays as a string
+
+	// OR
+
+	// The user needs to enter a JSON string: {"arr": ['data']}
+	var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+	console.log('input_obj2: ', input_obj2);
+	// ----------
+	
+	// console.log('input_obj["arr"]: ', `${input_obj["arr"]}`);  // undefined
+	// console.log('input_obj.arr: ', `${input_obj.arr}`);  // undefined
+	console.log('input_obj2["arr"]: ', `${input_obj2["arr"]}`); // dictionary object
+	console.log('input_obj2.arr: ', `${input_obj2.arr}`); // dictionary object
+	
+	var arr = dictc[`${input_obj2.arr}`];
+	console.log('arr: ', arr);
+
+	// -----------------------
+	// Senario 2: Transform data using the aggregation function buttons
+	// -----------------------
+	return await counter(arr)
+		.then(async function(dictc2) { 
+			console.log('dictc2: ', dictc2);
+
+			
+			await bar_chart(dictc2); });
+}
+
+async function line_chart_arrayInputOnly() {
+
+	// -----------------------
+	// How to reload transformed data for the discrete plotting processes
+	// -----------------------
+	// Way 0: Read a JSON string from the page OR from a repo file
+	let dictc = JSON.parse(outp.innerHTML);
+	// OR
+	// Way 1: Read an object from memory OR a blob from an endpoint
+	// -----------------------
+
+	
+	// -----------------------
+	// Senario 0: Plot data directly
+	// -----------------------
+	// Select the column that one wants to make a plot
+
+	let user_input = document.getElementById("backend_input").value;
+	
+	// ----------
+	// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
+	var input_obj = JSON.parse(JSON.stringify(user_input));
+	console.log('input_obj: ', input_obj);
+
+	// OR
+
+	// The user needs to enter a JSON string: {"x_labels": ['data'], "y_values": ['index']}
+	var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+	console.log('input_obj2: ', input_obj2);
+	// ----------
+
+	console.log('input_obj["arr"]: ', `${input_obj["arr"]}`);  // undefined
+	console.log('input_obj.arr: ', `${input_obj.arr}`);  // undefined
+	console.log('input_obj2["arr"]: ', `${input_obj2["arr"]}`); // dictionary object
+	console.log('input_obj2.arr: ', `${input_obj2.arr}`); // dictionary object
+	
+	// Rename the keys of the dictionary
+	dictc.x_labels = dictc[`${input_obj2.x_labels}`];
+	// delete dictc.`${input_obj2.x_labels}`;  // Remove old key
+	dictc.y_values = dictc[`${input_obj2.y_values}`];
+	// delete dictc.`${input_obj2.y_values}`;  // Remove old key
+
+	console.log('dictc: ', dictc);
+	
+	// -----------------------
+	// Senario 1: Transform data using the code input
+	// -----------------------
+
+
+	// -----------------------
+	// Senario 2: Transform data using the aggregation function buttons
+	// -----------------------
+	
+	return await line_chart(dictc);
+}
+	
+	
+// ----------------------------------------------------
+// SUBFUNCTIONS
+// ----------------------------------------------------
+
+async function bar_chart(dictc) {
+	// https://plotly.com/javascript/bar-charts/
+	var xValue = dictc.x_labels;
+	var yValue = dictc.y_values;
+	var trace1 = { x: xValue, y: yValue, type: 'bar', text: yValue.map(String), textposition: 'auto', hoverinfo: 'none', marker: { color: 'rgb(158,202,225)', opacity: 0.6, line: {color: 'rgb(8,48,107)', width: 1.5} } };
+	var data = [trace1];
+	var layout = { title: 'Bar chart', barmode: 'stack', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
+	Plotly.newPlot('js_plot_bar', data, layout);
+}
+
+// ----------------------------------------------------
+
+async function line_chart(dictc) {
+        // https://plotly.com/javascript/getting-started/
+	const xValue = [...Array(dictc.x_labels.length).keys()].map((x) => x);
+	var yValue = dictc.y_values;
+	
+        const trace_items = { x: xValue, y: yValue, mode: 'markers', type: 'line' };
+        const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
+        Plotly.newPlot("js_plot_line", [trace_items], layout );
+}
+
+// ----------------------------------------------------
+	
+async function counter(arr) {
+	
+	// Returns the unique values in vec, which a count of how many times the value appears
+	let unique = [...new Set(arr)];
+	// console.log('unique: ', unique);
+	let truevals = (num) => num.length > 0;
+	const unique1 = unique.filter(truevals);
+	truevals = (num) => num != "\n";
+	const unique2 = unique1.filter(truevals);
+	// console.log('unique2: ', unique2);
+	
+	let count = [];
+	unique2.forEach(async function(val, index) {
+		const uq_vals = (num) => num === val;
+		const uq_val_arr = arr.filter(uq_vals);
+		// console.log('val: ', val, 'uq_val_arr: ', uq_val_arr);
+		count.push(uq_val_arr.length);
+	});
+	
+	// Create a dictionary for plotting directly
+	return {x_labels: unique, y_values: count};
+}
+
+// ----------------------------------------------------
+
+async function convert_dictionarylikestring_to_dictionary(dictc_string) {
+
+	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
+
+	const NoDoublequote = (num) => num != '"'
+	const Noquote = (num) => num != "'"
+	const Nospace = (num) => num != " "
+
+	// -----------------------
+	
+	// Ensure the input is a string
+	dictc_string = dictc_string.toString();
+	console.log('dictc_string: ', dictc_string);
+	console.log('dictc_string.length: ', dictc_string.length);
+
+	// -----------------------
+	
+	let char_arr = dictc_string.split('');
+
+	// Remove all blank spaces from the char array
+	char_arr = char_arr.filter(Nospace);
+	
+	let char_arr_orglen = char_arr.length;
+
+	// -----------------------
+	
+	// Design 2: without relying on JSON.parse
+	let flag = 'not_done';
+	let array0 = [];
+	let array1 = [];
+	let c = 0;
+	
+	while (flag == 'not_done') {
+		console.log('char_arr: ', char_arr);
+		
+		// there are 3 unique characters to search for each loop
+		// : - indicates end of key
+		// [ - indicates start of array
+		// ] - indicates end of array OR ]," (for pandas split notation to avoid cutting rows in square brackets)
+		let uq0 = char_arr.findIndex((char) => char == ':');
+		console.log('uq0: ', uq0);
+		
+		let uq1 = char_arr.findIndex((char) => char == '[');
+		console.log('uq1: ', uq1);
+
+		// -----------------------
+		// For simplistic dictionary string: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
+		let uq2 = char_arr.findIndex((char) => char == ']');  // end marker
+		console.log('uq2: ', uq2);
+
+		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+
+		// Idea (Confirm that the end marker is correct - the end marker needs to have a sequential pattern of ],' or ]," ): search (from left to right) for current : and the next : to the right
+
+		// step 0: obtain string from after the current : to the end of string
+		let next_char_arr = char_arr.slice(uq1, char_arr_orglen);
+		console.log('next_char_arr: ', next_char_arr);
+
+		// step 1: find the index of the next : with respect to next_char_arr
+		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
+		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
+		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
+			// The string is at the last object value
+			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
+		} else {
+			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
+	
+			// step 2: confirm which index is where the sequence pattern occurs
+			console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
+			
+			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
+			let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
+			let correct_index = ind.map((i) => {
+				if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+					console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
+					uq2 = i;
+				}
+			});
+			console.log('uq2 corrected: ', uq2);
+		}
+		
+		// -----------------------
+
+		// Obtain the key information as a string 
+		let key = char_arr.slice(1, uq0);
+		key = key.filter(NoDoublequote);
+		key = key.filter(Noquote);
+		key = key.filter(Nospace);
+		key = key.join('');
+
+		array0.push(key);
+		
+		// -----------------------
+		
+		// Obtain the value information as an array
+		let char_arr_values = char_arr.slice(uq1+1, uq2);
+		char_arr_values = char_arr_values.filter(Noquote);
+		char_arr_values = char_arr_values.filter(Nospace);
+		
+		let string_values = char_arr_values.join('');
+		let arr = string_values.split(',');
+
+		// Ensure that array values are proper string or integer/float
+		let object1 = {};
+		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); })
+		// console.log('object1: ', object1);
+		// console.log('arr: ', arr);
+		
+		array1.push(arr);
+		
+		// -----------------------
+		
+		// Reassign char_arr to remaining string to parse
+		char_arr = char_arr.slice(uq2+1, char_arr_orglen)
+
+		// -----------------------
+		
+		if (char_arr.length < 3 || c > 10) { flag = 'done'; }
+
+		c = c + 1; // to force loop to stop while debugging
+		// -----------------------
+	}
+	
+	return Object.fromEntries(array0.map((key, index) => [key, array1[index]]));
+}
+
+// ----------------------------------------------------
+
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download_url) {
+
+	return await fetch(file_download_url)
+		.then(res => res.text())
+		.then(data => { 
+			console.log('data: ', data); return data;
+		})
+		.catch(error => { console.log(error); });
+}
+
+
+// ----------------------------------------------------
+	
+async function dictionary_to_array(dictc) {
+
+	let keys0 = Object.keys(dictc);
+	// console.log('keys0: ', keys0);
+	
+	var columnArray = [];
+	keys0.forEach(async function(key, ind) {
+		let col = [];
+		col.push(key);
+		col = col.concat(dictc[key]);
+		// console.log('col: ', col);
+		columnArray.push(col);
+	});
+	// console.log('columnArray: ', columnArray);
+
+	var rowArray = await transform_columnArray_into_rowArray(columnArray);
+	return rowArray;
+}
+	
+// ----------------------------------------------------
+
+async function transform_columnArray_into_rowArray(columnArray) {
+
+	let num_of_rows = columnArray[0].length;
+	let num_of_cols = columnArray.length;
+
+	var rowArray = [];
+	for (let r=0; r < num_of_rows; r++){
+		let row = [];
+		for (let c=0; c < num_of_cols; c++){
+			row.push(columnArray[c][r]);
+		}
+		rowArray.push(row);
+	}
+	return rowArray;
+}
+
+// ----------------------------------------------------
+
+async function transform_rowArray_into_columnArray(rowArray) {
+
+	let num_of_rows = rowArray[0].length;
+	let num_of_cols = rowArray.length;
+
+	var rowArray = [];
+	for (let r=0; r < num_of_rows; r++){
+		let row = [];
+		for (let c=0; c < num_of_cols; c++){
+			row.push(columnArray[c][r]);
+		}
+		rowArray.push(row);
+	}
+	return rowArray;
+}
+	
+// -------------------------------------------------
+
+async function generateTable_dynamically(rowArray) {
+
+	//document.getElementById("dynamic_table").remove();
+	
+	const tbl = document.createElement("table");
+	tbl.setAttribute("id", 'dynamic_table');
+	
+	const tblBody = document.createElement("tbody");
+	tblBody.setAttribute("id", 'dynamic_table_body');
+
+	// Create row cells dynamically
+	for (let i=0; i < rowArray.length; i++){
+		// create a table row
+		const row = document.createElement("tr");
+		tblBody.setAttribute("id", 'dynamic_table_body_row');
+
+		for (let j=0; j < rowArray[0].length; j++){
+			const cell = document.createElement("td");
+			cell.setAttribute("id", 'dynamic_table_body_row_cell');
+			
+			const cellText = document.createTextNode(`${rowArray[i][j]}`);
+			cell.appendChild(cellText);
+			row.appendChild(cell);
+		}
+
+		// add a row to the end of the table
+		tblBody.appendChild(row);
+	}
+	tbl.appendChild(tblBody);
+
+	document.getElementById("graph_output").appendChild(tbl);
+  }  
+
+	
+// ----------------------------------------------------
+
+
+</script>
+
+
+  </body>
+</html>
