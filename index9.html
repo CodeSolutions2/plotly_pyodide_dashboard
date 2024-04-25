@@ -36,8 +36,8 @@ This dashboard is unique because it uses a string-to-dictionary function (conver
 <!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
 <fieldset>
 <legend>Select a Backend computational engine:</legend>
-<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">Python via Pyodide</label></div>
-<div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">Javascript</label></div>
+<div><input type="radio" id="python_pyodide" name="radio_name_backend" value="python_pyodide" /><label for="python_pyodide">Python via Pyodide</label></div>
+<div><input type="radio" id="javascript" name="radio_name_backend" value="javascript" /><label for="javascript">Javascript</label></div>
 </fieldset>
 <br>
 <button id="show_data" onclick="show_selected_csv_data()">[Step 1] Show selected csv data</button>
@@ -50,8 +50,8 @@ This dashboard is unique because it uses a string-to-dictionary function (conver
 <!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
 <fieldset>
 <legend>Select a Frontend plotting library (any library can be added here, like Chart.js, D3.js!):</legend>
-<div><input type="radio" id="plotly" name="radio_name" value="plotly" /><label for="plotly">Plotly</label></div>
-<div><input type="radio" id="danfo" name="radio_name" value="danfo" /><label for="danfo">Danfo</label></div>
+<div><input type="radio" id="plotly" name="radio_name_frontend" value="plotly" /><label for="plotly">Plotly</label></div>
+<div><input type="radio" id="danfo" name="radio_name_frontend" value="danfo" /><label for="danfo">Danfo</label></div>
 </fieldset>
 <br>
 For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value; Python example: {"arr": ['data']} , Javascript example: {"arr": ['a']} .
