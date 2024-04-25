@@ -4,7 +4,7 @@
   <body>
 
 <!-- --------------------------------------------------- -->
-<h1>Various JavaScript library (Plotly, Danfo, Charts, etc) Frontend Dashboard, using different Backend computational engines (Python via Pyodide, Javascript)</h1>
+<h1>Various JavaScript library (Plotly, Danfo, etc) Frontend Dashboard, using different Backend computational engines (Python via Pyodide, Javascript)</h1>
 <h3>Imagine if everyone could share plotting information using dictionary notation, one could use any plotting library (Frontend) regardless of the programming language (Backend) that the data was processed in. This Dashboard uses dictionaries in Python or JavaScript to plot figures in any plottings library in the browser (Plotly, Danfo, etc).</h3>
 <br>
 This dashboard is unique because it uses a string-to-dictionary function (convert_dictionarylikestring_to_dictionary) that can transform dictionary strings into dictionary objects, more robustly than JSON.parse. JSON.parse requires that keys are surrounded by doublequotes, thus causes conflicts with dictionary importation from other backend frameworks. The convert_dictionarylikestring_to_dictionary function uses simple JavaScript parsing to transform any dictionary-like string, in form of {key0: [], key1: []}, to a JavaScript object regardless of specific quotes around the key.
