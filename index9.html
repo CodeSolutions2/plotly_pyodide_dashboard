@@ -303,6 +303,9 @@ async function bar_chart_arrayInputOnly() {
 		// ----------
 		var out = await find_sequential_characters('arr', user_input.toString());
 		console.log('out: ', out);
+
+		var out1 = await find_sequential_characters('hello', user_input.toString());
+		console.log('test nonfound char: ', out1);
 		// OR
 		let regexp = /arr/g;
 		var matches = regexp.exec(user_input);
@@ -477,10 +480,9 @@ async function find_sequential_characters(str_to_find, str_to_search) {
 		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 			console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
 			return i;
-		} else {
-			return '';
 		}
 	});
+
 	console.log('first_found_index: ', first_found_index);
 	return first_found_index;
 }
