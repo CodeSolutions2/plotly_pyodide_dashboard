@@ -293,7 +293,7 @@ async function bar_chart_arrayInputOnly() {
 	let user_input = document.getElementById("backend_input").value;
 
 	const Nospace = (num) => num != " "
-	let user_input_Nospace = user_input.filter(Nospace);
+	let user_input_Nospace = [user_input].filter(Nospace);
 	
 	if (user_input_Nospace.length < 0) {
 		outn.innerHTML = 'Please enter a dictionary string in the Backend input area, specifying which columns to plot.';
@@ -355,7 +355,7 @@ async function line_chart_arrayInputOnly() {
 	let user_input = document.getElementById("backend_input").value;
 
 	const Nospace = (num) => num != " "
-	let user_input_Nospace = user_input.filter(Nospace);
+	let user_input_Nospace = [user_input].filter(Nospace);
 	
 	if (user_input_Nospace.length < 0) {
 		outn.innerHTML = 'Please enter a dictionary string in the Backend input area, specifying which columns to plot.';
