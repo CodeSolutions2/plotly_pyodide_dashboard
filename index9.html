@@ -312,17 +312,16 @@ async function bar_chart_arrayInputOnly() {
 				if (match_arr.length > 0) {
 					await convert_dictionarylikestring_to_dictionary(user_input.toString())
 						.then(async function(user_input_obj) {
-							console.log('user_input_obj: ', user_input_obj);
-							console.log('user_input_obj.arr[0]: ', user_input_obj.arr[0]);
+							// console.log('user_input_obj: ', user_input_obj);
+							// console.log('user_input_obj.arr[0]: ', user_input_obj.arr[0]);
 							let desired_key = await remove_characters_from_str(user_input_obj.arr[0], ['"',"'"]);
-							console.log('desired_key: ', desired_key);
-							
+							// console.log('desired_key: ', desired_key);
 							return await counter(dictc[desired_key]);
 						})
 						.then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
 				} else {
 					// user input is not correct
-					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ["data"]} , Javascript example: {"arr": ["a"]} where data and a respective column names';
+					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"arr": ['data']} where data is a column name in the table.';
 				}
 			});
 
@@ -340,8 +339,12 @@ async function bar_chart_arrayInputOnly() {
 		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
 	}
 
+	// -----------------------------------------------
+
 }
 
+// -----------------------------------------------
+	
 async function line_chart_arrayInputOnly() {
 
 	// -----------------------
@@ -368,64 +371,46 @@ async function line_chart_arrayInputOnly() {
 		let user_input = document.getElementById("backend_input").value;
 		console.log('user_input: ', user_input);
 
-		// ----------
-		var out = await find_sequential_characters_simple(user_input.toString(), ['x_labels', 'y_labels']);
-		console.log('[simple] out: ', out);
-		// OR
-		let regexp = /x_labels/g;
-		var matches = regexp.exec(user_input);
-		console.log('matches: ', matches);
-		// ----------
+		await find_sequential_characters_simple(user_input.toString(), ['x_labels', 'y_labels'])
+			.then(async function(match_arr) {
+				// console.log('match_arr: ', match_arr);
+				if (match_arr.length == 2) {
+					await convert_dictionarylikestring_to_dictionary(user_input.toString())
+						.then(async function(user_input_obj) {
+							let clean_desired_key0 = await remove_characters_from_str(user_input_obj.x_labels[0], ['"', "'", " ", "."]);
+							console.log('clean_desired_key0: ', clean_desired_key0);
+							let clean_desired_key1 = await remove_characters_from_str(user_input_obj.y_values[0], ['"', "'", " ", "."]);
+							console.log('clean_desired_key1: ', clean_desired_key1);
 
-		if (matches.length > 0) {
-			// user input is correct
-			// ----------
-			// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
-			// var input_obj = JSON.parse(JSON.stringify(user_input));
-			// console.log('input_obj: ', input_obj);
-		
-			// OR
-		
-			// The user needs to enter a JSON string: {"x_labels": ['data'], "y_values": ['index']}
-			// var input_obj2 = await (user_input);
-			// console.log('input_obj2: ', input_obj2);
-			// ----------
-
-			await (user_input)
-				.then(async function(input_obj2) {
-					// Rename the keys of the dictionary
-					dictc.x_labels = dictc[`${input_obj2.x_labels}`];
-					// delete dictc.`${input_obj2.x_labels}`;  // Remove old key
-					dictc.y_values = dictc[`${input_obj2.y_values}`];
-					// delete dictc.`${input_obj2.y_values}`;  // Remove old key
-		
-					console.log('dictc: ', dictc);
-			
-					// -----------------------
-					// Senario 1: Transform data using the code input
-					// -----------------------
-		
-		
-					// -----------------------
-					// Senario 2: Transform data using the aggregation function buttons
-					// -----------------------
-			
-					await plotly_line_chart(dictc);
-				});
-			
-		} else {
-			// user input is not correct
-			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"x_labels": ["data"], "y_values": ["index"]} , Javascript example: {"x_labels": ["a"], "y_values": ["0"]} where [data, index] and [a, 0] are respective column names';
-		}
-		
+							// Add keys to the plotting_dictc dictionary
+							let plotting_dictc = {};
+							plotting_dictc.x_labels = dictc[clean_desired_key0];
+							plotting_dictc.y_values = dictc[clean_desired_key1];
+							console.log('plotting_dictc: ', plotting_dictc);
+							
+							await plotly_line_chart(plotting_dictc);
+						});
+						
+				} else {
+					// user input is not correct
+					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"x_labels": ['data'], "y_values": ['index']} where data and index are column names in the table.';
+				}
+			});
 	}
+	
+	// -----------------------------------------------
+	
 	if (plotly == false && danfo == true) {
 		outn.innerHTML = 'In developement, please use Plotly.';
 	}
+
+	// -----------------------------------------------
 	
 	if (plotly == false && danfo == false) {
 		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
 	}
+
+	// -----------------------------------------------
 	
 }
 	
@@ -579,13 +564,7 @@ async function counter(arr) {
 async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
-
-	// The function only cleans the key by removing double quotes, quotes, and spaces. It does not clean the data.
-
-	const NoDoublequote = (num) => num != '"';
-	const Noquote = (num) => num != "'";
-	const Nospace = (num) => num != " ";
-
+	
 	// -----------------------
 	
 	// Ensure the input is a string
@@ -625,7 +604,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		let uq2 = char_arr.findIndex((char) => char == ']');  // end marker
 		// console.log('uq2: ', uq2);
 
-		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]} correct uq2
 		// step 0: obtain string from after the current : to the end of string
 		let next_char_arr = char_arr.slice(uq1, char_arr_orglen);
 		// console.log('next_char_arr: ', next_char_arr);
@@ -638,7 +617,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
 		} else {
 			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
-			// find two types of end markers, and then update the index of the end of the data array
+			// step 2: find two types of end markers, and then update the index of the end of the data array
 			uq2 = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3)
 				.then(async function(output_arr) {
 					return output_arr.pop()[0];
@@ -648,46 +627,33 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		}
 		// -----------------------
 
+		// -----------------------
 		// Clean the key: remove double quotes, quotes, spaces from the key string
-		// ----------
-		let key_char_arr = char_arr.slice(1, uq0);
-		key_char_arr = key_char_arr.filter(NoDoublequote);
-		key_char_arr = key_char_arr.filter(Noquote);
-		key_char_arr = key_char_arr.filter(Nospace);
-		let key_string0 = key_char_arr.join('');
-		console.log('key_string0:', key_string0);
-
-		// OR
-
-		let str_to_clean = char_arr.slice(1, uq0).join('');
-		let key_string = await remove_characters_from_str(str_to_clean, ['"', "'", " "]);
-		console.log('key_string:', key_string);
-		// ----------
+		// -----------------------
+		let key_str_to_clean = char_arr.slice(1, uq0).join('');
+		let key_string = await remove_characters_from_str(key_str_to_clean, ['"', "'", " ", "."]);
+		// console.log('key_string:', key_string);
 		
 		array0.push(key_string);
 		
 		// -----------------------
-		
+
+		// -----------------------
+		// Clean the array data: remove spaces only, do not want to change the data
+		// In progress : there will be better ideas about how to clean it after loading a large dataframe of data
+		// -----------------------
 		// Obtain the value information as an array
-		let char_arr_values = char_arr.slice(uq1+1, uq2);
-		console.log('char_arr_values:', char_arr_values);
+		let data_str_to_clean = char_arr.slice(uq1+1, uq2).join('');
+		console.log('data_str_to_clean:', data_str_to_clean);
+		let data_string = await remove_characters_from_str(data_str_to_clean, [" "]);
 		
-		char_arr_values = char_arr_values.filter(Noquote);
-		console.log('char_arr_values Noquote:', char_arr_values);
-		
-		char_arr_values = char_arr_values.filter(Nospace);
-		console.log('char_arr_values Nospace:', char_arr_values);
-		
-		let string_values = char_arr_values.join('');
-		console.log('string_values:', string_values);
-		
-		let arr = string_values.split(',');
-		console.log('arr:', arr);
+		let data_char_arr = data_string.split(',');
+		// console.log('data_char_arr:', data_char_arr);
 
 		// Ensure that array values are proper string or integer/float
 		let object1 = {};
-		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); });
-		console.log('arr int float:', arr);
+		data_char_arr = data_char_arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); });
+		// console.log('arr int float:', data_char_arr);
 		
 		array1.push(arr);
 		
