@@ -225,7 +225,7 @@ async function test_python_function() {
 			// Convert dictionary to rowArray
 			return await dictionary_to_array(dictc);
 		})
-		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
+		.then(async function(rowArray) { document.getElementById("dynamic_table").remove(); await generateTable_dynamically(rowArray); })
 		.catch(error => { console.log(error); });
 	
 }
@@ -778,8 +778,6 @@ async function transform_columnArray_into_dictionary(columnArray) {
 
 async function generateTable_dynamically(rowArray) {
 
-	//document.getElementById("dynamic_table").remove();
-	
 	const tbl = document.createElement("table");
 	tbl.setAttribute("id", 'dynamic_table');
 	
