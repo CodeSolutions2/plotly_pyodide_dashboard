@@ -302,9 +302,9 @@ async function bar_chart_arrayInputOnly() {
 
 		// ----------
 		var out = await find_sequential_characters(user_input.toString(), 'arr');
-		console.log('out: ', out);
+		console.log('[ver0] out: ', out);
 		var out1 = await find_sequential_characters_simple(user_input.toString(), ['arr', 'hello']);
-		console.log('test nonfound char: ', out1);
+		console.log('[simple] out1: ', out1);
 		// OR
 		let regexp = /arr/g;
 		var matches = regexp.exec(user_input);
@@ -313,7 +313,7 @@ async function bar_chart_arrayInputOnly() {
 		// ----------
 		
 		
-		if (out.length > 0) {
+		if (matches.length > 0) {
 			// user input is correct
 			// ----------
 			// The user needs to enter a JSON string: {"arr": 'data'}
@@ -378,15 +378,15 @@ async function line_chart_arrayInputOnly() {
 		console.log('user_input: ', user_input);
 
 		// ----------
-		var out = await find_sequential_characters(user_input.toString(), 'x_labels');
-		console.log('out: ', out);
+		var out = await find_sequential_characters_simple(user_input.toString(), ['x_labels', 'y_labels']);
+		console.log('[simple] out: ', out);
 		// OR
 		let regexp = /x_labels/g;
 		var matches = regexp.exec(user_input);
 		console.log('matches: ', matches);
 		// ----------
 
-		if (out.length > 0) {
+		if (matches.length > 0) {
 			// user input is correct
 			// ----------
 			// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
@@ -471,7 +471,6 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 
 	let str_to_search_char_arr = str_to_search.split('');
 	let str_to_find_char_arr = str_to_find.split('');
-
 	let search_length = str_to_search_char_arr.length;
 	let offset = str_to_find_char_arr.length;
 	
@@ -479,7 +478,7 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 	let first_found_index = ind.map((i) => {
 		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 			console.log('[ver0] sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
-			return {i : str_to_search_char_arr.slice(i,i+offset).join('')};
+			return [i, str_to_search_char_arr.slice(i,i+offset).join('')];
 		} else {
 			return '';
 		}
@@ -488,8 +487,6 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 	// Remove empty fields
 	const isNotEmpty = (num) => num.length > 0;
 	first_found_index = first_found_index.filter(isNotEmpty);
-	
-	console.log('first_found_index: ', first_found_index);
 	return first_found_index;
 }
 
@@ -525,8 +522,6 @@ async function find_sequential_characters_simple(str_to_search, strarr_to_find) 
 		// Remove empty fields
 		total_index = total_index.concat(first_found_index.filter(isNotEmpty));
 	});
-	
-	console.log('total_index: ', total_index);
 	return total_index;
 }
 
@@ -561,8 +556,6 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		// Remove empty fields
 		total_index = total_index.concat(first_found_index.filter(isNotEmpty));
 	});
-	
-	console.log('total_index: ', total_index);
 	return total_index;
 }
 
@@ -673,7 +666,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 			// OR
 			
-			test = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3);
+			let test = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3);
 			console.log('test: ', test);
 			
 			// console.log('uq2 corrected: ', uq2);
