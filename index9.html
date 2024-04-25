@@ -54,7 +54,9 @@ This dashboard is unique because it uses a string-to-dictionary function (conver
 <div><input type="radio" id="danfo" name="radio_name_frontend" value="danfo" /><label for="danfo">Danfo</label></div>
 </fieldset>
 <br>
-For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value; Python example: {"arr": ['data']} , Javascript example: {"arr": ['a']} .
+For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value;
+<br>Python example: {"arr": ['data']} ,
+<br>Javascript example: {"arr": ['a']} .
 <br>
 <button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of an accumulated/counted value column</button>
 <br>
@@ -288,7 +290,6 @@ async function bar_chart_arrayInputOnly() {
 	// -----------------------
 	console.log('dictc: ', dictc);
 
-	
 	const plotly = document.getElementById("plotly").checked;
 	const danfo = document.getElementById("danfo").checked;
 
@@ -297,53 +298,53 @@ async function bar_chart_arrayInputOnly() {
 		outn.innerHTML = '';
 
 		// Check if the user input is correct
-		let user_input = document.getElementById("backend_input").value;
-		console.log('user_input: ', user_input);
+		// let user_input = document.getElementById("backend_input").value;
+		// console.log('user_input: ', user_input);
 
 		// ----------
-		var out = await find_sequential_characters(user_input.toString(), 'arr');
-		console.log('[ver0] out: ', out);
-		var out1 = await find_sequential_characters_simple(user_input.toString(), ['arr', 'hello']);
-		console.log('[simple] out1: ', out1);
+		// var out = await find_sequential_characters(user_input.toString(), 'arr');
+		// console.log('[ver0] out: ', out);
+		// var out1 = await find_sequential_characters_simple(user_input.toString(), ['arr', 'hello']);
+		// console.log('[simple] out1: ', out1);
 		// OR
-		let regexp = /arr/g;
-		var matches = regexp.exec(user_input);
-		console.log('matches: ', matches);
+		// let regexp = /arr/g;
+		// var matches = regexp.exec(user_input);
+		// console.log('matches: ', matches);
 		// if there is no match, outputs null
 		// ----------
 		
-		
-		if (matches.length > 0) {
-			// user input is correct
-			// ----------
-			// The user needs to enter a JSON string: {"arr": 'data'}
-			// var input_obj = JSON.parse(JSON.stringify(user_input));
-			// console.log('input_obj: ', input_obj);  // input_obj:  {"arr": ['data']} it stays as a string
-		
-			// OR
-		
-			// The user needs to enter a JSON string: {"arr": ['data']}
-			// var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
-			// console.log('input_obj2: ', input_obj2);
-			// ----------
-			
-			await convert_dictionarylikestring_to_dictionary(user_input)
-				.then(async function(input_obj2) {
-					var arr = dictc[`${input_obj2.arr}`];
-					console.log('arr: ', arr);
-					return await counter(arr);
-				})
-				.then(async function(dictc2) { console.log('dictc2: ', dictc2); await plotly_bar_chart(dictc2); });
-				
-		} else {
-			// user input is not correct
-			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ["data"]} , Javascript example: {"arr": ["a"]} where data and a respective column names';
-		}
-		
+		await find_sequential_characters_simple(document.getElementById("backend_input").value.toString(), ['arr'])
+			.then(async function(match_arr) {
+				console.log('match_arr: ', match_arr);
+				if (match_arr.length > 0) {
+					await convert_dictionarylikestring_to_dictionary(document.getElementById("backend_input").value.toString())
+						.then(async function(input_obj2) {
+							console.log('input_obj2: ', input_obj2);
+							var arr = dictc[`${input_obj2.arr}`];
+							console.log('arr: ', arr);
+							var arr1 = dictc[input_obj2.arr.toString()];
+							console.log('arr1: ', arr1);
+							return await counter(arr1);
+						})
+						.then(async function(dictc2) { 
+							console.log('dictc2: ', dictc2); 
+							await plotly_bar_chart(dictc2); 
+						});
+				} else {
+					// user input is not correct
+					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ["data"]} , Javascript example: {"arr": ["a"]} where data and a respective column names';
+				}
+			});
+
 	}
+	
+	// -----------------------------------------------
+	
 	if (plotly == false && danfo == true) {
 		outn.innerHTML = 'In developement, please use Plotly.';
 	}
+	
+	// -----------------------------------------------
 	
 	if (plotly == false && danfo == false) {
 		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
