@@ -323,7 +323,7 @@ async function bar_chart_arrayInputOnly() {
 			await counter(arr).then(async function(dictc2) { console.log('dictc2: ', dictc2); await plotly_bar_chart(dictc2); });
 		} else {
 			// user input is not correct
-			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ['data']} , Javascript example: {"arr": ['a']} where data and a respective column names';
+			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ["data"]} , Javascript example: {"arr": ["a"]} where data and a respective column names';
 		}
 		
 	}
@@ -397,7 +397,7 @@ async function line_chart_arrayInputOnly() {
 			
 		} else {
 			// user input is not correct
-			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"x_labels": ['data'], "y_values": ['index']} , Javascript example: {"x_labels": ['a'], "y_values": ['0']} where [data, index] and [a, 0] are respective column names';
+			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"x_labels": ["data"], "y_values": ["index"]} , Javascript example: {"x_labels": ["a"], "y_values": ["0"]} where [data, index] and [a, 0] are respective column names';
 		}
 		
 	}
