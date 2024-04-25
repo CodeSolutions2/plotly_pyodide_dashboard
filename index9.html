@@ -567,14 +567,11 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 	
 	// -----------------------
 	
-	// Ensure the input is a string
-	dictc_string = dictc_string.toString();
+	// Remove all blank spaces from the input string
+	let data_string = await remove_characters_from_str(dictc_string.toString(), [" "]);
 
 	// Make a character array of the string
-	let char_arr = dictc_string.split('');
-
-	// Remove all blank spaces from the char array
-	char_arr = char_arr.filter(Nospace);
+	let char_arr = data_string.split('');
 	
 	let char_arr_orglen = char_arr.length;
 
