@@ -159,12 +159,6 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 		      if (file.type === 'file' && file.name.match(regexp)) {
 			      file_objects.push(file); 
 			      outp.innerHTML = file.download_url;
-
-			      // Fill in input automatically
-			      // document.getElementById("enter_url_label").value = file.download_url;
-			      // document.getElementById("enter_url_label").setAttribute("value", file.download_url);
-			      
-			      // console.log('file.download_url: ', file.download_url);
 		      }
 		      });
 		      return file_objects;
@@ -307,38 +301,44 @@ async function bar_chart_arrayInputOnly() {
 	if (plotly == true && danfo == false) {
 		// Plotly
 		outn.innerHTML = '';
+
+		// Check if the user input is correct
+		let user_input = document.getElementById("backend_input").value;
+		// console.log('user_input: ', user_input);
 		
-		await find_sequential_characters_simple(document.getElementById("backend_input").value.toString(), ['arr'])
+		await find_sequential_characters_simple(user_input.toString(), ['arr'])
 			.then(async function(match_arr) {
-				console.log('match_arr: ', match_arr);
+				// console.log('match_arr: ', match_arr);
 				if (match_arr.length > 0) {
-					await convert_dictionarylikestring_to_dictionary(document.getElementById("backend_input").value.toString())
+					await convert_dictionarylikestring_to_dictionary(user_input.toString())
 						.then(async function(input_obj2) {
-							console.log('input_obj2: ', input_obj2);
-							
+							// console.log('input_obj2: ', input_obj2);
+
+							// ----------
 							// Remove quotes
 							// ----------
 							let key_str_arr = input_obj2.arr;
 							const NoDoublequote = (num) => num != '"';
 							const Noquote = (num) => num != "'";
-							key_str_arr = key_str_arr.filter(NoDoublequote);
-							key_str_arr = key_str_arr.filter(Noquote);
-							let clean_key_str0 = key_str_arr[0];
-							console.log('clean_key_str0: ', clean_key_str0);
+							let key_str_arr_char_arr = key_str_arr.split('');
+							key_str_arr_char_arr = key_str_arr_char_arr.filter(NoDoublequote);
+							key_str_arr_char_arr = key_str_arr_char_arr.filter(Noquote);
+							let clean_key_str0 = key_str_arr_char_arr.join('');
+							console.log('clean_key_str0: ', clean_key_str0); // clean_key_str0:  "data"
 							// OR
 							let key_str = input_obj2.arr[0];
 							let clean_key_str1 = key_str.replace(/['"]/g, '');
-							console.log('clean_key_str1: ', clean_key_str1); 
+							console.log('clean_key_str1: ', clean_key_str1); // clean_key_str1:  data
 							// ----------
 							
-							console.log('dictc: ', dictc); 
+							// console.log('dictc: ', dictc); 
 							
-							console.log('dictc[clean_key_str0]: ', dictc[clean_key_str0]);
-							console.log('dictc[clean_key_str1]: ', dictc[clean_key_str1]);
+							// console.log('dictc[clean_key_str0]: ', dictc[clean_key_str0]); // undefined
+							// console.log('dictc[clean_key_str1]: ', dictc[clean_key_str1]); // WORKS
 							
-							//return await counter(dictc[key_str]);
+							return await counter(dictc[clean_key_str1]);
 						})
-						// .then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
+						.then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
 				} else {
 					// user input is not correct
 					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ["data"]} , Javascript example: {"arr": ["a"]} where data and a respective column names';
@@ -658,21 +658,6 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
 		} else {
 			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
-	
-			// step 2: confirm which index is where the sequence pattern occurs
-			// console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
-			
-			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
-			// let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
-			// let correct_index = ind.map((i) => {
-			//	if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
-					// console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
-			//		uq2 = i;
-			//	}
-			// });
-
-			// OR
-			
 			uq2 = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3)
 				.then(async function(output_arr) {
 					return output_arr.pop()[0];
@@ -685,10 +670,19 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// Obtain the key information as a string 
 		let key = char_arr.slice(1, uq0);
+		console.log('key:', key);
+		
 		key = key.filter(NoDoublequote);
+		console.log('key NoDoublequote:', key);
+		
 		key = key.filter(Noquote);
+		console.log('key Noquote:', key);
+		
 		key = key.filter(Nospace);
+		console.log('key Nospace:', key);
+		
 		key = key.join('');
+		console.log('key join:', key);
 
 		array0.push(key);
 		
