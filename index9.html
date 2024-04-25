@@ -301,9 +301,9 @@ async function bar_chart_arrayInputOnly() {
 		console.log('user_input: ', user_input);
 
 		// ----------
-		var out = await find_sequential_characters('arr', user_input.toString());
+		var out = await find_sequential_characters(user_input.toString(), 'arr');
 		console.log('out: ', out);
-		var out1 = await find_sequential_characters_simple(['arr', 'hello'], strarr_to_find);
+		var out1 = await find_sequential_characters_simple(user_input.toString(), ['arr', 'hello']);
 		console.log('test nonfound char: ', out1);
 		// OR
 		let regexp = /arr/g;
@@ -378,7 +378,7 @@ async function line_chart_arrayInputOnly() {
 		console.log('user_input: ', user_input);
 
 		// ----------
-		var out = await find_sequential_characters('x_labels', user_input.toString());
+		var out = await find_sequential_characters(user_input.toString(), 'x_labels');
 		console.log('out: ', out);
 		// OR
 		let regexp = /x_labels/g;
