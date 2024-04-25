@@ -489,7 +489,7 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 
 	// Remove empty fields
 	const isNotEmpty = (num) => num.length > 0;
-	first_found_index = first_found_index.(isNotEmpty);
+	first_found_index = first_found_index.filter(isNotEmpty);
 	
 	console.log('first_found_index: ', first_found_index);
 	return first_found_index;
@@ -519,14 +519,16 @@ async function find_sequential_characters_simple(str_to_search, strarr_to_find) 
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 				console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
-				return {str_to_search_char_arr.slice(i,i+sequential_range).join(''): i};
+				let obj = {};
+				obj[i] = str_to_search_char_arr.slice(i,i+sequential_range).join('');
+				return obj;
 			} else {
 				return '';
 			}
 		});
 	
 		// Remove empty fields
-		first_found_index = first_found_index.(isNotEmpty);
+		first_found_index = first_found_index.filter(isNotEmpty);
 		console.log('total_index: ', total_index);
 	
 		total_index = total_index.concat(first_found_index);
@@ -561,14 +563,16 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 				console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
-				return {str_to_search_char_arr.slice(i,i+sequential_range).join(''): i};
+				let obj = {};
+				obj[i] = str_to_search_char_arr.slice(i,i+sequential_range).join('');
+				return obj;
 			} else {
 				return '';
 			}
 		});
 	
 		// Remove empty fields
-		first_found_index = first_found_index.(isNotEmpty);
+		first_found_index = first_found_index.filter(isNotEmpty);
 		console.log('total_index: ', total_index);
 	
 		total_index = total_index.concat(first_found_index);
@@ -589,7 +593,7 @@ async function counter(arr) {
 	const isNotEmpty = (num) => num.length > 0;
 	const isNotNewlineChar = (num) => num != "\n";
 	
-	const unique1 = unique.(isNotEmpty);
+	const unique1 = unique.filter(isNotEmpty);
 	const unique2 = unique1.filter(isNotNewlineChar);
 	// console.log('unique2: ', unique2);
 	
@@ -611,9 +615,9 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
 
-	const NoDoublequote = (num) => num != '"'
-	const Noquote = (num) => num != "'"
-	const Nospace = (num) => num != " "
+	const NoDoublequote = (num) => num != '"';
+	const Noquote = (num) => num != "'";
+	const Nospace = (num) => num != " ";
 
 	// -----------------------
 	
