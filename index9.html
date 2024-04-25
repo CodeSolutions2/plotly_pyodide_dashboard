@@ -299,6 +299,11 @@ async function bar_chart_arrayInputOnly() {
 		// Check if the user input is correct
 		let user_input = document.getElementById("backend_input").value;
 
+		console.log('user_input: ', user_input);
+
+		console.log('user_input2: ', [user_input.toString()].includes('arr'));
+		console.log('user_input3: ', [user_input].includes('arr'));
+
 		if ([user_input].includes('arr') == true) {
 			// user input is correct
 			// ----------
