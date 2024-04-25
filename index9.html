@@ -669,6 +669,10 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			
 			let test = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3);
 			console.log('test: ', test);
+			let last_index_arr = test.pop()[0];
+			let last_index_val = last_index_arr[0];
+			console.log('last_index_arr: ', last_index_arr);
+			console.log('last_index_val: ', last_index_val);
 			
 			// console.log('uq2 corrected: ', uq2);
 		}
