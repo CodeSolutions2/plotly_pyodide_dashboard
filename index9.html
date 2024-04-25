@@ -114,16 +114,11 @@ input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border
 
 	  
 <script>
+
+// ----------------------------------------------------
+	
 const outp = document.getElementById('output');
 const outn = document.getElementById('notifications');
-
-
-// Filters
-const isNotEmpty = (num) => num.length > 0;
-const isNotNewlineChar = (num) => num != "\n";
-const NoDoublequote = (num) => num != '"';
-const Noquote = (num) => num != "'";
-const Nospace = (num) => num != " ";
 
 // ----------------------------------------------------
 
@@ -334,9 +329,10 @@ async function bar_chart_arrayInputOnly() {
 							console.log('clean_key_str1: ', clean_key_str1); 
 							// ----------
 							
-							// console.log('dictc: ', dictc); 
+							console.log('dictc: ', dictc); 
 							
-							// console.log('dictc[key_str]: ', dictc[key_str]);
+							console.log('dictc[clean_key_str0]: ', dictc[clean_key_str0]);
+							console.log('dictc[clean_key_str1]: ', dictc[clean_key_str1]);
 							
 							//return await counter(dictc[key_str]);
 						})
@@ -497,7 +493,7 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 	});
 
 	// Remove empty fields
-	// const isNotEmpty = (num) => num.length > 0;
+	const isNotEmpty = (num) => num.length > 0;
 	first_found_index = first_found_index.filter(isNotEmpty);
 	return first_found_index;
 }
@@ -514,7 +510,7 @@ async function find_sequential_characters_simple(str_to_search, strarr_to_find) 
 		
 	let str_to_search_char_arr = str_to_search.split('');
 	let search_length = str_to_search_char_arr.length;
-	// const isNotEmpty = (num) => num.length > 0;
+	const isNotEmpty = (num) => num.length > 0;
 	
 	let total_index = [];
 	strarr_to_find.forEach(async function(str_to_find, index) {
@@ -548,7 +544,7 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		
 	let str_to_search_char_arr = str_to_search.split('');
 	let search_length = search_index_end - search_index_start;
-	// const isNotEmpty = (num) => num.length > 0;
+	const isNotEmpty = (num) => num.length > 0;
 	
 	let total_index = [];
 	strarr_to_find.forEach(async function(str_to_find, index) {
@@ -578,18 +574,16 @@ async function counter(arr) {
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
 	
-	// const isNotEmpty = (num) => num.length > 0;
-	// const isNotNewlineChar = (num) => num != "\n";
+	const isNotEmpty = (num) => num.length > 0;
+	const isNotNewlineChar = (num) => num != "\n";
 	
 	const unique1 = unique.filter(isNotEmpty);
 	const unique2 = unique1.filter(isNotNewlineChar);
-	// console.log('unique2: ', unique2);
 	
 	let count = [];
 	unique2.forEach(async function(val, index) {
 		const uq_vals = (num) => num === val;
 		const uq_val_arr = arr.filter(uq_vals);
-		// console.log('val: ', val, 'uq_val_arr: ', uq_val_arr);
 		count.push(uq_val_arr.length);
 	});
 	
@@ -603,9 +597,9 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
 
-	// const NoDoublequote = (num) => num != '"';
-	// const Noquote = (num) => num != "'";
-	// const Nospace = (num) => num != " ";
+	const NoDoublequote = (num) => num != '"';
+	const Noquote = (num) => num != "'";
+	const Nospace = (num) => num != " ";
 
 	// -----------------------
 	
@@ -629,7 +623,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 	let c = 0;
 	
 	while (flag == 'not_done') {
-		console.log('char_arr: ', char_arr);
+		// console.log('char_arr: ', char_arr);
 		
 		// there are 3 unique characters to search for each loop
 		// : - indicates end of key
@@ -718,9 +712,9 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// -----------------------
 		
-		if (char_arr.length < 3 || c > 10) { flag = 'done'; }
-
-		c = c + 1; // to force loop to stop while debugging
+		if (char_arr.length < 3 || c > 1000) { flag = 'done'; }
+		c = c + 1; // *** DATA LIMIT LENGTH IMPOSED: to force loop to stop ***
+		
 		// -----------------------
 	}
 	
