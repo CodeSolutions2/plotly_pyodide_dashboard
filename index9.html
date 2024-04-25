@@ -110,7 +110,15 @@ input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border
 <script>
 const outp = document.getElementById('output');
 const outn = document.getElementById('notifications');
-	
+
+
+// Filters
+const isNotEmpty = (num) => num.length > 0;
+const isNotNewlineChar = (num) => num != "\n";
+const NoDoublequote = (num) => num != '"';
+const Noquote = (num) => num != "'";
+const Nospace = (num) => num != " ";
+
 // ----------------------------------------------------
 
 async function load_pyodide() {
@@ -320,11 +328,15 @@ async function bar_chart_arrayInputOnly() {
 					await convert_dictionarylikestring_to_dictionary(document.getElementById("backend_input").value.toString())
 						.then(async function(input_obj2) {
 							console.log('input_obj2: ', input_obj2);
-							var arr = dictc[`${input_obj2.arr}`];
-							console.log('arr: ', arr);
-							var arr1 = dictc[input_obj2.arr.toString()];
-							console.log('arr1: ', arr1);
-							return await counter(arr1);
+							
+							// Remove quotes 
+							let key_str = input_obj2.arr;
+							key_str = key_str.filter(NoDoublequote);
+							key_str = key_str.filter(Noquote);
+							
+							console.log('dictc[key_str]: ', dictc[key_str]);
+							
+							return await counter(dictc[key_str]);
 						})
 						.then(async function(dictc2) { 
 							console.log('dictc2: ', dictc2); 
@@ -478,7 +490,7 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 	let ind = [...Array(search_length-offset).keys()].map((x) => x);
 	let first_found_index = ind.map((i) => {
 		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
-			console.log('[ver0] sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
+			// console.log('[ver0] sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
 			return [i, str_to_search_char_arr.slice(i,i+offset).join('')];
 		} else {
 			return '';
@@ -486,7 +498,7 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 	});
 
 	// Remove empty fields
-	const isNotEmpty = (num) => num.length > 0;
+	// const isNotEmpty = (num) => num.length > 0;
 	first_found_index = first_found_index.filter(isNotEmpty);
 	return first_found_index;
 }
@@ -503,7 +515,7 @@ async function find_sequential_characters_simple(str_to_search, strarr_to_find) 
 		
 	let str_to_search_char_arr = str_to_search.split('');
 	let search_length = str_to_search_char_arr.length;
-	const isNotEmpty = (num) => num.length > 0;
+	// const isNotEmpty = (num) => num.length > 0;
 	
 	let total_index = [];
 	strarr_to_find.forEach(async function(str_to_find, index) {
@@ -513,7 +525,7 @@ async function find_sequential_characters_simple(str_to_search, strarr_to_find) 
 		let ind = [...Array(search_length-sequential_range).keys()].map((x) => x);
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
-				console.log('[simple] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
+				// console.log('[simple] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
 				return [i, str_to_search_char_arr.slice(i,i+sequential_range).join('')];
 			} else {
 				return '';
@@ -537,7 +549,7 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		
 	let str_to_search_char_arr = str_to_search.split('');
 	let search_length = search_index_end - search_index_start;
-	const isNotEmpty = (num) => num.length > 0;
+	// const isNotEmpty = (num) => num.length > 0;
 	
 	let total_index = [];
 	strarr_to_find.forEach(async function(str_to_find, index) {
@@ -547,7 +559,7 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		let ind = [...Array(search_length-sequential_range).keys()].map((x) => x+search_index_start);
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
-				console.log('[complex] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
+				// console.log('[complex] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
 				return [i, str_to_search_char_arr.slice(i,i+sequential_range).join('')];
 			} else {
 				return '';
@@ -566,10 +578,9 @@ async function counter(arr) {
 	
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
-	// console.log('unique: ', unique);
 	
-	const isNotEmpty = (num) => num.length > 0;
-	const isNotNewlineChar = (num) => num != "\n";
+	// const isNotEmpty = (num) => num.length > 0;
+	// const isNotNewlineChar = (num) => num != "\n";
 	
 	const unique1 = unique.filter(isNotEmpty);
 	const unique2 = unique1.filter(isNotNewlineChar);
@@ -593,9 +604,9 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
 
-	const NoDoublequote = (num) => num != '"';
-	const Noquote = (num) => num != "'";
-	const Nospace = (num) => num != " ";
+	// const NoDoublequote = (num) => num != '"';
+	// const Noquote = (num) => num != "'";
+	// const Nospace = (num) => num != " ";
 
 	// -----------------------
 	
@@ -657,22 +668,20 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			// console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
 			
 			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
-			let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
-			let correct_index = ind.map((i) => {
-				if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+			// let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
+			// let correct_index = ind.map((i) => {
+			//	if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
 					// console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
-					uq2 = i;
-				}
-			});
+			//		uq2 = i;
+			//	}
+			// });
 
 			// OR
 			
-			let test = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3);
-			console.log('test: ', test);
-			let last_index_arr = test.pop()[0];
-			let last_index_val = last_index_arr[0];
-			console.log('last_index_arr: ', last_index_arr);
-			console.log('last_index_val: ', last_index_val);
+			uq2 = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3)
+				.then(async function(output_arr) {
+					return output_arr.pop()[0];
+				});
 			
 			// console.log('uq2 corrected: ', uq2);
 		}
