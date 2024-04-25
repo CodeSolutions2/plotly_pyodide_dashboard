@@ -479,7 +479,7 @@ async function find_sequential_characters(str_to_search, str_to_find) {
 	let first_found_index = ind.map((i) => {
 		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 			console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
-			return {'"+str_to_search_char_arr.slice(i,i+offset).join('')+"': i};
+			return {str_to_search_char_arr.slice(i,i+offset).join(''): i};
 		} else {
 			return '';
 		}
@@ -517,7 +517,7 @@ async function find_sequential_characters_simple(str_to_search, strarr_to_find) 
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 				console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
-				return {'"+str_to_search_char_arr.slice(i,i+sequential_range).join('')+"': i};
+				return {str_to_search_char_arr.slice(i,i+sequential_range).join(''): i};
 			} else {
 				return '';
 			}
@@ -559,7 +559,7 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 				console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
-				return {'"+str_to_search_char_arr.slice(i,i+sequential_range).join('')+"': i};
+				return {str_to_search_char_arr.slice(i,i+sequential_range).join(''): i};
 			} else {
 				return '';
 			}
