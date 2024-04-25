@@ -309,7 +309,7 @@ async function bar_chart_arrayInputOnly() {
 		await find_sequential_characters_simple(user_input.toString(), ['arr'])
 			.then(async function(match_arr) {
 				// console.log('match_arr: ', match_arr);
-				if (match_arr.length > 0) {
+				if (match_arr.length > 0) { // to improve
 					await convert_dictionarylikestring_to_dictionary(user_input.toString())
 						.then(async function(user_input_obj) {
 							// console.log('user_input_obj: ', user_input_obj);
@@ -373,8 +373,8 @@ async function line_chart_arrayInputOnly() {
 
 		await find_sequential_characters_simple(user_input.toString(), ['x_labels', 'y_labels'])
 			.then(async function(match_arr) {
-				// console.log('match_arr: ', match_arr);
-				if (match_arr.length == 2) {
+				console.log('match_arr: ', match_arr);
+				if (match_arr.length > 0) {  // to improve
 					await convert_dictionarylikestring_to_dictionary(user_input.toString())
 						.then(async function(user_input_obj) {
 							let clean_desired_key0 = await remove_characters_from_str(user_input_obj.x_labels[0], ['"', "'", " ", "."]);
@@ -773,13 +773,14 @@ async function transform_columnArray_into_dictionary(columnArray) {
 }
 // -------------------------------------------------
 
-async function generateTable_dynamically(rowArray) {
+// document.getElementById("dynamic_table").remove(); 
+const tbl = document.createElement("table");
+tbl.setAttribute("id", 'dynamic_table');
+const tblBody = document.createElement("tbody");
+tblBody.setAttribute("id", 'dynamic_table_body');
 
-	const tbl = document.createElement("table");
-	tbl.setAttribute("id", 'dynamic_table');
 	
-	const tblBody = document.createElement("tbody");
-	tblBody.setAttribute("id", 'dynamic_table_body');
+async function generateTable_dynamically(rowArray) {
 
 	// Create row cells dynamically
 	for (let i=0; i < rowArray.length; i++){
