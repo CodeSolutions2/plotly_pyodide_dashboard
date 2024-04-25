@@ -4,8 +4,10 @@
   <body>
 
 <!-- --------------------------------------------------- -->
-<h1>A Dashboard in the browser using Plotly and/or Pyodide: plot data from a csv file</h1>
-	  
+<h1>Various JavaScript library (Plotly, Danfo, Charts, etc) Frontend Dashboard, using different Backend computational engines (Python via Pyodide, Javascript)</h1>
+<h3>Imagine if everyone could share plotting information using dictionary notation, one could use any plotting library (Frontend) regardless of the programming language (Backend) that the data was processed in. This Dashboard uses dictionaries in Python or JavaScript to plot figures in any plottings library in the browser (Plotly, Danfo, etc).</h3>
+<br>
+This dashboard is unique because it uses a string-to-dictionary function (convert_dictionarylikestring_to_dictionary) that can transform dictionary strings into dictionary objects, more robustly than JSON.parse. JSON.parse requires that keys are surrounded by doublequotes, thus causes conflicts with dictionary importation from other backend frameworks. The convert_dictionarylikestring_to_dictionary function uses simple JavaScript parsing to transform any dictionary-like string, in form of {key0: [], key1: []}, to a JavaScript object regardless of specific quotes around the key.
 <br><br>
     
 <!-- View two split window -->
@@ -16,12 +18,12 @@
 <td>
 <label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
 <!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
-<br><br>
+<br>
 <input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
 <input id="repoName" type="text" value="" placeholder="repoName" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
 <input id="csv_filename" type="text" value="" placeholder="csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
 <br>
-<button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">Get a download url for a file</button>
+<button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">[Step 0] Get a download url for a file</button>
 
 <br><br>
 	  
@@ -29,34 +31,47 @@
 <br>
 <!-- https://raw.githubusercontent.com/CodeSolutions2/plotly_pyodide_dashboard/main/data.csv -->
 <input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 550px;">
-<br><br>
+<br>
 <!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
 <!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
 <fieldset>
-<legend>Select a backend computational engine:</legend>
-<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">python_pyodide</label></div>
-<div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">javascript</label></div>
+<legend>Select a Backend computational engine:</legend>
+<div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">Python via Pyodide</label></div>
+<div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">Javascript</label></div>
 </fieldset>
 <br>
-<button id="show_data" onclick="show_selected_csv_data()">Show selected csv data</button>
+<button id="show_data" onclick="show_selected_csv_data()">[Step 1] Show selected csv data</button>
 
 <br><br>
 
 <label id="transform_plot_label" style="display:block">[Step 2] Visualize the data:</label>
 <br>
-For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value: {"arr": ['data']} <br><br>For Line chart: enter the JSON string, replacing 'data' and 'index' with desired x and y column names: {"x_labels": ['data'], "y_values": ['index']}
+<!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
+<!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
+<fieldset>
+<legend>Select a Frontend plotting library (any library can be added here, like Chart.js, D3.js!):</legend>
+<div><input type="radio" id="plotly" name="radio_name" value="plotly" /><label for="plotly">Plotly</label></div>
+<div><input type="radio" id="danfo" name="radio_name" value="danfo" /><label for="danfo">Danfo</label></div>
+</fieldset>
+<br>
+For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value; Python example: {"arr": ['data']} , Javascript example: {"arr": ['a']} .
 <br>
 <button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of an accumulated/counted value column</button>
+<br>
+For Line chart: enter the JSON string, replacing 'data' and 'index' with desired x and y column names; Python example: {"x_labels": ['data'], "y_values": ['index']} , Javascript example: {"x_labels": ['a'], "y_values": ['0']} .
+<br>
 <button id="line_chart_arrayInputOnly" onclick="line_chart_arrayInputOnly()" style="display:block">Line chart of a column</button>
+	
 </td>
 
 <!-- View results -->
-<td id="graph_output">	
-<!-- <textarea id="graph_output" rows="35" cols="100" placeholder="" style="display:block"></textarea> -->
+<td id="graph_output">
 <label id="modify_plots" style="display:block">[Step 3] Backend input: enter Python, Javascript, or dictionary strings to create figures.</label>
 <input id="backend_input" type="text" value="" placeholder="Backend input area (select the radio button for Python or JavaScript)" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 <br>
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+<br>
+<div id="notifications" style="font-family:courier;font-size:24px;height:300px"></div>
 <br>
 <div id="js_plot_bar" style="width:600px;height:250px;"></div>
 <br><br>
@@ -92,8 +107,8 @@ input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border
 	  
 <script>
 const outp = document.getElementById('output');
-
-
+const outn = document.getElementById('notifications');
+	
 // ----------------------------------------------------
 
 async function load_pyodide() {
@@ -150,17 +165,23 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 async function show_selected_csv_data() {
 
 	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
+	
 	const python_pyodide = document.getElementById("python_pyodide").checked;
 	const javascript = document.getElementById("javascript").checked;
 
 	if (python_pyodide == true && javascript == false) {
 		// python_pyodide
 		// await python_load_data(csv_dataset_url);
+		outn.innerHTML = '';
 		await test_python_function();
 	}
 	if (python_pyodide == false && javascript == true) {
 		// javascript
+		outn.innerHTML = '';
 		await javascript_load_data(csv_dataset_url);
+	}
+	if (python_pyodide == false && javascript == false) {
+		outn.innerHTML = 'Please one of the Backend computational engines, Python or JavaScript.';
 	}
 	
 }
@@ -294,12 +315,20 @@ async function bar_chart_arrayInputOnly() {
 	// -----------------------
 	// Senario 2: Transform data using the aggregation function buttons
 	// -----------------------
-	return await counter(arr)
-		.then(async function(dictc2) { 
-			console.log('dictc2: ', dictc2);
 
-			
-			await bar_chart(dictc2); });
+	const plotly = document.getElementById("plotly").checked;
+	const danfo = document.getElementById("danfo").checked;
+
+	if (plotly == true && danfo == false) {
+		outn.innerHTML = '';
+		await counter(arr).then(async function(dictc2) { console.log('dictc2: ', dictc2); await bar_chart(dictc2); });
+	}
+	if (plotly == false && danfo == true) {
+		outn.innerHTML = 'In developement, please use Plotly';
+	}
+	if (plotly == false && danfo == false) {
+		outn.innerHTML = 'Please one of the Frontend plotting libraries, Plotly or Danfo.';
+	}
 }
 
 async function line_chart_arrayInputOnly() {
@@ -354,8 +383,22 @@ async function line_chart_arrayInputOnly() {
 	// -----------------------
 	// Senario 2: Transform data using the aggregation function buttons
 	// -----------------------
-	
-	return await line_chart(dictc);
+
+
+	const plotly = document.getElementById("plotly").checked;
+	const danfo = document.getElementById("danfo").checked;
+
+	if (plotly == true && danfo == false) {
+		outn.innerHTML = '';
+		await plotly_line_chart(dictc);
+	}
+	if (plotly == false && danfo == true) {
+		outn.innerHTML = 'In developement, please use Plotly';
+		// await danfo_line_chart(dictc);
+	}
+	if (plotly == false && danfo == false) {
+		outn.innerHTML = 'Please one of the Frontend plotting libraries, Plotly or Danfo.';
+	}
 }
 	
 	
