@@ -313,7 +313,11 @@ async function bar_chart_arrayInputOnly() {
 					await convert_dictionarylikestring_to_dictionary(user_input.toString())
 						.then(async function(user_input_obj) {
 							console.log('user_input_obj: ', user_input_obj);
-							return await counter(dictc[user_input_obj.arr]);
+							console.log('user_input_obj.arr[0]: ', user_input_obj.arr[0]);
+							let desired_key = await remove_characters_from_str(user_input_obj.arr[0], ['"',"'"]);
+							console.log('desired_key: ', desired_key);
+							
+							return await counter(dictc[desired_key]);
 						})
 						.then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
 				} else {
@@ -576,6 +580,8 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
 
+	// The function only cleans the key by removing double quotes, quotes, and spaces. It does not clean the data.
+
 	const NoDoublequote = (num) => num != '"';
 	const Noquote = (num) => num != "'";
 	const Nospace = (num) => num != " ";
@@ -620,14 +626,11 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// console.log('uq2: ', uq2);
 
 		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
-
-		// Idea (Confirm that the end marker is correct - the end marker needs to have a sequential pattern of ],' or ]," ): search (from left to right) for current : and the next : to the right
-
 		// step 0: obtain string from after the current : to the end of string
 		let next_char_arr = char_arr.slice(uq1, char_arr_orglen);
 		// console.log('next_char_arr: ', next_char_arr);
 
-		// step 1: find the index of the next : with respect to next_char_arr
+		// step 1: find the index of the next colon with respect to next_char_arr
 		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
 		// console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
 		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
@@ -635,6 +638,7 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
 		} else {
 			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
+			// find two types of end markers, and then update the index of the end of the data array
 			uq2 = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3)
 				.then(async function(output_arr) {
 					return output_arr.pop()[0];
@@ -642,40 +646,49 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			
 			// console.log('uq2 corrected: ', uq2);
 		}
-		
 		// -----------------------
 
-		// Obtain the key information as a string 
-		let key = char_arr.slice(1, uq0);
-		console.log('key:', key);
-		
-		key = key.filter(NoDoublequote);
-		console.log('key NoDoublequote:', key);
-		
-		key = key.filter(Noquote);
-		console.log('key Noquote:', key);
-		
-		key = key.filter(Nospace);
-		console.log('key Nospace:', key);
-		
-		key = key.join('');
-		console.log('key join:', key);
+		// Clean the key: remove double quotes, quotes, spaces from the key string
+		// ----------
+		let key_char_arr = char_arr.slice(1, uq0);
+		key_char_arr = key_char_arr.filter(NoDoublequote);
+		key_char_arr = key_char_arr.filter(Noquote);
+		key_char_arr = key_char_arr.filter(Nospace);
+		let key_string = key_char_arr.join('');
+		console.log('key_string0:', key_string0);
 
-		array0.push(key);
+		// OR
+
+		let str_to_clean = char_arr.slice(1, uq0).join('');
+		let key_string = await remove_characters_from_str(str_to_clean, ['"', "'", " "]);
+		console.log('key_string:', key_string);
+		// ----------
+		
+		array0.push(key_string);
 		
 		// -----------------------
 		
 		// Obtain the value information as an array
 		let char_arr_values = char_arr.slice(uq1+1, uq2);
+		console.log('char_arr_values:', char_arr_values);
+		
 		char_arr_values = char_arr_values.filter(Noquote);
+		console.log('char_arr_values Noquote:', char_arr_values);
+		
 		char_arr_values = char_arr_values.filter(Nospace);
+		console.log('char_arr_values Nospace:', char_arr_values);
 		
 		let string_values = char_arr_values.join('');
+		console.log('string_values:', string_values);
+		
 		let arr = string_values.split(',');
+		console.log('arr:', arr);
 
 		// Ensure that array values are proper string or integer/float
 		let object1 = {};
-		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); })
+		arr = arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); });
+		console.log('arr int float:', arr);
+		
 		array1.push(arr);
 		
 		// -----------------------
@@ -695,6 +708,21 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 }
 
 // ----------------------------------------------------
+
+async function remove_characters_from_str(str_to_clean, arr_of_char_to_remove) {
+
+	// str_to_clean should be a string
+	// (Example) arr_of_char_to_remove = ['"', "'", " ", "\n"]
+	let str_to_clean_char_arr = [str_to_clean].split('');
+	arr_of_char_to_remove.forEach(async function(char, index) {
+		const NoVal = (num) => num != char;
+		str_to_clean_char_arr = str_to_clean_char_arr.filter(NoVal);
+	});
+	return str_to_clean_char_arr.join('');
+}
+	
+// ----------------------------------------------------
+
 
 async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download_url) {
 
