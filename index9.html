@@ -383,11 +383,11 @@ async function line_chart_arrayInputOnly() {
 			// OR
 		
 			// The user needs to enter a JSON string: {"x_labels": ['data'], "y_values": ['index']}
-			// var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+			// var input_obj2 = await (user_input);
 			// console.log('input_obj2: ', input_obj2);
 			// ----------
 
-			await convert_dictionarylikestring_to_dictionary(user_input)
+			await (user_input)
 				.then(async function(input_obj2) {
 					// Rename the keys of the dictionary
 					dictc.x_labels = dictc[`${input_obj2.x_labels}`];
