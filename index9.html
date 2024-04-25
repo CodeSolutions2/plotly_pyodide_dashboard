@@ -54,13 +54,19 @@ This dashboard is unique because it uses a string-to-dictionary function (conver
 <div><input type="radio" id="danfo" name="radio_name_frontend" value="danfo" /><label for="danfo">Danfo</label></div>
 </fieldset>
 <br>
-For Bar chart: enter the JSON string into the backend input area, replacing 'data' with a desired column name; row values are counted to display a bar chart per unique row value;
-<br>Python example: {"arr": ['data']} ,
-<br>Javascript example: {"arr": ['a']} .
+For Bar chart: enter the JSON string into the backend input area
+<ul>
+<li>Python example: {"arr": ['data']} where data is a column name in the table</li>
+<li>Javascript example: {"arr": ['a']} where a is a column name in the table</li>
+</ul>
 <br>
 <button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of an accumulated/counted value column</button>
 <br>
-For Line chart: enter the JSON string, replacing 'data' and 'index' with desired x and y column names; Python example: {"x_labels": ['data'], "y_values": ['index']} , Javascript example: {"x_labels": ['a'], "y_values": ['0']} .
+For Line chart: enter the JSON string into the backend input area
+<ul>
+<li>Python example: {"x_labels": ['data'], "y_values": ['index']} where data and index are column names in the table</li>
+<li>Javascript example: {"x_labels": ['a'], "y_values": ['0']} where a and 0 are column names in the table</li>
+</ul>
 <br>
 <button id="line_chart_arrayInputOnly" onclick="line_chart_arrayInputOnly()" style="display:block">Line chart of a column</button>
 	
@@ -304,22 +310,6 @@ async function bar_chart_arrayInputOnly() {
 	if (plotly == true && danfo == false) {
 		// Plotly
 		outn.innerHTML = '';
-
-		// Check if the user input is correct
-		// let user_input = document.getElementById("backend_input").value;
-		// console.log('user_input: ', user_input);
-
-		// ----------
-		// var out = await find_sequential_characters(user_input.toString(), 'arr');
-		// console.log('[ver0] out: ', out);
-		// var out1 = await find_sequential_characters_simple(user_input.toString(), ['arr', 'hello']);
-		// console.log('[simple] out1: ', out1);
-		// OR
-		// let regexp = /arr/g;
-		// var matches = regexp.exec(user_input);
-		// console.log('matches: ', matches);
-		// if there is no match, outputs null
-		// ----------
 		
 		await find_sequential_characters_simple(document.getElementById("backend_input").value.toString(), ['arr'])
 			.then(async function(match_arr) {
@@ -329,22 +319,28 @@ async function bar_chart_arrayInputOnly() {
 						.then(async function(input_obj2) {
 							console.log('input_obj2: ', input_obj2);
 							
-							// Remove quotes 
-							let key_str = input_obj2.arr;
-							key_str = key_str.filter(NoDoublequote);
-							key_str = key_str.filter(Noquote);
-							console.log('key_str: ', key_str);
-
-							console.log('dictc: ', dictc); 
+							// Remove quotes
+							// ----------
+							let key_str_arr = input_obj2.arr;
+							const NoDoublequote = (num) => num != '"';
+							const Noquote = (num) => num != "'";
+							key_str_arr = key_str_arr.filter(NoDoublequote);
+							key_str_arr = key_str_arr.filter(Noquote);
+							let clean_key_str0 = key_str_arr[0];
+							console.log('clean_key_str0: ', clean_key_str0);
+							// OR
+							let key_str = input_obj2.arr[0];
+							let clean_key_str1 = key_str.replace(/['"]/g, '');
+							console.log('clean_key_str1: ', clean_key_str1); 
+							// ----------
 							
-							console.log('dictc[key_str]: ', dictc[key_str]);
+							// console.log('dictc: ', dictc); 
 							
-							return await counter(dictc[key_str]);
+							// console.log('dictc[key_str]: ', dictc[key_str]);
+							
+							//return await counter(dictc[key_str]);
 						})
-						.then(async function(plotting_dictc) { 
-							
-							await plotly_bar_chart(plotting_dictc); 
-						});
+						// .then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
 				} else {
 					// user input is not correct
 					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ["data"]} , Javascript example: {"arr": ["a"]} where data and a respective column names';
