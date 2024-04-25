@@ -713,7 +713,9 @@ async function remove_characters_from_str(str_to_clean, arr_of_char_to_remove) {
 
 	// str_to_clean should be a string
 	// (Example) arr_of_char_to_remove = ['"', "'", " ", "\n"]
-	let str_to_clean_char_arr = [str_to_clean].split('');
+	let str_to_clean_char_arr = str_to_clean.split('');
+	console.log('str_to_clean_char_arr:', str_to_clean_char_arr);
+	
 	arr_of_char_to_remove.forEach(async function(char, index) {
 		const NoVal = (num) => num != char;
 		str_to_clean_char_arr = str_to_clean_char_arr.filter(NoVal);
