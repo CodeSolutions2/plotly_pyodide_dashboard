@@ -552,7 +552,7 @@ async function find_sequential_characters_complex(str_to_search, strarr_to_find,
 		let first_found_index = ind.map((i) => {
 			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 				console.log('[complex] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
-				return {str_to_search_char_arr.slice(i,i+sequential_range).join('')+i.toString() : i};;
+				return [i, str_to_search_char_arr.slice(i,i+sequential_range).join('')];
 			} else {
 				return '';
 			}
