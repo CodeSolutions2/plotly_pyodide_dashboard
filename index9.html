@@ -35,7 +35,7 @@
 <fieldset>
 <legend>Select a backend computational engine:</legend>
 <div><input type="radio" id="python_pyodide" name="radio_name" value="python_pyodide" /><label for="python_pyodide">python_pyodide</label></div>
-<!-- <div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">javascript</label></div> -->
+<div><input type="radio" id="javascript" name="radio_name" value="javascript" /><label for="javascript">javascript</label></div>
 </fieldset>
 <br>
 <button id="show_data" onclick="show_selected_csv_data()">Show selected csv data</button>
@@ -213,31 +213,33 @@ async function javascript_load_data(csv_dataset_url) {
 		  
 		  // Transform text array into a dictionary
 		  var rowArray_stringPerRow = text_arr.split('\n');
-
-		  // **** Could use map here ****
 		  
 		  // Separate each row into an Array
 		  var rowArray_wo_index = [];
-		  rowArray_stringPerRow.forEach(async function(row, ind) { rowArray_wo_index.push(row.split(',')); });
+		  rowArray_stringPerRow.forEach(async function(row, ind) { rowArray_wo_index.push(row.split(',')); });  // **** Could use map here ****
 
 		  // (Optional) add and index to the rowArray
 		  var rowArray_w_index = [];
-		  rowArray_wo_index.forEach(async function(row, ind) { rowArray_w_index.push([ind].concat(row)); });
+		  rowArray_wo_index.forEach(async function(row, ind) { rowArray_w_index.push([ind].concat(row)); });  // **** Could use map here ****
 
 		  var rowArray = rowArray_w_index;  // rowArray_wo_index
 		  
 		  // Plot in table
 		  await generateTable_dynamically(rowArray);
+
+		  // -----------------------
+		  
+		  // Preparation for step 2: Convert rowArray to a columnArray
+		  var dictc = await transform_rowArray_into_columnArray(rowArray)
+		  	.then(async function(columnArray) {
+				// Convert columnArray to dictionary
+				let dictc = await transform_columnArray_into_dictionary(columnArray); return dictc;
+		  	})
 		  
 		  // -----------------------
-
-		  // Convert rowArray to a columnArray
 		  
-
-		  // Convert columnArray to dictionary
-
 		  // Display dictionary on page for Step 2: plotting
-		  //outp.innerHTML = dict;
+		  outp.innerHTML = dictc;
 		  
 		  // -----------------------
 	  })
@@ -422,8 +424,8 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 	
 	// Ensure the input is a string
 	dictc_string = dictc_string.toString();
-	console.log('dictc_string: ', dictc_string);
-	console.log('dictc_string.length: ', dictc_string.length);
+	// console.log('dictc_string: ', dictc_string);
+	// console.log('dictc_string.length: ', dictc_string.length);
 
 	// -----------------------
 	
@@ -450,15 +452,15 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 		// [ - indicates start of array
 		// ] - indicates end of array OR ]," (for pandas split notation to avoid cutting rows in square brackets)
 		let uq0 = char_arr.findIndex((char) => char == ':');
-		console.log('uq0: ', uq0);
+		// console.log('uq0: ', uq0);
 		
 		let uq1 = char_arr.findIndex((char) => char == '[');
-		console.log('uq1: ', uq1);
+		// console.log('uq1: ', uq1);
 
 		// -----------------------
 		// For simplistic dictionary string: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
 		let uq2 = char_arr.findIndex((char) => char == ']');  // end marker
-		console.log('uq2: ', uq2);
+		// console.log('uq2: ', uq2);
 
 		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
 
@@ -466,11 +468,11 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 
 		// step 0: obtain string from after the current : to the end of string
 		let next_char_arr = char_arr.slice(uq1, char_arr_orglen);
-		console.log('next_char_arr: ', next_char_arr);
+		// console.log('next_char_arr: ', next_char_arr);
 
 		// step 1: find the index of the next : with respect to next_char_arr
 		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
-		console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
+		// console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
 		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
 			// The string is at the last object value
 			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
@@ -478,17 +480,17 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
 	
 			// step 2: confirm which index is where the sequence pattern occurs
-			console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
+			// console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
 			
 			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
 			let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
 			let correct_index = ind.map((i) => {
 				if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
-					console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
+					// console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
 					uq2 = i;
 				}
 			});
-			console.log('uq2 corrected: ', uq2);
+			// console.log('uq2 corrected: ', uq2);
 		}
 		
 		// -----------------------
@@ -592,20 +594,34 @@ async function transform_columnArray_into_rowArray(columnArray) {
 
 async function transform_rowArray_into_columnArray(rowArray) {
 
-	let num_of_rows = rowArray[0].length;
-	let num_of_cols = rowArray.length;
+	let num_of_rows = rowArray.length;
+	let num_of_cols = rowArray[0].length;
 
-	var rowArray = [];
-	for (let r=0; r < num_of_rows; r++){
-		let row = [];
-		for (let c=0; c < num_of_cols; c++){
-			row.push(columnArray[c][r]);
+	var columnArray = [];
+	for (let c=0; c < num_of_cols; c++){
+		let col = [];
+		for (let r=0; r < num_of_rows; r++){
+			col.push(rowArray[r][c]);
 		}
-		rowArray.push(row);
+		columnArray.push(col);
 	}
-	return rowArray;
+	return columnArray;
 }
 	
+// -------------------------------------------------
+
+
+async function transform_columnArray_into_dictionary(columnArray) {
+
+	let dictc = {};
+	for (let i=0; i < columnArray.length; i++){
+		let col = columnArray[i];
+		// Get key
+		let key = col.shift();
+		dictc[key] = col;
+	}
+	return dictc;
+}
 // -------------------------------------------------
 
 async function generateTable_dynamically(rowArray) {
