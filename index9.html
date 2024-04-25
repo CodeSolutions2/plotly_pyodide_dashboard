@@ -225,7 +225,7 @@ async function test_python_function() {
 			// Convert dictionary to rowArray
 			return await dictionary_to_array(dictc);
 		})
-		.then(async function(rowArray) { document.getElementById("dynamic_table").remove(); await generateTable_dynamically(rowArray); })
+		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
 		.catch(error => { console.log(error); });
 	
 }
@@ -289,7 +289,7 @@ async function bar_chart_arrayInputOnly() {
 	// How to reload transformed data for the discrete plotting processes
 	// -----------------------
 	// Way 0: Read a JSON string from the page OR from a repo file
-	var dictc = JSON.parse(outp.innerHTML);
+	let dictc = JSON.parse(outp.innerHTML);
 	// OR
 	// Way 1: Read an object from memory OR a blob from an endpoint
 	// -----------------------
