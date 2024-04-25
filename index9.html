@@ -303,21 +303,17 @@ async function bar_chart_arrayInputOnly() {
 		// ----------
 		var out = await find_sequential_characters('arr', user_input.toString());
 		console.log('out: ', out);
-
-		var out1 = await find_sequential_characters('hello', user_input.toString());
+		var out1 = await find_sequential_characters_simple(['arr', 'hello'], strarr_to_find);
 		console.log('test nonfound char: ', out1);
 		// OR
 		let regexp = /arr/g;
 		var matches = regexp.exec(user_input);
 		console.log('matches: ', matches);
-
-		let regexp1 = /hello/g;
-		var matches1 = regexp1.exec(user_input);
-		console.log('matches1: ', matches1);
+		// if there is no match, outputs null
 		// ----------
 		
 		
-		if ([user_input].includes('arr') == true) {
+		if (out.length > 0) {
 			// user input is correct
 			// ----------
 			// The user needs to enter a JSON string: {"arr": 'data'}
@@ -390,7 +386,7 @@ async function line_chart_arrayInputOnly() {
 		console.log('matches: ', matches);
 		// ----------
 
-		if ([user_input].includes('arr') == true) {
+		if (out.length > 0) {
 			// user input is correct
 			// ----------
 			// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
@@ -471,7 +467,7 @@ async function plotly_line_chart(dictc) {
 
 // ----------------------------------------------------
 
-async function find_sequential_characters(str_to_find, str_to_search) {
+async function find_sequential_characters(str_to_search, str_to_find) {
 
 	let str_to_search_char_arr = str_to_search.split('');
 	let str_to_find_char_arr = str_to_find.split('');
@@ -483,12 +479,101 @@ async function find_sequential_characters(str_to_find, str_to_search) {
 	let first_found_index = ind.map((i) => {
 		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
 			console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
-			return i;
+			return {`"${str_to_search_char_arr.slice(i,i+offset).join('')}"`: i};
+		} else {
+			return '';
 		}
 	});
 
+	// Remove empty fields
+	const isNotEmpty = (num) => num.length > 0;
+	first_found_index = first_found_index.(isNotEmpty);
+	
 	console.log('first_found_index: ', first_found_index);
 	return first_found_index;
+}
+
+
+// ----------------------------------------------------
+
+async function find_sequential_characters_simple(str_to_search, strarr_to_find) {
+	
+	// In some cases, the str_to_search has unique sequential characters per interval of [search_index_start to search_index_end], that one may want to identify. This function allows one to search str_to_search over specific intervals of the string.
+	
+	// search_index_start: it is the index of str_to_search_char_arr, where one STARTS searching for sequencial matches of str_to_find_char_arr
+	// search_index_end: it is the index of str_to_search_char_arr, where one STOPS searching for sequencial matches of str_to_find_char_arr
+		
+	let str_to_search_char_arr = str_to_search.split('');
+	let search_length = str_to_search_char_arr.length;
+
+	const isNotEmpty = (num) => num.length > 0;
+	
+	let total_index = [];
+	strarr_to_find.forEach(async function(str_to_find, index) {
+		let str_to_find_char_arr = str_to_find.split('');
+		let sequential_range = str_to_find_char_arr.length;
+		
+		let ind = [...Array(search_length-sequential_range).keys()].map((x) => x);
+		let first_found_index = ind.map((i) => {
+			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
+				console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
+				return {`"${str_to_search_char_arr.slice(i,i+sequential_range).join('')}"`: i};
+			} else {
+				return '';
+			}
+		});
+	
+		// Remove empty fields
+		first_found_index = first_found_index.(isNotEmpty);
+		console.log('total_index: ', total_index);
+	
+		total_index = total_index.concat(first_found_index);
+	});
+	
+	console.log('total_index: ', total_index);
+	return total_index;
+}
+
+// ----------------------------------------------------
+
+async function find_sequential_characters_complex(str_to_search, strarr_to_find, search_index_start, search_index_end) {
+	
+	// In some cases, the str_to_search has unique sequential characters per interval of [search_index_start to search_index_end], that one may want to identify. This function allows one to search str_to_search over specific intervals of the string.
+	
+	// search_index_start: it is the index of str_to_search_char_arr, where one STARTS searching for sequencial matches of str_to_find_char_arr
+	// search_index_end: it is the index of str_to_search_char_arr, where one STOPS searching for sequencial matches of str_to_find_char_arr
+		
+	let str_to_search_char_arr = str_to_search.split('');
+	
+
+	let search_length = search_index_end - search_index_start;
+
+	const isNotEmpty = (num) => num.length > 0;
+	
+	let total_index = [];
+	strarr_to_find.forEach(async function(str_to_find, index) {
+		let str_to_find_char_arr = str_to_find.split('');
+		let sequential_range = str_to_find_char_arr.length;
+		
+		let ind = [...Array(search_length-sequential_range).keys()].map((x) => x+search_index_start);
+		let first_found_index = ind.map((i) => {
+			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
+				console.log('sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
+				return {`"${str_to_search_char_arr.slice(i,i+sequential_range).join('')}"`: i};
+			} else {
+				return '';
+			}
+		});
+	
+		// Remove empty fields
+		first_found_index = first_found_index.(isNotEmpty);
+		console.log('total_index: ', total_index);
+	
+		total_index = total_index.concat(first_found_index);
+	});
+	
+	console.log('total_index: ', total_index);
+	return total_index;
 }
 
 // ----------------------------------------------------
@@ -498,10 +583,12 @@ async function counter(arr) {
 	// Returns the unique values in vec, which a count of how many times the value appears
 	let unique = [...new Set(arr)];
 	// console.log('unique: ', unique);
-	let truevals = (num) => num.length > 0;
-	const unique1 = unique.filter(truevals);
-	truevals = (num) => num != "\n";
-	const unique2 = unique1.filter(truevals);
+	
+	const isNotEmpty = (num) => num.length > 0;
+	const isNotNewlineChar = (num) => num != "\n";
+	
+	const unique1 = unique.(isNotEmpty);
+	const unique2 = unique1.filter(isNotNewlineChar);
 	// console.log('unique2: ', unique2);
 	
 	let count = [];
@@ -589,13 +676,17 @@ async function convert_dictionarylikestring_to_dictionary(dictc_string) {
 			// console.log('Search increments (uq3-uq2)-3: ', (uq3-uq2)-3);
 			
 			// create an index array of what part of char_arr to look at for the [sequence pattern of 3 characters ( ],' OR ]," )]
-			let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
-			let correct_index = ind.map((i) => {
-				if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
+			//let ind = [...Array((uq3-uq2)-3).keys()].map((x) => x+uq2); // index array from uq2 to uq3 values
+			//let correct_index = ind.map((i) => {
+			//	if ( [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes('],"') == true || [char_arr[i]+char_arr[i+1]+char_arr[i+2]].includes("],'") == true ) {
 					// console.log('sequence found map: ', char_arr[i]+char_arr[i+1]+char_arr[i+2]);
-					uq2 = i;
-				}
-			});
+			//		uq2 = i;
+			//	}
+			//});
+
+			// OR
+			uq2 = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3);
+			
 			// console.log('uq2 corrected: ', uq2);
 		}
 		
