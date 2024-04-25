@@ -288,51 +288,53 @@ async function bar_chart_arrayInputOnly() {
 	// -----------------------
 	console.log('dictc: ', dictc);
 
-	// Select the column that one wants count
 	
-	let user_input = document.getElementById("backend_input").value;
+	const plotly = document.getElementById("plotly").checked;
+	const danfo = document.getElementById("danfo").checked;
 
-	const Nospace = (num) => num != " "
-	let user_input_Nospace = [user_input].filter(Nospace);
-	
-	if (user_input_Nospace.length < 0) {
-		outn.innerHTML = 'Please enter a dictionary string in the Backend input area, specifying which columns to plot.';
-	} else {
+	if (plotly == true && danfo == false) {
+		// Plotly
+		outn.innerHTML = '';
 
-		// ----------
-		// The user needs to enter a JSON string: {"arr": 'data'}
-		// var input_obj = JSON.parse(JSON.stringify(user_input));
-		// console.log('input_obj: ', input_obj);  // input_obj:  {"arr": ['data']} it stays as a string
-	
-		// OR
-	
-		// The user needs to enter a JSON string: {"arr": ['data']}
-		var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
-		console.log('input_obj2: ', input_obj2);
-		// ----------
+		// Check if the user input is correct
+		let user_input = document.getElementById("backend_input").value;
+
+		if ([user_input].includes('arr') === true) {
+			// user input is correct
+			// ----------
+			// The user needs to enter a JSON string: {"arr": 'data'}
+			// var input_obj = JSON.parse(JSON.stringify(user_input));
+			// console.log('input_obj: ', input_obj);  // input_obj:  {"arr": ['data']} it stays as a string
 		
-		var arr = dictc[`${input_obj2.arr}`];
-		console.log('arr: ', arr);
-	
-		// -----------------------
-		// Senario 2: Transform data using the aggregation function buttons
-		// -----------------------
-	
-		const plotly = document.getElementById("plotly").checked;
-		const danfo = document.getElementById("danfo").checked;
-	
-		if (plotly == true && danfo == false) {
-			outn.innerHTML = '';
-			await counter(arr).then(async function(dictc2) { console.log('dictc2: ', dictc2); await bar_chart(dictc2); });
+			// OR
+		
+			// The user needs to enter a JSON string: {"arr": ['data']}
+			var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+			console.log('input_obj2: ', input_obj2);
+			// ----------
+			
+			var arr = dictc[`${input_obj2.arr}`];
+			console.log('arr: ', arr);
+		
+			// -----------------------
+			// Senario 2: Transform data using the aggregation function buttons
+			// -----------------------
+				
+			await counter(arr).then(async function(dictc2) { console.log('dictc2: ', dictc2); await plotly_bar_chart(dictc2); });
+		} else {
+			// user input is not correct
+			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"arr": ['data']} , Javascript example: {"arr": ['a']} where data and a respective column names';
 		}
-		if (plotly == false && danfo == true) {
-			outn.innerHTML = 'In developement, please use Plotly';
-		}
-		if (plotly == false && danfo == false) {
-			outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
-		}
-
+		
 	}
+	if (plotly == false && danfo == true) {
+		outn.innerHTML = 'In developement, please use Plotly.';
+	}
+	
+	if (plotly == false && danfo == false) {
+		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
+	}
+
 }
 
 async function line_chart_arrayInputOnly() {
@@ -350,60 +352,61 @@ async function line_chart_arrayInputOnly() {
 	// -----------------------
 	// Senario 0: Plot data directly
 	// -----------------------
-	// Select the column that one wants to make a plot
+	const plotly = document.getElementById("plotly").checked;
+	const danfo = document.getElementById("danfo").checked;
 
-	let user_input = document.getElementById("backend_input").value;
+	if (plotly == true && danfo == false) {
+		// Plotly
+		outn.innerHTML = '';
 
-	const Nospace = (num) => num != " "
-	let user_input_Nospace = [user_input].filter(Nospace);
-	
-	if (user_input_Nospace.length < 0) {
-		outn.innerHTML = 'Please enter a dictionary string in the Backend input area, specifying which columns to plot.';
-	} else {
-		// ----------
-		// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
-		// var input_obj = JSON.parse(JSON.stringify(user_input));
-		// console.log('input_obj: ', input_obj);
-	
-		// OR
-	
-		// The user needs to enter a JSON string: {"x_labels": ['data'], "y_values": ['index']}
-		var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
-		console.log('input_obj2: ', input_obj2);
-		// ----------
+		// Check if the user input is correct
+		let user_input = document.getElementById("backend_input").value;
+
+		if ([user_input].includes('arr') === true) {
+			// user input is correct
+			// ----------
+			// The user needs to enter a JSON string: {"x_labels": 'data', "y_values": 'index'}
+			// var input_obj = JSON.parse(JSON.stringify(user_input));
+			// console.log('input_obj: ', input_obj);
 		
-		// Rename the keys of the dictionary
-		dictc.x_labels = dictc[`${input_obj2.x_labels}`];
-		// delete dictc.`${input_obj2.x_labels}`;  // Remove old key
-		dictc.y_values = dictc[`${input_obj2.y_values}`];
-		// delete dictc.`${input_obj2.y_values}`;  // Remove old key
-	
-		console.log('dictc: ', dictc);
+			// OR
 		
-		// -----------------------
-		// Senario 1: Transform data using the code input
-		// -----------------------
-	
-	
-		// -----------------------
-		// Senario 2: Transform data using the aggregation function buttons
-		// -----------------------
-	
-	
-		const plotly = document.getElementById("plotly").checked;
-		const danfo = document.getElementById("danfo").checked;
-	
-		if (plotly == true && danfo == false) {
-			outn.innerHTML = '';
+			// The user needs to enter a JSON string: {"x_labels": ['data'], "y_values": ['index']}
+			var input_obj2 = await convert_dictionarylikestring_to_dictionary(user_input);
+			console.log('input_obj2: ', input_obj2);
+			// ----------
+			
+			// Rename the keys of the dictionary
+			dictc.x_labels = dictc[`${input_obj2.x_labels}`];
+			// delete dictc.`${input_obj2.x_labels}`;  // Remove old key
+			dictc.y_values = dictc[`${input_obj2.y_values}`];
+			// delete dictc.`${input_obj2.y_values}`;  // Remove old key
+		
+			console.log('dictc: ', dictc);
+			
+			// -----------------------
+			// Senario 1: Transform data using the code input
+			// -----------------------
+		
+		
+			// -----------------------
+			// Senario 2: Transform data using the aggregation function buttons
+			// -----------------------
+			
 			await plotly_line_chart(dictc);
+			
+		} else {
+			// user input is not correct
+			outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; Python example: {"x_labels": ['data'], "y_values": ['index']} , Javascript example: {"x_labels": ['a'], "y_values": ['0']} where [data, index] and [a, 0] are respective column names';
 		}
-		if (plotly == false && danfo == true) {
-			outn.innerHTML = 'In developement, please use Plotly';
-			// await danfo_line_chart(dictc);
-		}
-		if (plotly == false && danfo == false) {
-			outn.innerHTML = 'Please one of the Frontend plotting libraries, Plotly or Danfo.';
-		}
+		
+	}
+	if (plotly == false && danfo == true) {
+		outn.innerHTML = 'In developement, please use Plotly.';
+	}
+	
+	if (plotly == false && danfo == false) {
+		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
 	}
 	
 }
@@ -413,7 +416,7 @@ async function line_chart_arrayInputOnly() {
 // SUBFUNCTIONS
 // ----------------------------------------------------
 
-async function bar_chart(dictc) {
+async function plotly_bar_chart(dictc) {
 	// https://plotly.com/javascript/bar-charts/
 	var xValue = dictc.x_labels;
 	var yValue = dictc.y_values;
@@ -425,7 +428,7 @@ async function bar_chart(dictc) {
 
 // ----------------------------------------------------
 
-async function line_chart(dictc) {
+async function plotly_line_chart(dictc) {
         // https://plotly.com/javascript/getting-started/
 	const xValue = [...Array(dictc.x_labels.length).keys()].map((x) => x);
 	var yValue = dictc.y_values;
