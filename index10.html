@@ -82,16 +82,16 @@ For Line chart: enter the JSON string into the backend input area
 <label for="modify_data_label">Check to modify data with selected Backend engine: </label>
 <input id="modify_data" name="modify_data" value="false" type="checkbox" />
 <br>
+<table id="dynamic_table" style='text-align: left; width: 300px; display:block'>
+<!-- dynamically add rows here -->
+</table>
+<br>
 <div id="output" style="font-family:courier;font-size:24px;"></div>
-<br>
 <div id="notifications" style="font-family:courier;font-size:15px;"></div>
-<br>
 <div id="errors" style="font-family:courier;font-size:15px;"></div>
-<br>
-<!-- style="width:600px;height:250px;" -->
-<div id="js_plot_bar"></div> 
-<br><br>
+<div id="js_plot_bar"></div>
 <div id="js_plot_line"></div>
+	
 </td>
         
 </tr>
@@ -821,7 +821,7 @@ async function generateTable_dynamically(rowArray) {
 	}
 	tbl.appendChild(tblBody);
 
-	document.getElementById("graph_output").appendChild(tbl);
+	// document.getElementById("graph_output").appendChild(tbl);
   }  
 
 	
