@@ -781,7 +781,7 @@ async function remove_dynamically_generatedTable() {
   // document.getElementById("dynamic_table").remove(); 
   var elem = document.getElementById('dynamic_table');
   console.log('elem: ', elem);
-  console.log('elem.length: ', elem.length);
+  console.log('typeof elem: ', typeof elem);
 
   if (typeof elem != 'undefined' || elem != 'null' ) { elem.parentNode.removeChild(elem); }
 
