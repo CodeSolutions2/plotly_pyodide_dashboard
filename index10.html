@@ -183,10 +183,10 @@ async function show_selected_csv_data() {
 
 	if (python_pyodide == true && javascript == false) {
 		// python_pyodide
-		if (document.getElementById("modify_data").value == false) {
+		if (document.getElementById("modify_data").checked == false) {
 			// Default case: for initially loading data
 			outn.innerHTML = 'Loading table. If you would like to change the table, check "modify data" and type the appropriate Backend code.';
-		} else if (document.getElementById("modify_data").value == true) {
+		} else if (document.getElementById("modify_data").checked == true) {
 			outn.innerHTML = 'Type Python into the Backend input to modify the existing table data. Push [Step 1] to process code input.';
 		}
 	
