@@ -780,10 +780,10 @@ async function remove_dynamically_generatedTable() {
   
   // document.getElementById("dynamic_table").remove(); 
   var elem = document.getElementById('dynamic_table');
-  console.log('elem: ', elem);
-  console.log('typeof elem: ', typeof elem);
+  console.log('elem: ', elem);  // elem:  null
+  console.log('typeof elem: ', typeof elem); // typeof elem:  object
 
-  if (typeof elem != 'undefined' || elem != 'null' ) { elem.parentNode.removeChild(elem); }
+  if (elem != 'null') { elem.parentNode.removeChild(elem); }
 
 }
 
