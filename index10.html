@@ -86,6 +86,8 @@ For Line chart: enter the JSON string into the backend input area
 <br>
 <div id="notifications" style="font-family:courier;font-size:24px;height:300px"></div>
 <br>
+<div id="notifications" style="font-family:courier;font-size:24px;height:300px"></div>
+<br>
 <div id="js_plot_bar" style="width:600px;height:250px;"></div>
 <br><br>
 <div id="js_plot_line" style="width:600px;height:250px;"></div>
@@ -126,6 +128,7 @@ input#checkbox {display: inline-block; background-color: #b8c0d6; width: 100px; 
 	
 const outp = document.getElementById('output');
 const outn = document.getElementById('notifications');
+const outn = document.getElementById('errors');
 
 // ----------------------------------------------------
 
@@ -798,8 +801,7 @@ async function remove_dynamically_generatedTable() {
   } else {
 	tbl = document.createElement("table");
 	tbl.setAttribute("id", 'dynamic_table');
-	const tblBody = document.createElement("tbody");
-	tblBody.setAttribute("id", 'dynamic_table_body');
+	
   }
 
 }
@@ -808,7 +810,8 @@ async function remove_dynamically_generatedTable() {
 	
 async function generateTable_dynamically(rowArray) {
 
-  
+	const tblBody = document.createElement("tbody");
+	tblBody.setAttribute("id", 'dynamic_table_body');
   
 	// Create row cells dynamically
 	for (let i=0; i < rowArray.length; i++){
