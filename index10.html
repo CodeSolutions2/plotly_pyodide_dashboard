@@ -79,6 +79,9 @@ For Line chart: enter the JSON string into the backend input area
 <label id="modify_plots" style="display:block">[Step 3] Backend input: enter Python, Javascript, or dictionary strings to create figures.</label>
 <input id="backend_input" type="text" value="" placeholder="Backend input area (select the radio button for Python or JavaScript)" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 <br>
+<label for="modify_data_label">Check to modify data with selected Backend engine: </label>
+<input id="modify_data" name="modify_data" value="false" type="checkbox" />
+<br>
 <div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
 <br>
 <div id="notifications" style="font-family:courier;font-size:24px;height:300px"></div>
@@ -105,7 +108,9 @@ td#dynamic_table_body_row_cell {vertical-align: top; border: 1px solid black; pa
 
 th {border: 0px solid black; padding: 10px 20px;}
 
-input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+input#backend_input {background-color: #b8c0d6; border: 0.5px grey; -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+
+input#checkbox {display: inline-block; background-color: #b8c0d6; width: 100px; height: 100px;}
 </style>
 	  
 <!-- --------------------------------------------------- -->
@@ -178,15 +183,23 @@ async function show_selected_csv_data() {
 
 	if (python_pyodide == true && javascript == false) {
 		// python_pyodide
+		if (document.getElementById("modify_data").value == false) {
+			// Default case: for initially loading data
+			outn.innerHTML = 'Loading table. If you would like to change the table, check "modify data" and type the appropriate Backend code.';
+		} else if (document.getElementById("modify_data").value == true) {
+			outn.innerHTML = 'Type Python into the Backend input to modify the existing table data. Push [Step 1] to process code input.';
+		}
+	
 		// await python_load_data(csv_dataset_url);
-		outn.innerHTML = '';
 		await test_python_function();
 	}
+	
 	if (python_pyodide == false && javascript == true) {
 		// javascript
 		outn.innerHTML = '';
 		await javascript_load_data(csv_dataset_url);
 	}
+	
 	if (python_pyodide == false && javascript == false) {
 		outn.innerHTML = 'Please select one of the Backend computational engines, Python or JavaScript.';
 	}
@@ -276,10 +289,7 @@ async function javascript_load_data(csv_dataset_url) {
 	  .catch(error => { console.log(error); });
   
 }
-
-
-
-
+	
 // ----------------------------------------------------
 
 // Step 2: decide how to visualize the data in the table
@@ -779,11 +789,18 @@ async function transform_columnArray_into_dictionary(columnArray) {
 async function remove_dynamically_generatedTable() {
   
   // document.getElementById("dynamic_table").remove(); 
-  var elem = document.getElementById('dynamic_table');
-  console.log('elem: ', elem);  // elem:  null
-  console.log('typeof elem: ', typeof elem); // typeof elem:  object
+  var tbl = document.getElementById('dynamic_table');
+  console.log('tbl: ', tbl);  // tbl:  null
+  console.log('typeof tbl: ', typeof tbl); // typeof tbl:  object
 
-  if (elem != 'null') { elem.parentNode.removeChild(elem); }
+  if (elem) { // implying not null
+	  elem.parentNode.removeChild(elem);
+  } else {
+	tbl = document.createElement("table");
+	tbl.setAttribute("id", 'dynamic_table');
+	const tblBody = document.createElement("tbody");
+	tblBody.setAttribute("id", 'dynamic_table_body');
+  }
 
 }
 
@@ -791,10 +808,7 @@ async function remove_dynamically_generatedTable() {
 	
 async function generateTable_dynamically(rowArray) {
 
-  const tbl = document.createElement("table");
-	tbl.setAttribute("id", 'dynamic_table');
-	const tblBody = document.createElement("tbody");
-	tblBody.setAttribute("id", 'dynamic_table_body');
+  
   
 	// Create row cells dynamically
 	for (let i=0; i < rowArray.length; i++){
