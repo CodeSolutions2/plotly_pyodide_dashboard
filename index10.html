@@ -190,7 +190,7 @@ async function show_selected_csv_data() {
 		// python_pyodide
 		if (document.getElementById("modify_data").checked == false) {
 			// Default case: for initially loading data
-			outn.innerHTML = 'Loading table. If you would like to change the table, check "modify data" and type the appropriate Backend code.';
+			outn.innerHTML = 'Loading table... If you would like to change the table, check "modify data" and type the appropriate Backend code.';
 		} else if (document.getElementById("modify_data").checked == true) {
 			outn.innerHTML = 'Type Python into the Backend input to modify the existing table data. Push [Step 1] to process code input.';
 		}
@@ -338,7 +338,7 @@ async function bar_chart_arrayInputOnly() {
 						.then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
 				} else {
 					// user input is not correct
-					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"arr": ["data"]} where data is a column name in the table.';
+					oute.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"arr": ["data"]} where data is a column name in the table.';
 				}
 			});
 
@@ -347,13 +347,13 @@ async function bar_chart_arrayInputOnly() {
 	// -----------------------------------------------
 	
 	if (plotly == false && danfo == true) {
-		outn.innerHTML = 'In developement, please use Plotly.';
+		oute.innerHTML = 'In developement, please use Plotly.';
 	}
 	
 	// -----------------------------------------------
 	
 	if (plotly == false && danfo == false) {
-		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
+		oute.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
 	}
 
 	// -----------------------------------------------
@@ -410,7 +410,7 @@ async function line_chart_arrayInputOnly() {
 						
 				} else {
 					// user input is not correct
-					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"x_labels": ["data"], "y_values": ["index"]} where data and index are column names in the table.';
+					oute.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"x_labels": ["data"], "y_values": ["index"]} where data and index are column names in the table.';
 				}
 			});
 	}
@@ -418,13 +418,13 @@ async function line_chart_arrayInputOnly() {
 	// -----------------------------------------------
 	
 	if (plotly == false && danfo == true) {
-		outn.innerHTML = 'In developement, please use Plotly.';
+		oute.innerHTML = 'In developement, please use Plotly.';
 	}
 
 	// -----------------------------------------------
 	
 	if (plotly == false && danfo == false) {
-		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
+		oute.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
 	}
 
 	// -----------------------------------------------
@@ -812,6 +812,8 @@ async function remove_dynamically_generatedTable() {
 	
 async function generateTable_dynamically(rowArray) {
 
+	tbl = document.getElementById('dynamic_table');
+	
 	const tblBody = document.createElement("tbody");
 	tblBody.setAttribute("id", 'dynamic_table_body');
   
