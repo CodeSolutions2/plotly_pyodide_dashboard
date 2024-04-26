@@ -793,8 +793,8 @@ async function remove_dynamically_generatedTable() {
   console.log('tbl: ', tbl);  // tbl:  null
   console.log('typeof tbl: ', typeof tbl); // typeof tbl:  object
 
-  if (elem) { // implying not null
-	  elem.parentNode.removeChild(elem);
+  if (tbl) { // implying not null
+	  tbl.parentNode.removeChild(tbl);
   } else {
 	tbl = document.createElement("table");
 	tbl.setAttribute("id", 'dynamic_table');
