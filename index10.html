@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+<!-- --------------------------------------------------- -->
+<h1>Various JavaScript library (Plotly, Danfo, etc) Frontend Dashboard, using different Backend computational engines (Python via Pyodide, Javascript)</h1>
+<h3>Imagine if everyone could share plotting information using dictionary notation, one could use any plotting library (Frontend) regardless of the programming language (Backend) that the data was processed in. This Dashboard uses dictionaries in Python or JavaScript to plot figures in any plotting library in the browser (Plotly, Danfo, etc).</h3>
+<br>
+This dashboard is unique because it uses a string-to-dictionary function (convert_dictionarylikestring_to_dictionary) that can transform dictionary strings into dictionary objects, more robustly than JSON.parse. JSON.parse requires that keys are surrounded by double quotes, thus causing conflicts with dictionary importation from other backend frameworks. Some backend programming languages use single quote, double quote, or no quotes thus causing conflicts when using JSON.parse. The convert_dictionarylikestring_to_dictionary function uses simple JavaScript parsing to transform any dictionary-like string, in the form of {key0: [], key1: []}, to a JavaScript object regardless of specific quotes around the key.
+<br>
+<hr>
+<br>
+    
+<!-- View two split window -->
+<div align="left">
+<table style='text-align: left; width: 300px; display:block'>
+<tr>
+        
+<td>
+<label id="get_downloadurl_label" style="display:block">[Step 0] (Optional) Obtain the download url for a file in a GitHub repository. Enter the desired repository Owner, repository Name, csv filename (ie: CodeSolutions2, plotly_pyodide_dashboard, data.csv).</label>
+<!-- CodeSolutions2, plotly_pyodide_dashboard, data.csv -->
+<br>
+<input id="repoOwner" type="text" value="" placeholder="repoOwner" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<input id="repoName" type="text" value="" placeholder="repoName" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<input id="csv_filename" type="text" value="" placeholder="csv_filename" rows="10" cols="100" style="display:block; text-align: left; width: 200px;">
+<br>
+<button id="get_download_url_button" onclick="GET_text_from_file_wo_auth_GitHub_RESTAPI()">[Step 0] Get a download url for a file</button>
+
+<br><br>
+	  
+<label id="enter_url_label" style="display:block">[Step 1] Enter a url of a csv file to present the data in a table:</label>
+<br>
+<!-- https://raw.githubusercontent.com/CodeSolutions2/plotly_pyodide_dashboard/main/data.csv -->
+<input id="csv_dataset_url" type="text" value="" placeholder="csv_dataset_url" rows="10" cols="100" style="display:block; text-align: left; width: 550px;">
+<br>
+<!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
+<!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
+<fieldset>
+<legend>Select a Backend computational engine:</legend>
+<div><input type="radio" id="python_pyodide" name="radio_name_backend" value="python_pyodide" /><label for="python_pyodide">Python via Pyodide</label></div>
+<div><input type="radio" id="javascript" name="radio_name_backend" value="javascript" /><label for="javascript">Javascript</label></div>
+</fieldset>
+<br>
+<button id="show_data" onclick="show_selected_csv_data()">[Step 1] Show selected csv data</button>
+
+<br><br>
+
+<label id="transform_plot_label" style="display:block">[Step 2] Visualize the data:</label>
+<br>
+<!--Radio button : https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio-->
+<!-- Giving all the buttons the same name allows one radio button to be checked at a time-->
+<fieldset>
+<legend>Select a Frontend plotting library (any library can be added here, like Chart.js, D3.js!):</legend>
+<div><input type="radio" id="plotly" name="radio_name_frontend" value="plotly" /><label for="plotly">Plotly</label></div>
+<div><input type="radio" id="danfo" name="radio_name_frontend" value="danfo" /><label for="danfo">Danfo</label></div>
+</fieldset>
+<br>
+For Bar chart: enter the JSON string into the backend input area
+<ul>
+<li>Python example: {"arr": ['data']} where data is a column name in the table</li>
+<li>Javascript example: {"arr": ['a']} where a is a column name in the table</li>
+</ul>
+<br>
+<button id="bar_chart_arrayInputOnly" onclick="bar_chart_arrayInputOnly()" style="display:block">Bar chart of an accumulated/counted value column</button>
+<br>
+For Line chart: enter the JSON string into the backend input area
+<ul>
+<li>Python example: {"x_labels": ['data'], "y_values": ['index']} where data and index are column names in the table</li>
+<li>Javascript example: {"x_labels": ['a'], "y_values": ['0']} where a and 0 are column names in the table</li>
+</ul>
+<br>
+<button id="line_chart_arrayInputOnly" onclick="line_chart_arrayInputOnly()" style="display:block">Line chart of a column</button>
+	
+</td>
+
+<!-- View results -->
+<td id="graph_output">
+<label id="modify_plots" style="display:block">[Step 3] Backend input: enter Python, Javascript, or dictionary strings to create figures.</label>
+<input id="backend_input" type="text" value="" placeholder="Backend input area (select the radio button for Python or JavaScript)" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
+<br>
+<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+<br>
+<div id="notifications" style="font-family:courier;font-size:24px;height:300px"></div>
+<br>
+<div id="js_plot_bar" style="width:600px;height:250px;"></div>
+<br><br>
+<div id="js_plot_line" style="width:600px;height:250px;"></div>
+</td>
+        
+</tr>
+</table>
+</div>  
+
+<!-- --------------------------------------------------- -->
+
+<!-- CSS -->
+<style>
+div {position: relative; z-index: 0;}
+
+table {vertical-align: top; border-collapse: collapse; position: relative; z-index: 0;}
+
+td {vertical-align: top;}
+td#dynamic_table_body_row_cell {vertical-align: top; border: 1px solid black; padding: 10px 20px;}
+
+th {border: 0px solid black; padding: 10px 20px;}
+
+input#backend_input {background-color: #b8c0d6;border: 0.5px grey;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+</style>
+	  
+<!-- --------------------------------------------------- -->
+
+
+<script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+
+	  
+<script>
+
+// ----------------------------------------------------
+	
+const outp = document.getElementById('output');
+const outn = document.getElementById('notifications');
+
+// ----------------------------------------------------
+
+async function load_pyodide() {
+	// -----------------------
+	// const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/dev/full/';
+	// let pyodide = await loadPyodide({'indexURL': pyodideUrl});
+	// OR
+	let pyodide = await loadPyodide(); // more robust when browser loads quickly
+	// -----------------------
+	
+        await pyodide.loadPackage(["pandas"]);
+	
+        return pyodide;
+}
+
+// var pyodideReadyPromise = load_pyodide();
+
+	
+// ----------------------------------------------------
+
+// Step 0
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
+	
+	const repoOwner = document.getElementById("repoOwner").value;
+	const repoName = document.getElementById("repoName").value;
+	const csv_filename = document.getElementById("csv_filename").value;
+	
+	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+	var file_objects = [];
+	return await fetch(url)
+		.then(res => res.json())
+		.then(data => { data.forEach(async function(file) {
+			    var regexp = new RegExp(`${csv_filename}`, 'g');
+		      if (file.type === 'file' && file.name.match(regexp)) {
+			      file_objects.push(file); 
+			      outp.innerHTML = file.download_url;
+		      }
+		      });
+		      return file_objects;
+		})
+		.catch(error => { console.log(error); });
+}
+
+// ----------------------------------------------------
+
+// Step 1
+async function show_selected_csv_data() {
+
+	const csv_dataset_url = document.getElementById("csv_dataset_url").value;
+	
+	const python_pyodide = document.getElementById("python_pyodide").checked;
+	const javascript = document.getElementById("javascript").checked;
+
+	if (python_pyodide == true && javascript == false) {
+		// python_pyodide
+		// await python_load_data(csv_dataset_url);
+		outn.innerHTML = '';
+		await test_python_function();
+	}
+	if (python_pyodide == false && javascript == true) {
+		// javascript
+		outn.innerHTML = '';
+		await javascript_load_data(csv_dataset_url);
+	}
+	if (python_pyodide == false && javascript == false) {
+		outn.innerHTML = 'Please select one of the Backend computational engines, Python or JavaScript.';
+	}
+	
+}
+
+
+	
+async function python_load_data(csv_dataset_url) {
+
+	var pyodide = await pyodideReadyPromise;
+
+       try {
+	       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${csv_dataset_url}"`+"); df = pd.read_csv(url_content); df.to_json(orient='split')");
+	       // {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
+	       
+	       await output_results_load_data(result);
+       } catch (error){ 
+	       console.log('error: ', error);
+       }
+}
+
+
+// async function output_results_load_data(result) {
+async function test_python_function() {
+	var result = '{"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}';
+
+	await convert_dictionarylikestring_to_dictionary(result)
+		.then(async function(dictc) {
+			delete dictc.columns;
+			console.log('dictc: ', dictc);
+			
+			// Display dictionary on page for Step 2: plotting
+			outp.innerHTML = JSON.stringify(dictc);
+
+			// Convert dictionary to rowArray
+			return await dictionary_to_array(dictc);
+		})
+    .then(async function(rowArray) { await remove_dynamically_generatedTable(); })
+		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
+		.catch(error => { console.log(error); });
+	
+}
+// ----------------------------------------------------
+	
+async function javascript_load_data(csv_dataset_url) {
+
+  // Read data into Javascript from .csv
+  return await GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(csv_dataset_url)
+	  .then(async function(text_arr) { 
+
+		  // -----------------------
+		  
+		  // Transform text array into a dictionary
+		  var rowArray_stringPerRow = text_arr.split('\n');
+		  
+		  // Separate each row into an Array
+		  var rowArray_wo_index = [];
+		  rowArray_stringPerRow.forEach(async function(row, ind) { rowArray_wo_index.push(row.split(',')); });  // **** Could use map here ****
+
+		  // (Optional) add and index to the rowArray
+		  var rowArray_w_index = [];
+		  rowArray_wo_index.forEach(async function(row, ind) { rowArray_w_index.push([ind].concat(row)); });  // **** Could use map here ****
+
+		  var rowArray = rowArray_w_index;  // rowArray_wo_index
+		  
+		  // Plot in table
+      await remove_dynamically_generatedTable()
+        .then(async function() { await generateTable_dynamically(rowArray); });
+
+		  // -----------------------
+		  
+		  // Preparation for step 2: Convert rowArray to a columnArray
+		  var dictc = await transform_rowArray_into_columnArray(rowArray)
+		  	.then(async function(columnArray) {
+				// Convert columnArray to dictionary
+				let dictc = await transform_columnArray_into_dictionary(columnArray); return dictc;
+		  	})
+		  
+		  // -----------------------
+		  
+		  // Display dictionary on page for Step 2: plotting
+		  outp.innerHTML = JSON.stringify(dictc);
+		  
+		  // -----------------------
+	  })
+	  .catch(error => { console.log(error); });
+  
+}
+
+
+
+
+// ----------------------------------------------------
+
+// Step 2: decide how to visualize the data in the table
+// Make buttons appear that can format (ie: value_counts/counter) and plot the data
+
+async function bar_chart_arrayInputOnly() {
+
+	// -----------------------
+	// How to reload transformed data for the discrete plotting processes
+	// -----------------------
+	// Way 0: Read a JSON string from the page OR from a repo file
+	let dictc = JSON.parse(outp.innerHTML);
+	// OR
+	// Way 1: Read an object from memory OR a blob from an endpoint
+	// -----------------------
+	console.log('dictc: ', dictc);
+
+	const plotly = document.getElementById("plotly").checked;
+	const danfo = document.getElementById("danfo").checked;
+
+	if (plotly == true && danfo == false) {
+		// Plotly
+		outn.innerHTML = '';
+
+		// Check if the user input is correct
+		let user_input = document.getElementById("backend_input").value;
+		// console.log('user_input: ', user_input);
+		
+		await find_sequential_characters_simple(user_input.toString(), ['arr'])
+			.then(async function(match_arr) {
+				// console.log('match_arr: ', match_arr);
+				if (match_arr.length > 0) { // to improve
+					await convert_dictionarylikestring_to_dictionary(user_input.toString())
+						.then(async function(user_input_obj) {
+							// console.log('user_input_obj: ', user_input_obj);
+							// console.log('user_input_obj.arr[0]: ', user_input_obj.arr[0]);
+							let desired_key = await remove_characters_from_str(user_input_obj.arr[0], ['"',"'"]);
+							// console.log('desired_key: ', desired_key);
+							return await counter(dictc[desired_key]);
+						})
+						.then(async function(plotting_dictc) { await plotly_bar_chart(plotting_dictc); });
+				} else {
+					// user input is not correct
+					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"arr": ["data"]} where data is a column name in the table.';
+				}
+			});
+
+	}
+	
+	// -----------------------------------------------
+	
+	if (plotly == false && danfo == true) {
+		outn.innerHTML = 'In developement, please use Plotly.';
+	}
+	
+	// -----------------------------------------------
+	
+	if (plotly == false && danfo == false) {
+		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
+	}
+
+	// -----------------------------------------------
+
+}
+
+// -----------------------------------------------
+	
+async function line_chart_arrayInputOnly() {
+
+	// -----------------------
+	// How to reload transformed data for the discrete plotting processes
+	// -----------------------
+	// Way 0: Read a JSON string from the page OR from a repo file
+	let dictc = JSON.parse(outp.innerHTML);
+	// OR
+	// Way 1: Read an object from memory OR a blob from an endpoint
+	// -----------------------
+
+	
+	// -----------------------
+	// Senario 0: Plot data directly
+	// -----------------------
+	const plotly = document.getElementById("plotly").checked;
+	const danfo = document.getElementById("danfo").checked;
+
+	if (plotly == true && danfo == false) {
+		// Plotly
+		outn.innerHTML = '';
+
+		// Check if the user input is correct
+		let user_input = document.getElementById("backend_input").value;
+		console.log('user_input: ', user_input);
+
+		await find_sequential_characters_simple(user_input.toString(), ['x_labels', 'y_labels'])
+			.then(async function(match_arr) {
+				console.log('match_arr: ', match_arr);
+				if (match_arr.length > 0) {  // to improve
+					await convert_dictionarylikestring_to_dictionary(user_input.toString())
+						.then(async function(user_input_obj) {
+							let clean_desired_key0 = await remove_characters_from_str(user_input_obj.x_labels[0], ['"', "'", " ", "."]);
+							console.log('clean_desired_key0: ', clean_desired_key0);
+							let clean_desired_key1 = await remove_characters_from_str(user_input_obj.y_values[0], ['"', "'", " ", "."]);
+							console.log('clean_desired_key1: ', clean_desired_key1);
+
+							// Add keys to the plotting_dictc dictionary
+							let plotting_dictc = {};
+							plotting_dictc.x_labels = dictc[clean_desired_key0];
+							plotting_dictc.y_values = dictc[clean_desired_key1];
+							console.log('plotting_dictc: ', plotting_dictc);
+							
+							await plotly_line_chart(plotting_dictc);
+						});
+						
+				} else {
+					// user input is not correct
+					outn.innerHTML = 'Plotting selection notation is not correct, please enter the column name in the following notation; {"x_labels": ["data"], "y_values": ["index"]} where data and index are column names in the table.';
+				}
+			});
+	}
+	
+	// -----------------------------------------------
+	
+	if (plotly == false && danfo == true) {
+		outn.innerHTML = 'In developement, please use Plotly.';
+	}
+
+	// -----------------------------------------------
+	
+	if (plotly == false && danfo == false) {
+		outn.innerHTML = 'Please select one of the Frontend plotting libraries, Plotly or Danfo.';
+	}
+
+	// -----------------------------------------------
+	
+}
+	
+	
+// ----------------------------------------------------
+// SUBFUNCTIONS
+// ----------------------------------------------------
+
+async function plotly_bar_chart(dictc) {
+	// https://plotly.com/javascript/bar-charts/
+	var xValue = dictc.x_labels;
+	var yValue = dictc.y_values;
+	var trace1 = { x: xValue, y: yValue, type: 'bar', text: yValue.map(String), textposition: 'auto', hoverinfo: 'none', marker: { color: 'rgb(158,202,225)', opacity: 0.6, line: {color: 'rgb(8,48,107)', width: 1.5} } };
+	var data = [trace1];
+	var layout = { title: 'Bar chart', barmode: 'stack', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
+	Plotly.newPlot('js_plot_bar', data, layout);
+}
+
+// ----------------------------------------------------
+
+async function plotly_line_chart(dictc) {
+        // https://plotly.com/javascript/getting-started/
+	const xValue = [...Array(dictc.x_labels.length).keys()].map((x) => x);
+	var yValue = dictc.y_values;
+	
+        const trace_items = { x: xValue, y: yValue, mode: 'markers', type: 'line' };
+        const layout = {title: 'Line and Scatter Plot', xaxis: {title: 'index'}, yaxis: {title: 'count'} };
+        Plotly.newPlot("js_plot_line", [trace_items], layout );
+}
+
+// ----------------------------------------------------
+
+async function find_sequential_characters(str_to_search, str_to_find) {
+
+	let str_to_search_char_arr = str_to_search.split('');
+	let str_to_find_char_arr = str_to_find.split('');
+	let search_length = str_to_search_char_arr.length;
+	let offset = str_to_find_char_arr.length;
+	
+	let ind = [...Array(search_length-offset).keys()].map((x) => x);
+	let first_found_index = ind.map((i) => {
+		if ( [str_to_search_char_arr.slice(i,i+offset).join('')].includes(str_to_find_char_arr.join('')) == true ) {
+			// console.log('[ver0] sequence found map: ', str_to_search_char_arr.slice(i,i+offset).join(''));
+			return [i, str_to_search_char_arr.slice(i,i+offset).join('')];
+		} else {
+			return '';
+		}
+	});
+
+	// Remove empty fields
+	const isNotEmpty = (num) => num.length > 0;
+	first_found_index = first_found_index.filter(isNotEmpty);
+	return first_found_index;
+}
+
+
+// ----------------------------------------------------
+
+async function find_sequential_characters_simple(str_to_search, strarr_to_find) {
+	
+	// In some cases, the str_to_search has unique sequential characters per interval of [search_index_start to search_index_end], that one may want to identify. This function allows one to search str_to_search over specific intervals of the string.
+	
+	// search_index_start: it is the index of str_to_search_char_arr, where one STARTS searching for sequencial matches of str_to_find_char_arr
+	// search_index_end: it is the index of str_to_search_char_arr, where one STOPS searching for sequencial matches of str_to_find_char_arr
+		
+	let str_to_search_char_arr = str_to_search.split('');
+	let search_length = str_to_search_char_arr.length;
+	const isNotEmpty = (num) => num.length > 0;
+	
+	let total_index = [];
+	strarr_to_find.forEach(async function(str_to_find, index) {
+		let str_to_find_char_arr = str_to_find.split('');
+		let sequential_range = str_to_find_char_arr.length;
+		
+		let ind = [...Array(search_length-sequential_range).keys()].map((x) => x);
+		let first_found_index = ind.map((i) => {
+			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
+				// console.log('[simple] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
+				return [i, str_to_search_char_arr.slice(i,i+sequential_range).join('')];
+			} else {
+				return '';
+			}
+		});
+	
+		// Remove empty fields
+		total_index = total_index.concat(first_found_index.filter(isNotEmpty));
+	});
+	return total_index;
+}
+
+// ----------------------------------------------------
+
+async function find_sequential_characters_complex(str_to_search, strarr_to_find, search_index_start, search_index_end) {
+	
+	// In some cases, the str_to_search has unique sequential characters per interval of [search_index_start to search_index_end], that one may want to identify. This function allows one to search str_to_search over specific intervals of the string.
+	
+	// search_index_start: it is the index of str_to_search_char_arr, where one STARTS searching for sequencial matches of str_to_find_char_arr
+	// search_index_end: it is the index of str_to_search_char_arr, where one STOPS searching for sequencial matches of str_to_find_char_arr
+		
+	let str_to_search_char_arr = str_to_search.split('');
+	let search_length = search_index_end - search_index_start;
+	const isNotEmpty = (num) => num.length > 0;
+	
+	let total_index = [];
+	strarr_to_find.forEach(async function(str_to_find, index) {
+		let str_to_find_char_arr = str_to_find.split('');
+		let sequential_range = str_to_find_char_arr.length;
+		
+		let ind = [...Array(search_length-sequential_range).keys()].map((x) => x+search_index_start);
+		let first_found_index = ind.map((i) => {
+			if ( [str_to_search_char_arr.slice(i,i+sequential_range).join('')].includes(str_to_find_char_arr.join('')) == true ) {
+				// console.log('[complex] sequence found map: ', str_to_search_char_arr.slice(i,i+sequential_range).join(''));
+				return [i, str_to_search_char_arr.slice(i,i+sequential_range).join('')];
+			} else {
+				return '';
+			}
+		});
+	
+		// Remove empty fields
+		total_index = total_index.concat(first_found_index.filter(isNotEmpty));
+	});
+	return total_index;
+}
+
+// ----------------------------------------------------
+
+async function counter(arr) {
+	
+	// Returns the unique values in vec, which a count of how many times the value appears
+	let unique = [...new Set(arr)];
+	
+	const isNotEmpty = (num) => num.length > 0;
+	const isNotNewlineChar = (num) => num != "\n";
+	
+	const unique1 = unique.filter(isNotEmpty);
+	const unique2 = unique1.filter(isNotNewlineChar);
+	
+	let count = [];
+	unique2.forEach(async function(val, index) {
+		const uq_vals = (num) => num === val;
+		const uq_val_arr = arr.filter(uq_vals);
+		count.push(uq_val_arr.length);
+	});
+	
+	// Create a dictionary for plotting directly
+	return {x_labels: unique, y_values: count};
+}
+
+// ----------------------------------------------------
+
+async function convert_dictionarylikestring_to_dictionary(dictc_string) {
+
+	// Transforms a dictionary string like the following: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}, into a JavaScript dictionary.
+	
+	// -----------------------
+	
+	// Remove all blank spaces from the input string
+	let data_string = await remove_characters_from_str(dictc_string.toString(), [" "]);
+
+	// Make a character array of the string
+	let char_arr = data_string.split('');
+	
+	let char_arr_orglen = char_arr.length;
+
+	// -----------------------
+	
+	// Design 2: without relying on JSON.parse
+	let flag = 'not_done';
+	let array0 = [];
+	let array1 = [];
+	let c = 0;
+	
+	while (flag == 'not_done') {
+		// console.log('char_arr: ', char_arr);
+		
+		// there are 3 unique characters to search for each loop
+		// : - indicates end of key
+		// [ - indicates start of array
+		// ] - indicates end of array OR ]," (for pandas split notation to avoid cutting rows in square brackets)
+		let uq0 = char_arr.findIndex((char) => char == ':');
+		// console.log('uq0: ', uq0);
+		
+		let uq1 = char_arr.findIndex((char) => char == '[');
+		// console.log('uq1: ', uq1);
+
+		// -----------------------
+		// For simplistic dictionary string: {'labels': ['c', 'a', 'b', 'd', 'f', 'g'], 'values': ['2', '1', '1', '1', '1', '1']}
+		let uq2 = char_arr.findIndex((char) => char == ']');  // end marker
+		// console.log('uq2: ', uq2);
+
+		// For complex dictionary string: {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]} correct uq2
+		// step 0: obtain string from after the current : to the end of string
+		let next_char_arr = char_arr.slice(uq1, char_arr_orglen);
+		// console.log('next_char_arr: ', next_char_arr);
+
+		// step 1: find the index of the next colon with respect to next_char_arr
+		let uq3_1stcolonstart = next_char_arr.findIndex((char) => char == ':');
+		// console.log('uq3_1stcolonstart: ', uq3_1stcolonstart);
+		if (uq3_1stcolonstart == 'undefined' || uq3_1stcolonstart < 0 ){ 
+			// The string is at the last object value
+			uq2 = char_arr.length-2;  // -2 is for removing ]} at the end
+		} else {
+			let uq3 = uq1 + uq3_1stcolonstart;  // index of 2nd colon to the right of the 1st colon
+			// step 2: find two types of end markers, and then update the index of the end of the data array
+			uq2 = await find_sequential_characters_complex(char_arr.join(''), ['],"', "],'"], uq2, uq3)
+				.then(async function(output_arr) {
+					return output_arr.pop()[0];
+				});
+			
+			// console.log('uq2 corrected: ', uq2);
+		}
+		// -----------------------
+
+		// -----------------------
+		// Clean the key: remove double quotes, quotes, spaces from the key string
+		// -----------------------
+		let key_str_to_clean = char_arr.slice(1, uq0).join('');
+		let key_string = await remove_characters_from_str(key_str_to_clean, ['"', "'", " ", "."]);
+		// console.log('key_string:', key_string);
+		
+		array0.push(key_string);
+		
+		// -----------------------
+
+		// -----------------------
+		// Clean the array data: remove spaces only, do not want to change the data
+		// In progress : there will be better ideas about how to clean it after loading a large dataframe of data
+		// -----------------------
+		// Obtain the value information as an array
+		let data_str_to_clean = char_arr.slice(uq1+1, uq2).join('');
+		console.log('data_str_to_clean:', data_str_to_clean);
+		let data_string = await remove_characters_from_str(data_str_to_clean, [" "]);
+		
+		let data_char_arr = data_string.split(',');
+		// console.log('data_char_arr:', data_char_arr);
+
+		// Ensure that array values are proper string or integer/float
+		let object1 = {};
+		data_char_arr = data_char_arr.map((num) => { object1[Number(num)] = Number(num); return object1[num] ?? num.toString(); });
+		// console.log('arr int float:', data_char_arr);
+		
+		array1.push(data_char_arr);
+		
+		// -----------------------
+		
+		// Reassign char_arr to remaining string to parse
+		char_arr = char_arr.slice(uq2+1, char_arr_orglen)
+
+		// -----------------------
+		
+		if (char_arr.length < 3 || c > 1000) { flag = 'done'; }
+		c = c + 1; // *** DATA LIMIT LENGTH IMPOSED: to force loop to stop ***
+		
+		// -----------------------
+	}
+	
+	return Object.fromEntries(array0.map((key, index) => [key, array1[index]]));
+}
+
+// ----------------------------------------------------
+
+async function remove_characters_from_str(str_to_clean, arr_of_char_to_remove) {
+
+	// str_to_clean should be a string
+	// (Example) arr_of_char_to_remove = ['"', "'", " ", "\n"]
+	let str_to_clean_char_arr = str_to_clean.split('');
+	console.log('str_to_clean_char_arr:', str_to_clean_char_arr);
+	
+	arr_of_char_to_remove.forEach(async function(char, index) {
+		const NoVal = (num) => num != char;
+		str_to_clean_char_arr = str_to_clean_char_arr.filter(NoVal);
+	});
+	return str_to_clean_char_arr.join('');
+}
+	
+// ----------------------------------------------------
+
+
+async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download_url) {
+
+	return await fetch(file_download_url)
+		.then(res => res.text())
+		.then(data => { 
+			console.log('data: ', data); return data;
+		})
+		.catch(error => { console.log(error); });
+}
+
+
+// ----------------------------------------------------
+	
+async function dictionary_to_array(dictc) {
+
+	let keys0 = Object.keys(dictc);
+	// console.log('keys0: ', keys0);
+	
+	var columnArray = [];
+	keys0.forEach(async function(key, ind) {
+		let col = [];
+		col.push(key);
+		col = col.concat(dictc[key]);
+		// console.log('col: ', col);
+		columnArray.push(col);
+	});
+	// console.log('columnArray: ', columnArray);
+
+	var rowArray = await transform_columnArray_into_rowArray(columnArray);
+	return rowArray;
+}
+	
+// ----------------------------------------------------
+
+async function transform_columnArray_into_rowArray(columnArray) {
+
+	let num_of_rows = columnArray[0].length;
+	let num_of_cols = columnArray.length;
+
+	var rowArray = [];
+	for (let r=0; r < num_of_rows; r++){
+		let row = [];
+		for (let c=0; c < num_of_cols; c++){
+			row.push(columnArray[c][r]);
+		}
+		rowArray.push(row);
+	}
+	return rowArray;
+}
+
+// ----------------------------------------------------
+
+async function transform_rowArray_into_columnArray(rowArray) {
+
+	let num_of_rows = rowArray.length;
+	let num_of_cols = rowArray[0].length;
+
+	var columnArray = [];
+	for (let c=0; c < num_of_cols; c++){
+		let col = [];
+		for (let r=0; r < num_of_rows; r++){
+			col.push(rowArray[r][c]);
+		}
+		columnArray.push(col);
+	}
+	return columnArray;
+}
+	
+// -------------------------------------------------
+
+
+async function transform_columnArray_into_dictionary(columnArray) {
+
+	let dictc = {};
+	for (let i=0; i < columnArray.length; i++){
+		let col = columnArray[i];
+		// Get key
+		let key = col.shift();
+		dictc[key] = col;
+	}
+	return dictc;
+}
+
+// -------------------------------------------------
+
+async function remove_dynamically_generatedTable() {
+  
+  // document.getElementById("dynamic_table").remove(); 
+  var elem = documenet.getElementById('dynamic_table');
+
+  if (typeof elem != 'undefined') { elem.parentNode.removeChild(elem); }
+
+}
+
+// -------------------------------------------------
+	
+async function generateTable_dynamically(rowArray) {
+
+  const tbl = document.createElement("table");
+	tbl.setAttribute("id", 'dynamic_table');
+	const tblBody = document.createElement("tbody");
+	tblBody.setAttribute("id", 'dynamic_table_body');
+  
+	// Create row cells dynamically
+	for (let i=0; i < rowArray.length; i++){
+		// create a table row
+		const row = document.createElement("tr");
+		tblBody.setAttribute("id", 'dynamic_table_body_row');
+
+		for (let j=0; j < rowArray[0].length; j++){
+			const cell = document.createElement("td");
+			cell.setAttribute("id", 'dynamic_table_body_row_cell');
+			
+			const cellText = document.createTextNode(`${rowArray[i][j]}`);
+			cell.appendChild(cellText);
+			row.appendChild(cell);
+		}
+
+		// add a row to the end of the table
+		tblBody.appendChild(row);
+	}
+	tbl.appendChild(tblBody);
+
+	document.getElementById("graph_output").appendChild(tbl);
+  }  
+
+	
+// ----------------------------------------------------
+
+
+</script>
+
+
+  </body>
+</html>
