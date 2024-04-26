@@ -798,7 +798,7 @@ async function transform_columnArray_into_dictionary(columnArray) {
 async function remove_dynamically_generatedTable() {
   
   // document.getElementById("dynamic_table").remove(); 
-  var tbl = document.getElementById('dynamic_table');
+  let tbl = document.getElementById('dynamic_table');
   console.log('tbl: ', tbl);  // tbl:  null
   console.log('typeof tbl: ', typeof tbl); // typeof tbl:  object
 
@@ -821,7 +821,7 @@ async function remove_dynamically_generatedTable() {
 	
 async function generateTable_dynamically(rowArray) {
 
-	tbl = document.getElementById('dynamic_table');
+	let tbl = document.getElementById('dynamic_table');
 	
 	const tblBody = document.createElement("tbody");
   
