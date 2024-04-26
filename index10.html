@@ -793,35 +793,12 @@ async function transform_columnArray_into_dictionary(columnArray) {
 	return dictc;
 }
 
-// -------------------------------------------------
-
-async function remove_dynamically_generatedTable() {
-  
-  // document.getElementById("dynamic_table").remove(); 
-  let tbl = document.getElementById('dynamic_table');
-  console.log('tbl: ', tbl);  // tbl:  null
-  console.log('typeof tbl: ', typeof tbl); // typeof tbl:  object
-
-  try {
-	  
-	  if (tbl) { // implying not null
-		  tbl.parentNode.removeChild(tbl);
-	  } else {
-		tbl = document.createElement("table");
-		tbl.setAttribute("id", 'dynamic_table');
-		
-	  }
-  } catch(error) {
-	console.log(error);
-  }
-
-}
 
 // -------------------------------------------------
 	
 async function generateTable_dynamically(rowArray) {
 
-	let tbl = document.getElementById('dynamic_table');
+	var tbl = document.getElementById('dynamic_table');
 	
 	const tblBody = document.createElement("tbody");
   
