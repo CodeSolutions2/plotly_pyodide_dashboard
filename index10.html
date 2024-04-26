@@ -82,15 +82,16 @@ For Line chart: enter the JSON string into the backend input area
 <label for="modify_data_label">Check to modify data with selected Backend engine: </label>
 <input id="modify_data" name="modify_data" value="false" type="checkbox" />
 <br>
-<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+<div id="output" style="font-family:courier;font-size:24px;"></div>
 <br>
-<div id="notifications" style="font-family:courier;font-size:15px;height:300px"></div>
+<div id="notifications" style="font-family:courier;font-size:15px;"></div>
 <br>
-<div id="errors" style="font-family:courier;font-size:15px;height:300px"></div>
+<div id="errors" style="font-family:courier;font-size:15px;"></div>
 <br>
-<div id="js_plot_bar" style="width:600px;height:250px;"></div>
+<!-- style="width:600px;height:250px;" -->
+<div id="js_plot_bar"></div> 
 <br><br>
-<div id="js_plot_line" style="width:600px;height:250px;"></div>
+<div id="js_plot_line"></div>
 </td>
         
 </tr>
@@ -243,7 +244,7 @@ async function test_python_function() {
 			// Convert dictionary to rowArray
 			return await dictionary_to_array(dictc);
 		})
-    .then(async function(rowArray) { await remove_dynamically_generatedTable(); return rowArray; })
+   // .then(async function(rowArray) { await remove_dynamically_generatedTable(); return rowArray; })
 		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
 		.catch(error => { console.log(error); });
 	
@@ -272,8 +273,11 @@ async function javascript_load_data(csv_dataset_url) {
 		  var rowArray = rowArray_w_index;  // rowArray_wo_index
 		  
 		  // Plot in table
-      await remove_dynamically_generatedTable()
-        .then(async function() { await generateTable_dynamically(rowArray); });
+		  // await remove_dynamically_generatedTable().then(async function() { await generateTable_dynamically(rowArray); });
+
+		  // OR
+
+		  await generateTable_dynamically(rowArray);
 
 		  // -----------------------
 		  
@@ -798,12 +802,17 @@ async function remove_dynamically_generatedTable() {
   console.log('tbl: ', tbl);  // tbl:  null
   console.log('typeof tbl: ', typeof tbl); // typeof tbl:  object
 
-  if (tbl) { // implying not null
-	  tbl.parentNode.removeChild(tbl);
-  } else {
-	tbl = document.createElement("table");
-	tbl.setAttribute("id", 'dynamic_table');
-	
+  try {
+	  
+	  if (tbl) { // implying not null
+		  tbl.parentNode.removeChild(tbl);
+	  } else {
+		tbl = document.createElement("table");
+		tbl.setAttribute("id", 'dynamic_table');
+		
+	  }
+  } catch(error) {
+	console.log(error);
   }
 
 }
@@ -815,13 +824,11 @@ async function generateTable_dynamically(rowArray) {
 	tbl = document.getElementById('dynamic_table');
 	
 	const tblBody = document.createElement("tbody");
-	tblBody.setAttribute("id", 'dynamic_table_body');
   
 	// Create row cells dynamically
 	for (let i=0; i < rowArray.length; i++){
 		// create a table row
 		const row = document.createElement("tr");
-		tblBody.setAttribute("id", 'dynamic_table_body_row');
 
 		for (let j=0; j < rowArray[0].length; j++){
 			const cell = document.createElement("td");
