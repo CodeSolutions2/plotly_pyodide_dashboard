@@ -780,8 +780,10 @@ async function remove_dynamically_generatedTable() {
   
   // document.getElementById("dynamic_table").remove(); 
   var elem = document.getElementById('dynamic_table');
+  console.log('elem: ', elem);
+  console.log('elem.length: ', elem.length);
 
-  if (typeof elem != 'undefined') { elem.parentNode.removeChild(elem); }
+  if (typeof elem != 'undefined' || elem != 'null' ) { elem.parentNode.removeChild(elem); }
 
 }
 
