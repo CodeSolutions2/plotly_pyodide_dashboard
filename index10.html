@@ -238,7 +238,7 @@ async function test_python_function() {
 			// Convert dictionary to rowArray
 			return await dictionary_to_array(dictc);
 		})
-    .then(async function(rowArray) { await remove_dynamically_generatedTable(); })
+    .then(async function(rowArray) { await remove_dynamically_generatedTable(); return rowArray; })
 		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
 		.catch(error => { console.log(error); });
 	
