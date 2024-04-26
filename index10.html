@@ -148,7 +148,7 @@ async function load_pyodide() {
         return pyodide;
 }
 
-// var pyodideReadyPromise = load_pyodide();
+var pyodideReadyPromise = load_pyodide();
 
 	
 // ----------------------------------------------------
@@ -196,8 +196,9 @@ async function show_selected_csv_data() {
 			outn.innerHTML = 'Type Python into the Backend input to modify the existing table data. Push [Step 1] to process code input.';
 		}
 	
-		// await python_load_data(csv_dataset_url);
-		await test_python_function();
+		await python_load_data(csv_dataset_url);
+		// OR
+		// await test_python_function();
 	}
 	
 	if (python_pyodide == false && javascript == true) {
@@ -220,7 +221,6 @@ async function python_load_data(csv_dataset_url) {
 
        try {
 	       let result = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd; url_content = open_url("+`"${csv_dataset_url}"`+"); df = pd.read_csv(url_content); df.to_json(orient='split')");
-	       // {"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}
 	       
 	       await output_results_load_data(result);
        } catch (error){ 
