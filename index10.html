@@ -195,10 +195,12 @@ async function show_selected_csv_data() {
 		} else if (document.getElementById("modify_data").checked == true) {
 			outn.innerHTML = 'Type Python into the Backend input to modify the existing table data. Push [Step 1] to process code input.';
 		}
-	
+
+		// --------------------------------------
 		await python_load_data(csv_dataset_url);
 		// OR
 		// await test_python_function();
+		// --------------------------------------
 	}
 	
 	if (python_pyodide == false && javascript == true) {
@@ -229,7 +231,26 @@ async function python_load_data(csv_dataset_url) {
 }
 
 
-// async function output_results_load_data(result) {
+async function output_results_load_data(result) {
+	
+	await convert_dictionarylikestring_to_dictionary(result)
+		.then(async function(dictc) {
+			delete dictc.columns;
+			console.log('dictc: ', dictc);
+			
+			// Display dictionary on page for Step 2: plotting
+			outp.innerHTML = JSON.stringify(dictc);
+
+			// Convert dictionary to rowArray
+			return await dictionary_to_array(dictc);
+		})
+   // .then(async function(rowArray) { await remove_dynamically_generatedTable(); return rowArray; })
+		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
+		.catch(error => { console.log(error); });
+	
+}
+	
+
 async function test_python_function() {
 	var result = '{"columns":["a"],"index":[0,1,2,3,4,5,6],"data":[["a"],["b"],["c"],["c"],["f"],["d"],["g"]]}';
 
