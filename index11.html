@@ -519,7 +519,7 @@ async function run_code_interpreter() {
 			var index_of_equal_sign = each_input_arr.findIndex((element) => element == '=');
 			console.log('index_of_equal_sign: ', index_of_equal_sign);
 			
-			if (index_of_equal_sign.length > 0 && index_of_equal_sign != unidentified) {
+			if (index_of_equal_sign != -1) {
 				
 				var variable = each_input_arr.slice(0,index_of_equal_sign-1).join("");
 				console.log('variable: ', variable);
