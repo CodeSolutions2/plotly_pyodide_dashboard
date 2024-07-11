@@ -523,12 +523,8 @@ async function run_code_interpreter() {
 				console.log('assignment: ', assignment);
 
 				// Last character
-				var last_character = each_input_arr.slice(index_of_equal_sign-1, index_of_equal_sign);
-				console.log('last_character: ', last_character);
-				
-				// Remove more than one repeating space
-				var variable_arr = variable.split("").slice(0,(variable.length)-1);
-				console.log('variable_arr: ', variable_arr);
+				var last_character_arr = each_input_arr.slice(index_of_equal_sign-1, index_of_equal_sign);
+				console.log('last_character_arr: ', last_character_arr);
 				
 				var is_it_first_time_occurance = 'yes';
 				var variable_arr_mod = variable.split("").slice(0,(variable.length)-1).map((num, ind) => {
@@ -556,7 +552,7 @@ async function run_code_interpreter() {
 					}
 				});
 				
-				variable_arr_mod = variable_arr_mod.concat([last_character]);
+				variable_arr_mod = variable_arr_mod.concat(last_character_arr);
 				console.log('variable_arr_mod: ', variable_arr_mod);
 				
 				const removeMarker = (num) => num != "del";
