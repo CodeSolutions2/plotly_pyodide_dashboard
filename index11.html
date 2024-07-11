@@ -96,7 +96,8 @@ For Line chart: enter the JSON string into the backend input area
 <!-- <br> -->
 <!-- <label for="modify_data_label">Check to modify data with selected Backend engine: </label> -->
 <!-- <input id="modify_data" name="modify_data" value="false" type="checkbox" /> -->
-
+<button id="run_code_interpreter" onclick="run_code_interpreter()" style="display:block">Run code interpreter</button>
+	
 <br>
 <table id="dynamic_table" style='text-align: left; width: 300px; display:block'>
 <!-- dynamically add rows here -->
@@ -151,6 +152,7 @@ const oute = document.getElementById('errors');
 
 // ----------------------------------------------------
 
+// Pyodide loads automatically
 async function load_pyodide() {
 	// -----------------------
 	// const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/dev/full/';
@@ -165,7 +167,6 @@ async function load_pyodide() {
 }
 
 var pyodideReadyPromise = load_pyodide();
-
 	
 // ----------------------------------------------------
 
@@ -471,7 +472,46 @@ async function line_chart_arrayInputOnly() {
 	// -----------------------------------------------
 	
 }
+
+// -----------------------------------------------
+
+async function run_code_interpreter() {
 	
+	const python_pyodide = document.getElementById("python_pyodide").checked;
+	const javascript = document.getElementById("javascript").checked;
+
+	if (python_pyodide == true && javascript == false) {
+		// python_pyodide
+		var pyodide = await pyodideReadyPromise;
+		
+		try {
+			let user_input = document.getElementById("backend_input").value;
+			document.getElementById('output').innerHTML = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd;"+user_input+");
+		       document.getElementById('notifications').innerHTML = '';
+	       } catch (error){ 
+		       document.getElementById('errors').innerHTML = error;
+	       }
+	}
+	
+	if (python_pyodide == false && javascript == true) {
+		// javascript
+		let user_input = document.getElementById("backend_input").value;
+		document.getElementById('output').innerHTML = eval(user_input);
+		document.getElementById('notifications').innerHTML = '';
+	}
+	
+	if (python_pyodide == false && javascript == false) {
+		document.getElementById('notifications').innerHTML = 'Please select one of the Backend computational engines, Python or JavaScript.';
+	}
+		
+}
+	
+// -----------------------------------------------
+
+
+
+
+
 	
 // ----------------------------------------------------
 // SUBFUNCTIONS
