@@ -526,7 +526,7 @@ async function run_code_interpreter() {
 				var variable_arr = variable.split("");
 				var is_it_first_time_occurance = 'yes';
 				var variable_arr_mod = variable_arr.slice(0,(variable_arr.length)-1).map((num, ind) => {
-					if (num == " " && variable_arr.at(ind+1) == " ") {
+					if ((num == " " && variable_arr.at(ind+1) == " ") || (num == "del" && variable_arr.at(ind+1) == " ")) {
 						// Detection of consecutive spaces
 						if (is_it_first_time_occurance == 'no') {
 							// fill in marker to remove these
