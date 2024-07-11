@@ -585,7 +585,7 @@ async function run_code_interpreter() {
 				variable_name = variable_name_arr.filter(isNotEmpty).at(0);
 				console.log('variable_name: ', variable_name);
 
-				// Remove spaces in the variable name
+				// (unnecessary) Remove spaces in the variable name
 				variable_name = variable_name.split("").filter(isNotEmpty).join("");
 				console.log('variable_name: ', variable_name);
 				
