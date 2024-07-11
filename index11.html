@@ -588,8 +588,14 @@ async function run_code_interpreter() {
 
 			} else {
 				// need to modify each_input to rename the variables as objects
+				console.log('input_text: ', input_text);
+				console.log('re: ', re);
+				
 				out = eval(each_input);
 				console.log('out: ', out);
+				if (out == null) {
+					out = "null";
+				}
 				document.getElementById('output').innerHTML = out;
 			} // end of if statement
 		}
