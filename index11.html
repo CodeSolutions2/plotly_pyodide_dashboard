@@ -591,11 +591,14 @@ async function run_code_interpreter() {
 				
 				if (variable_type == "const") {
 					// way 0: use an object, but the problem is that one needs to rename the variables in all the assignments
+					eval(`const ${variable_name}=${assignment}`);
 					// way 1: try to make a dynamic global variable
 					window[variable_name] = eval(assignment);
 				} else if (variable_type == "var") {
+					eval(`var ${variable_name}=${assignment}`);
 					window[variable_name] = eval(assignment);
 				} else if (variable_type == "let") {
+					eval(`let ${variable_name}=${assignment}`);
 					window[variable_name] = eval(assignment);
 				}
 
