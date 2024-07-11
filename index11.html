@@ -568,6 +568,8 @@ async function run_code_interpreter() {
 				console.log('variable_type: ', variable_type);
 				
 				var variable_name = variable.split(`${variable_type} `);
+				const isNotEmpty = (num) => num.length > 0;
+				variable_name = variable_name.filter(isNotEmpty).at(0);
 				console.log('variable_name: ', variable_name);
 				
 				if (variable_type == "const") {
