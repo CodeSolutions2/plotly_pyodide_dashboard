@@ -500,8 +500,11 @@ async function run_code_interpreter() {
 		console.log('inputs: ', inputs);
 
 		var out;
-		var regexp = /[=]/g;
-		var regexp1 = /[const|var|let]/g;
+		// var regexp = /[=]/g;
+		// var regexp1 = /[const|var|let]/g;
+		var strs_to_find = ["const", "var", "let"];
+
+		
 		for (let i=0; i<inputs.length; i++) {
 
 			var each_input = inputs.at(i);
@@ -529,16 +532,51 @@ async function run_code_interpreter() {
 				var assignment = each_input_arr.slice(ind+1,each_input_arr.length).join("");
 				console.log('assignment: ', assignment);
 
-				// remove more than one repeating space
-				variable = variable.replace(/\s+/g, ' ');
-				var variable_type = variable.match(regexp1);
+				// Remove more than one repeating space
+				// variable = variable.replace(/\s+/g, ' ');
+				// OR
+				var variable_arr = variable.split("");
+				var is_it_first_time_occurance = 'yes';
+				var variable_arr_mod = variable_arr.slice(0,(variable_arr.length)-1).map((num, ind) => {
+					if (num == " " && variable_arr.at(ind+1) == " ") {
+						// Detection of consecutive spaces
+						if (is_it_first_time_occurance == 'no') {
+							// fill in marker to remove these
+							return "del";
+						} else {
+							// keep first space
+							is_it_first_time_occurance = 'no';
+							return num;
+						}
+					} else {
+						is_it_first_time_occurance = 'yes';
+						return num;
+					}
+					prev_res = num;
+				});
+				console.log('variable_arr_mod: ', variable_arr_mod);
+				const removeMarker = (num) => num != "del";
+				variable = variable_arr_mod.filter(removeMarker).join("");
+				console.log('variable: ', variable);
+
+				// Find the variable type
+				// var variable_type = variable.match(regexp1);
+				// OR
+				var variable_type = [];
+				for (let j=0; j<strs_to_find.length; j++) {
+					let first_found_index = await find_sequential_characters(variable, strs_to_find.at(j));			
+					if (first_found_index.length > 0){
+						variable_type.push(strs_to_find[j]);
+					}
+				}
 				console.log('variable_type: ', variable_type);
 				
-				var variable_name = variable.split(` ${variable_type}`);
+				var variable_name = variable.split(`${variable_type} `);
 				console.log('variable_name: ', variable_name);
 				
 				if (variable_type == "const") {
-					// easy way
+					// way 0: use and object, but the problem is that one needs to rename the variables in all the assignments
+					// way 1: try to make a dynamic global variable
 					window[variable_name] = eval(assignment);
 					// try to look for another way
 				} else if (variable_type == "var") {
@@ -555,7 +593,6 @@ async function run_code_interpreter() {
 				console.log('out: ', out);
 				document.getElementById('output').innerHTML = out;
 			} // end of if statement
-			
 		}
 		
 		
