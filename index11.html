@@ -509,10 +509,10 @@ async function run_code_interpreter() {
 			
 			// determine if "=" is in the string - find the first "=" from left to right
 			var each_input_arr = each_input.split("");
-			// console.log('each_input_arr: ', each_input_arr);
+			console.log('each_input_arr: ', each_input_arr);
 			
 			var index_of_equal_sign = each_input_arr.findIndex((element) => element == '=');
-			// console.log('index_of_equal_sign: ', index_of_equal_sign);
+			console.log('index_of_equal_sign: ', index_of_equal_sign);
 			
 			if (index_of_equal_sign != -1) {
 				
