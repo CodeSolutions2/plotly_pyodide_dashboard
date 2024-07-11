@@ -91,6 +91,7 @@ For Line chart: enter the JSON string into the backend input area
 <h2>Code interpreter</h2>
 <br>
 <h3>[Step 3] Backend input: Select a Backend computational engine and enter Python or JavaScript.</h3>
+Only use variables: out0, out1, out2, out3, out4, out5, out6, out7, out8, out9 at the moment.
 <br>
 <input id="backend_input" type="text" value="" placeholder="Select a Backend computational engine and enter Python or JavaScript" rows="10" cols="100" style="display:block; text-align: left; height: 100px; width: 500px;">
 <!-- <br> -->
@@ -505,6 +506,13 @@ async function run_code_interpreter() {
 		var out0;
 		var out1;
 		var out2;
+		var out3;
+		var out4;
+		var out5;
+		var out6;
+		var out7;
+		var out8;
+		var out9;
 		
 		for (let i=0; i<inputs.length; i++) {
 
@@ -595,7 +603,7 @@ async function run_code_interpreter() {
 				
 				if (variable_type == "const") {
 					// way 0: use an object, but the problem is that one needs to rename the variables in all the assignments
-					const eval(`${variable_name}`) = eval(`${assignment}`);
+					//const eval(`${variable_name}`) = eval(`${assignment}`);  // gives error
 					eval(`const ${variable_name}=${assignment}`);
 					// way 1: try to make a dynamic global variable
 					window[variable_name] = eval(assignment);
