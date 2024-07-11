@@ -191,7 +191,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 		      });
 		      return file_objects;
 		})
-		.catch(error => { console.log(error); });
+		.catch(error => { document.getElementById('errors').innerHTML = error; });
 }
 
 // ----------------------------------------------------
@@ -243,7 +243,7 @@ async function python_load_data(csv_dataset_url) {
 	       
 	       await output_results_load_data(result);
        } catch (error){ 
-	       console.log('error: ', error);
+	       document.getElementById('errors').innerHTML = error;
        }
 }
 
@@ -263,7 +263,7 @@ async function output_results_load_data(result) {
 		})
    // .then(async function(rowArray) { await remove_dynamically_generatedTable(); return rowArray; })
 		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
-		.catch(error => { console.log(error); });
+		.catch(error => { document.getElementById('errors').innerHTML = error; });
 	
 }
 	
@@ -284,7 +284,7 @@ async function test_python_function() {
 		})
    // .then(async function(rowArray) { await remove_dynamically_generatedTable(); return rowArray; })
 		.then(async function(rowArray) { await generateTable_dynamically(rowArray); })
-		.catch(error => { console.log(error); });
+		.catch(error => { document.getElementById('errors').innerHTML = error; });
 	
 }
 // ----------------------------------------------------
@@ -333,7 +333,7 @@ async function javascript_load_data(csv_dataset_url) {
 		  
 		  // -----------------------
 	  })
-	  .catch(error => { console.log(error); });
+	  .catch(error => { document.getElementById('errors').innerHTML = error; });
   
 }
 	
@@ -591,7 +591,8 @@ async function run_code_interpreter() {
 				console.log('input_text: ', input_text);
 				console.log('re: ', re);
 				
-				out = eval(each_input);
+				out = eval(each_input)
+					.catch(error => { document.getElementById('errors').innerHTML = error; });
 				console.log('out: ', out);
 				if (out == null) {
 					out = "null";
@@ -899,7 +900,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI_directurl(file_download
 		.then(data => { 
 			console.log('data: ', data); return data;
 		})
-		.catch(error => { console.log(error); });
+		.catch(error => { document.getElementById('errors').innerHTML = error; });
 }
 
 
