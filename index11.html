@@ -590,9 +590,13 @@ async function run_code_interpreter() {
 				var variable_name_arr = variable.split(`${variable_type} `);
 				console.log('variable_name_arr: ', variable_name_arr);
 				
-				// Remove spaces
+				// Remove spaces in the array
 				const isNotEmpty = (num) => num.length > 0;
-				variable_name = variable_name_arr.filter(isNotEmpty);
+				variable_name = variable_name_arr.filter(isNotEmpty).at(0);
+				console.log('variable_name: ', variable_name);
+
+				// Remove spaces in the variable name
+				variable_name = variable_name.split("").filter(isNotEmpty).join("");
 				console.log('variable_name: ', variable_name);
 				
 				if (variable_type == "const") {
