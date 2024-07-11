@@ -487,9 +487,9 @@ async function run_code_interpreter() {
 		try {
 			let user_input = document.getElementById("backend_input").value;
 			document.getElementById('output').innerHTML = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd;"+user_input);
-		       document.getElementById('notifications').innerHTML = '';
+			document.getElementById('notifications').innerHTML = '';
 	       } catch (error){ 
-		       document.getElementById('errors').innerHTML = error;
+			document.getElementById('errors').innerHTML = error;
 	       }
 	}
 	
@@ -500,17 +500,12 @@ async function run_code_interpreter() {
 		// console.log('inputs: ', inputs);
 
 		var out;
-		// var regexp = /[=]/g;
-		// var regexp1 = /[const|var|let]/g;
 		var strs_to_find = ["const", "var", "let"];
-
 		
 		for (let i=0; i<inputs.length; i++) {
 
 			var each_input = inputs.at(i);
 			// console.log('each_input: ', each_input);
-
-			// var temp = {};
 			
 			// determine if "=" is in the string - find the first "=" from left to right
 			var each_input_arr = each_input.split("");
@@ -528,8 +523,6 @@ async function run_code_interpreter() {
 				// console.log('assignment: ', assignment);
 
 				// Remove more than one repeating space
-				// variable = variable.replace(/\s+/g, ' ');
-				// OR
 				var variable_arr = variable.split("");
 				var is_it_first_time_occurance = 'yes';
 				var variable_arr_mod = variable_arr.slice(0,(variable_arr.length)-1).map((num, ind) => {
@@ -556,8 +549,6 @@ async function run_code_interpreter() {
 				// console.log('variable: ', variable);
 
 				// Find the variable type
-				// var variable_type = variable.match(regexp1);
-				// OR
 				var variable_type = [];
 				for (let j=0; j<strs_to_find.length; j++) {
 					let first_found_index = await find_sequential_characters(variable, strs_to_find.at(j));			
@@ -574,16 +565,13 @@ async function run_code_interpreter() {
 				console.log('variable_name: ', variable_name);
 				
 				if (variable_type == "const") {
-					// way 0: use and object, but the problem is that one needs to rename the variables in all the assignments
+					// way 0: use an object, but the problem is that one needs to rename the variables in all the assignments
 					// way 1: try to make a dynamic global variable
 					window[variable_name] = eval(assignment);
-					// try to look for another way
 				} else if (variable_type == "var") {
 					window[variable_name] = eval(assignment);
-					// try to look for another way
 				} else if (variable_type == "let") {
 					window[variable_name] = eval(assignment);
-					// try to look for another way
 				}
 
 			} else {
@@ -599,7 +587,7 @@ async function run_code_interpreter() {
 					document.getElementById('errors').innerHTML = error;
 				}
 				
-			} // end of if statement
+			}
 		}
 		document.getElementById('notifications').innerHTML = '';
 	}
