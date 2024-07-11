@@ -496,7 +496,16 @@ async function run_code_interpreter() {
 	if (python_pyodide == false && javascript == true) {
 		// javascript
 		let user_input = document.getElementById("backend_input").value;
-		document.getElementById('output').innerHTML = eval(user_input);
+		var inputs = user_input.split(';');
+
+		var out;
+		for (let i=0; i<inputs.length; i++) {
+			out = eval(user_input);
+			console.log('out: ', out);
+		}
+		
+		document.getElementById('output').innerHTML = out;
+		
 		document.getElementById('notifications').innerHTML = '';
 	}
 	
