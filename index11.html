@@ -531,21 +531,38 @@ async function run_code_interpreter() {
 					console.log('num: ', num);
 					console.log('is_it_first_time_occurance: ', is_it_first_time_occurance);
 					if (num == " " || num == "del") {
-						if ( variable.split("").at(ind+1) == " ") {
-							// Detection of consecutive spaces
-							if (is_it_first_time_occurance == 'no') {
-								// fill in marker to remove these
-								return "del";
-							} else {
-								// keep first space
-								is_it_first_time_occurance = 'no';
-								return num;
-							}
-						} else {
-							// case current=' ', next='char'
+						if (is_it_first_time_occurance == 'no') {
+							// fill in marker to remove these
 							is_it_first_time_occurance = 'yes';
 							return "del";
+						} else {
+							// keep first space
+							is_it_first_time_occurance = 'no';
+							return num;
 						}
+						
+						// if ( variable.split("").at(ind+1) == " ") {
+						// 	// Detection of consecutive spaces
+						// 	if (is_it_first_time_occurance == 'no') {
+						// 		// fill in marker to remove these
+						// 		return "del";
+						// 	} else {
+						// 		// keep first space
+						// 		is_it_first_time_occurance = 'no';
+						// 		return num;
+						// 	}
+						// } else {
+						// 	// case current=' ', next='char'
+						// 	if (is_it_first_time_occurance == 'no') {
+						// 		// fill in marker to remove these
+						// 		is_it_first_time_occurance = 'yes';
+						// 		return "del";
+						// 	} else {
+						// 		// keep first space
+						// 		is_it_first_time_occurance = 'no';
+						// 		return num;
+						// 	}
+						// }
 					} else {
 						is_it_first_time_occurance = 'yes';
 						return num;
