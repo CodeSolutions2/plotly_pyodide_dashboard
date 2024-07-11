@@ -512,9 +512,11 @@ async function run_code_interpreter() {
 
 			// var temp = {};
 			
-			// determine if = is in the string
-			// Find the operand character: =
-			if (regexp.test(each_input) == true) {
+			// determine if "=" is in the string
+			var index_of_equal_sign = each_input_arr.findIndex((element) => element == '=');
+			console.log('index_of_equal_sign: ', index_of_equal_sign);
+			
+			if (index_of_equal_sign.length > 0 && index_of_equal_sign != unidentified) {
 				// the input is an assignment
 				
 				// var [variable, assignment] = each_input.split("=");
@@ -523,10 +525,7 @@ async function run_code_interpreter() {
 				var each_input_arr = each_input.split("");
 				console.log('each_input_arr: ', each_input_arr);
 				
-				var ind = each_input_arr.findIndex((element) => element == '=');
-				console.log('ind: ', ind);
-				
-				var variable = each_input_arr.slice(0,ind-1).join("");
+				var variable = each_input_arr.slice(0,index_of_equal_sign-1).join("");
 				console.log('variable: ', variable);
 				
 				var assignment = each_input_arr.slice(ind+1,each_input_arr.length).join("");
