@@ -516,7 +516,7 @@ async function run_code_interpreter() {
 			
 			if (index_of_equal_sign != -1) {
 				
-				var variable = each_input_arr.slice(0,index_of_equal_sign-1).join("");
+				var variable = each_input_arr.slice(0,index_of_equal_sign).join("");
 				console.log('variable: ', variable);
 				
 				var assignment = each_input_arr.slice(index_of_equal_sign+1,each_input_arr.length).join("");
@@ -540,6 +540,10 @@ async function run_code_interpreter() {
 								is_it_first_time_occurance = 'no';
 								return num;
 							}
+						} else {
+							// case current=' ', next='char'
+							is_it_first_time_occurance = 'yes';
+							return "del";
 						}
 					} else {
 						is_it_first_time_occurance = 'yes';
