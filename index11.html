@@ -524,7 +524,7 @@ async function run_code_interpreter() {
 				var variable = each_input_arr.slice(0,index_of_equal_sign-1).join("");
 				console.log('variable: ', variable);
 				
-				var assignment = each_input_arr.slice(ind+1,each_input_arr.length).join("");
+				var assignment = each_input_arr.slice(index_of_equal_sign+1,each_input_arr.length).join("");
 				console.log('assignment: ', assignment);
 
 				// Remove more than one repeating space
