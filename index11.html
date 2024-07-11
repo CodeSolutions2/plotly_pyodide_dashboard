@@ -517,7 +517,7 @@ async function run_code_interpreter() {
 			if (index_of_equal_sign != -1) {
 				
 				var variable = each_input_arr.slice(0,index_of_equal_sign-1).join("");
-				// console.log('variable: ', variable);
+				console.log('variable: ', variable);
 				
 				var assignment = each_input_arr.slice(index_of_equal_sign+1,each_input_arr.length).join("");
 				console.log('assignment: ', assignment);
@@ -527,21 +527,24 @@ async function run_code_interpreter() {
 				console.log('variable_arr: ', variable_arr);
 				var is_it_first_time_occurance = 'yes';
 				var variable_arr_mod = variable_arr.slice(0,(variable_arr.length)-1).map((num, ind) => {
-					if ((num == " " && variable_arr.at(ind+1) == " ") || (num == "del" && variable_arr.at(ind+1) == " ")) {
-						// Detection of consecutive spaces
-						if (is_it_first_time_occurance == 'no') {
-							// fill in marker to remove these
-							return "del";
-						} else {
-							// keep first space
-							is_it_first_time_occurance = 'no';
-							return num;
+					console.log('num: ', num);
+					console.log('is_it_first_time_occurance: ', is_it_first_time_occurance);
+					if (num == " " || num == "del") {
+						if ( variable_arr.at(ind+1) == " ") {
+							// Detection of consecutive spaces
+							if (is_it_first_time_occurance == 'no') {
+								// fill in marker to remove these
+								return "del";
+							} else {
+								// keep first space
+								is_it_first_time_occurance = 'no';
+								return num;
+							}
 						}
 					} else {
 						is_it_first_time_occurance = 'yes';
 						return num;
 					}
-					prev_res = num;
 				});
 				console.log('last character: ', [variable_arr.pop()]);
 				variable_arr_mod = variable_arr_mod.concat([variable_arr.pop()]);
