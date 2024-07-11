@@ -565,6 +565,7 @@ async function run_code_interpreter() {
 						variable_type.push(strs_to_find[j]);
 					}
 				}
+				variable_type = variable_type.at(0);
 				console.log('variable_type: ', variable_type);
 				
 				var variable_name = variable.split(`${variable_type} `);
