@@ -498,7 +498,7 @@ async function run_code_interpreter() {
 		// javascript
 		let user_input = document.getElementById("backend_input").value;
 		var inputs = user_input.split(';');
-		console.log('inputs: ', inputs);
+		// console.log('inputs: ', inputs);
 
 		var out;
 		var strs_to_find = ["const", "var", "let"];
@@ -517,31 +517,31 @@ async function run_code_interpreter() {
 		for (let i=0; i<inputs.length; i++) {
 
 			var each_input = inputs.at(i);
-			console.log('each_input: ', each_input);
+			// console.log('each_input: ', each_input);
 			
 			// determine if "=" is in the string - find the first "=" from left to right
 			var each_input_arr = each_input.split("");
-			console.log('each_input_arr: ', each_input_arr);
+			// console.log('each_input_arr: ', each_input_arr);
 			
 			var index_of_equal_sign = each_input_arr.findIndex((element) => element == '=');
-			console.log('index_of_equal_sign: ', index_of_equal_sign);
+			// console.log('index_of_equal_sign: ', index_of_equal_sign);
 			
 			if (index_of_equal_sign != -1) {
 				
 				var variable = each_input_arr.slice(0,index_of_equal_sign).join("");
-				console.log('variable: ', variable);
+				// console.log('variable: ', variable);
 				
 				var assignment = each_input_arr.slice(index_of_equal_sign+1,each_input_arr.length).join("");
-				console.log('assignment: ', assignment);
+				// console.log('assignment: ', assignment);
 
 				// Last character
 				var last_character_arr = each_input_arr.slice(index_of_equal_sign-1, index_of_equal_sign);
-				console.log('last_character_arr: ', last_character_arr);
+				// console.log('last_character_arr: ', last_character_arr);
 				
 				var is_it_first_time_occurance = 'yes';
 				var variable_arr_mod = variable.split("").slice(0,(variable.length)-1).map((num, ind) => {
-					console.log('num: ', num);
-					console.log('is_it_first_time_occurance: ', is_it_first_time_occurance);
+					// console.log('num: ', num);
+					// console.log('is_it_first_time_occurance: ', is_it_first_time_occurance);
 					if (num == " " || num == "del") {
 						if ( variable.split("").at(ind+1) == " ") {
 						 	// Detection of consecutive spaces
@@ -572,11 +572,11 @@ async function run_code_interpreter() {
 				});
 				
 				variable_arr_mod = variable_arr_mod.concat(last_character_arr);
-				console.log('variable_arr_mod: ', variable_arr_mod);
+				// console.log('variable_arr_mod: ', variable_arr_mod);
 				
 				const removeMarker = (num) => num != "del";
 				variable = variable_arr_mod.filter(removeMarker).join("");
-				console.log('variable: ', variable);
+				// console.log('variable: ', variable);
 
 				// Find the variable type
 				var variable_type = [];
@@ -587,31 +587,31 @@ async function run_code_interpreter() {
 					}
 				}
 				variable_type = variable_type.at(0);
-				console.log('variable_type: ', variable_type);
+				// console.log('variable_type: ', variable_type);
 				
 				var variable_name_arr = variable.split(`${variable_type} `);
-				console.log('variable_name_arr: ', variable_name_arr);
+				// console.log('variable_name_arr: ', variable_name_arr);
 				
 				// Remove spaces in the array
 				const isNotEmpty = (num) => num.length > 0;
 				variable_name = variable_name_arr.filter(isNotEmpty).at(0);
-				console.log('variable_name: ', variable_name);
+				// console.log('variable_name: ', variable_name);
 
 				// (unnecessary) Remove spaces in the variable name
 				variable_name = variable_name.split("").filter(isNotEmpty).join("");
-				console.log('variable_name: ', variable_name);
+				// console.log('variable_name: ', variable_name);
 				
 				if (variable_type == "const") {
 					// way 0: use an object, but the problem is that one needs to rename the variables in all the assignments
 					//const eval(`${variable_name}`) = eval(`${assignment}`);  // gives error
-					eval(`const ${variable_name}=${assignment}`);
+					// eval(`const ${variable_name}=${assignment}`);  // does nothing, does not assign the variable
 					// way 1: try to make a dynamic global variable
 					window[variable_name] = eval(assignment);
 				} else if (variable_type == "var") {
-					eval(`var ${variable_name}=${assignment}`);
+					// eval(`var ${variable_name}=${assignment}`);
 					window[variable_name] = eval(assignment);
 				} else if (variable_type == "let") {
-					eval(`let ${variable_name}=${assignment}`);
+					// eval(`let ${variable_name}=${assignment}`);
 					window[variable_name] = eval(assignment);
 				}
 
@@ -619,7 +619,7 @@ async function run_code_interpreter() {
 				// need to modify each_input to rename the variables as objects
 				try {
 					out = eval(each_input);
-					console.log('out: ', out);
+					// console.log('out: ', out);
 					if (out == null) {
 						out = "null";
 					}
