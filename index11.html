@@ -497,7 +497,7 @@ async function run_code_interpreter() {
 		// javascript
 		let user_input = document.getElementById("backend_input").value;
 		var inputs = user_input.split(';');
-		// console.log('inputs: ', inputs);
+		console.log('inputs: ', inputs);
 
 		var out;
 		var strs_to_find = ["const", "var", "let"];
@@ -505,7 +505,7 @@ async function run_code_interpreter() {
 		for (let i=0; i<inputs.length; i++) {
 
 			var each_input = inputs.at(i);
-			// console.log('each_input: ', each_input);
+			console.log('each_input: ', each_input);
 			
 			// determine if "=" is in the string - find the first "=" from left to right
 			var each_input_arr = each_input.split("");
@@ -520,7 +520,7 @@ async function run_code_interpreter() {
 				// console.log('variable: ', variable);
 				
 				var assignment = each_input_arr.slice(index_of_equal_sign+1,each_input_arr.length).join("");
-				// console.log('assignment: ', assignment);
+				console.log('assignment: ', assignment);
 
 				// Remove more than one repeating space
 				var variable_arr = variable.split("");
@@ -546,7 +546,7 @@ async function run_code_interpreter() {
 				// console.log('variable_arr_mod: ', variable_arr_mod);
 				const removeMarker = (num) => num != "del";
 				variable = variable_arr_mod.filter(removeMarker).join("");
-				// console.log('variable: ', variable);
+				console.log('variable: ', variable);
 
 				// Find the variable type
 				var variable_type = [];
