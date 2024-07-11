@@ -531,7 +531,7 @@ async function run_code_interpreter() {
 					console.log('num: ', num);
 					console.log('is_it_first_time_occurance: ', is_it_first_time_occurance);
 					if (num == " " || num == "del") {
-						if ( variable_arr.at(ind+1) == " ") {
+						if ( variable.split("").at(ind+1) == " ") {
 							// Detection of consecutive spaces
 							if (is_it_first_time_occurance == 'no') {
 								// fill in marker to remove these
