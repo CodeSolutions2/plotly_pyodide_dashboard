@@ -7,15 +7,15 @@
 <h1>Data plotting dashboard and code interpreter webapp</h1>
 <ol type="A">
 	<li>Data plotting dashboard</li>
-    <ul>
-	    <li>[Step 0] (Optional) Obtain the download url for a file in a GitHub repository.</li>
-  	  <li>[Step 1] Enter a url of a csv file to present the data in a table.</li>
-	    <li>[Step 2] Visualize the data.</li>
-    </ul>
-	<li>Code interpreter</li>
-    <ul>
-	    <li>[Step 3] Backend input: Select a Backend computational engine (Step 2) and enter Python or JavaScript.</li>
-    </ul>
+		<ul>
+			<li>[Step 0] (Optional) Obtain the download url for a file in a GitHub repository.</li>
+			<li>[Step 1] Enter a url of a csv file to present the data in a table.</li>
+			<li>[Step 2] Visualize the data.</li>
+		</ul>
+			<li>Code interpreter</li>
+		<ul>
+			<li>[Step 3] Backend input: Select a Backend computational engine (Step 2) and enter Python or JavaScript.</li>
+		</ul>
 </ol>
 
 <!-- ---------------------------------------- -->
@@ -486,7 +486,7 @@ async function run_code_interpreter() {
 		
 		try {
 			let user_input = document.getElementById("backend_input").value;
-			document.getElementById('output').innerHTML = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd;"+user_input+");
+			document.getElementById('output').innerHTML = await pyodide.runPython("from pyodide.http import open_url; import pandas as pd;"+user_input);
 		       document.getElementById('notifications').innerHTML = '';
 	       } catch (error){ 
 		       document.getElementById('errors').innerHTML = error;
