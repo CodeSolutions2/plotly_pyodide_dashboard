@@ -497,7 +497,7 @@ async function run_code_interpreter() {
 		// javascript
 		let user_input = document.getElementById("backend_input").value;
 		var inputs = user_input.split(';');
-		console.log('inputs: ', inputs);
+		// console.log('inputs: ', inputs);
 
 		var out;
 		// var regexp = /[=]/g;
@@ -508,24 +508,24 @@ async function run_code_interpreter() {
 		for (let i=0; i<inputs.length; i++) {
 
 			var each_input = inputs.at(i);
-			console.log('each_input: ', each_input);
+			// console.log('each_input: ', each_input);
 
 			// var temp = {};
 			
 			// determine if "=" is in the string - find the first "=" from left to right
 			var each_input_arr = each_input.split("");
-			console.log('each_input_arr: ', each_input_arr);
+			// console.log('each_input_arr: ', each_input_arr);
 			
 			var index_of_equal_sign = each_input_arr.findIndex((element) => element == '=');
-			console.log('index_of_equal_sign: ', index_of_equal_sign);
+			// console.log('index_of_equal_sign: ', index_of_equal_sign);
 			
 			if (index_of_equal_sign != -1) {
 				
 				var variable = each_input_arr.slice(0,index_of_equal_sign-1).join("");
-				console.log('variable: ', variable);
+				// console.log('variable: ', variable);
 				
 				var assignment = each_input_arr.slice(index_of_equal_sign+1,each_input_arr.length).join("");
-				console.log('assignment: ', assignment);
+				// console.log('assignment: ', assignment);
 
 				// Remove more than one repeating space
 				// variable = variable.replace(/\s+/g, ' ');
@@ -550,10 +550,10 @@ async function run_code_interpreter() {
 					prev_res = num;
 				});
 				variable_arr_mod = variable_arr_mod.concat([variable_arr.pop()]);
-				console.log('variable_arr_mod: ', variable_arr_mod);
+				// console.log('variable_arr_mod: ', variable_arr_mod);
 				const removeMarker = (num) => num != "del";
 				variable = variable_arr_mod.filter(removeMarker).join("");
-				console.log('variable: ', variable);
+				// console.log('variable: ', variable);
 
 				// Find the variable type
 				// var variable_type = variable.match(regexp1);
@@ -588,9 +588,6 @@ async function run_code_interpreter() {
 
 			} else {
 				// need to modify each_input to rename the variables as objects
-				console.log('input_text: ', input_text);
-				console.log('re: ', re);
-
 				try {
 					out = eval(each_input);
 					console.log('out: ', out);
@@ -604,9 +601,6 @@ async function run_code_interpreter() {
 				
 			} // end of if statement
 		}
-		
-		
-		
 		document.getElementById('notifications').innerHTML = '';
 	}
 	
