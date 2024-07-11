@@ -543,7 +543,7 @@ async function run_code_interpreter() {
 					prev_res = num;
 				});
 				variable_arr_mod = variable_arr_mod.concat([variable_arr.pop()]);
-				// console.log('variable_arr_mod: ', variable_arr_mod);
+				console.log('variable_arr_mod: ', variable_arr_mod);
 				const removeMarker = (num) => num != "del";
 				variable = variable_arr_mod.filter(removeMarker).join("");
 				console.log('variable: ', variable);
