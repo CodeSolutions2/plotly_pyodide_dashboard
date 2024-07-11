@@ -497,14 +497,68 @@ async function run_code_interpreter() {
 		// javascript
 		let user_input = document.getElementById("backend_input").value;
 		var inputs = user_input.split(';');
+		console.log('inputs: ', inputs);
 
 		var out;
+		var regexp = /[=]/g;
+		var regexp1 = /[const|var|let]/g;
 		for (let i=0; i<inputs.length; i++) {
-			out = eval(user_input);
-			console.log('out: ', out);
+
+			var each_input = inputs.at(i);
+			console.log('each_input: ', each_input);
+
+			// var temp = {};
+			
+			// determine if = is in the string
+			// Find the operand character: =
+			if (regexp.test(each_input) == true) {
+				// the input is an assignment
+				
+				// var [variable, assignment] = each_input.split("=");
+				// OR
+				// agreed - it should split on the first = sign
+				var each_input_arr = each_input.split("");
+				console.log('each_input_arr: ', each_input_arr);
+				
+				var ind = each_input_arr.findIndex((element) => element == '=');
+				console.log('ind: ', ind);
+				
+				var variable = each_input_arr.slice(0,ind-1).join("");
+				console.log('variable: ', variable);
+				
+				var assignment = each_input_arr.slice(ind+1,each_input_arr.length).join("");
+				console.log('assignment: ', assignment);
+
+				// remove more than one repeating space
+				variable = variable.replace(/\s+/g, ' ');
+				var variable_type = variable.match(regexp1);
+				console.log('variable_type: ', variable_type);
+				
+				var variable_name = variable.split(` ${variable_type}`);
+				console.log('variable_name: ', variable_name);
+				
+				if (variable_type == "const") {
+					// easy way
+					window[variable_name] = eval(assignment);
+					// try to look for another way
+				} else if (variable_type == "var") {
+					window[variable_name] = eval(assignment);
+					// try to look for another way
+				} else if (variable_type == "let") {
+					window[variable_name] = eval(assignment);
+					// try to look for another way
+				}
+
+			} else {
+				// need to modify each_input to rename the variables as objects
+				out = eval(each_input);
+				console.log('out: ', out);
+				document.getElementById('output').innerHTML = out;
+			} // end of if statement
+			
 		}
 		
-		document.getElementById('output').innerHTML = out;
+		
 		
 		document.getElementById('notifications').innerHTML = '';
 	}
